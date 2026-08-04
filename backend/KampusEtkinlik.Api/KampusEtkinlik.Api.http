@@ -1,0 +1,6 @@
+@KampusEtkinlik.Api_HostAddress = http://localhost:5012
+
+GET {{KampusEtkinlik.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
