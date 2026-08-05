@@ -1,0 +1,105 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <a
+      class="brand"
+      routerLink="/"
+    >
+      KampüsEtkinlik
+    </a>
+
+    <header class="auth-header">
+      <span class="eyebrow">
+        Tekrar hoş geldin
+      </span>
+
+      <h1>Hesabına giriş yap</h1>
+
+      <p>
+        Kulüpleri ve kampüs etkinliklerini
+        tek merkezden takip et.
+      </p>
+    </header>
+
+    <form
+      class="auth-form"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      novalidate
+    >
+      <div class="form-field">
+        <label for="email">
+          E-posta
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="ornek@student.com"
+          autocomplete="email"
+        />
+
+        @if (
+          form.controls.email.touched
+          && form.controls.email.invalid
+        ) {
+          <small class="field-error">
+            Geçerli bir e-posta adresi gir.
+          </small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="password">
+          Şifre
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="En az 8 karakter"
+          autocomplete="current-password"
+        />
+
+        @if (
+          form.controls.password.touched
+          && form.controls.password.invalid
+        ) {
+          <small class="field-error">
+            Şifre en az 8 karakter olmalıdır.
+          </small>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div
+          class="alert alert-error"
+          role="alert"
+        >
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <button
+        class="primary-button"
+        type="submit"
+        [disabled]="loading()"
+      >
+        @if (loading()) {
+          Giriş yapılıyor...
+        } @else {
+          Giriş Yap
+        }
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Henüz hesabın yok mu?
+
+      <a routerLink="/register">
+        Kayıt ol
+      </a>
+    </p>
+  </section>
+</main>
