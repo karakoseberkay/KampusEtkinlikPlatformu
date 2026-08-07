@@ -1,8 +1,13 @@
-namespace KampusEtkinlik.Api.Enums;
+ 
+namespace KampusEtkinlik.Api.Enums; // bu dosyanın Enums klasörüne ait olduğunu belirtir
 
-public enum RegistrationApprovalStatus
+
+public enum RegistrationApprovalStatus // etkinlik kayıtlarının onay durumlarını tutar
 {
-    Pending = 1,
-    Approved = 2,
-    Rejected = 3
+    Pending = 1, // kayıt yöneticinin onayını bekliyor
+
+    Approved = 2, // kayıt kulüp yöneticisi tarafından onaylanmış
+
+    Rejected = 3 // kayıt kulüp yöneticisi tarafından reddedilmiş
 }
+ 

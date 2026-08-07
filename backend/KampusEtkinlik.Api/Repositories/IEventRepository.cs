@@ -1,29 +1,36 @@
-using KampusEtkinlik.Api.Models;
+ 
+using KampusEtkinlik.Api.Models; // Event modeline erişmemizi sağlar
 
-namespace KampusEtkinlik.Api.Repositories;
+namespace KampusEtkinlik.Api.Repositories; // bu dosyanın Repositories katmanına ait olduğunu belirtir
 
-public interface IEventRepository
+
+public interface IEventRepository // etkinlik veritabanı işlemlerinin hangi metotlara sahip olması gerektiğini belirleyen sözleşmedir
 {
     Task<List<Event>> GetAllAsync(
         CancellationToken cancellationToken = default
-    );
+    ); // tüm etkinlikleri veritabanından liste olarak getirir
+
 
     Task<List<Event>> GetPopularAsync(
-        int limit,
+        int limit, // en fazla kaç popüler etkinlik getirileceğini belirtir
         CancellationToken cancellationToken = default
-    );
+    ); // popüler etkinlikleri belirlenen sayı kadar getirir, popülerliğin nasıl hesaplandığını EventRepositoryde göreceğiz
+
 
     Task<Event?> GetByIdAsync(
-        int id,
+        int id, // getirilecek etkinliğin idsini alır
         CancellationToken cancellationToken = default
-    );
+    ); // etkinliği idsine göre getirir, bulunamazsa null döner
+
 
     Task AddAsync(
-        Event eventItem,
+        Event eventItem, // veritabanına eklenecek etkinlik nesnesini alır
         CancellationToken cancellationToken = default
-    );
+    ); // yeni etkinliği DbContext üzerinden eklenmek üzere hazırlar
+
 
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default
-    );
+    ); // etkinlik üzerindeki ekleme ve güncelleme değişikliklerini veritabanına kaydeder
 }
+ 

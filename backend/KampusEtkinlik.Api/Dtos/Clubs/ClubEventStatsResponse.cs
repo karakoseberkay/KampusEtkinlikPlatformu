@@ -1,24 +1,35 @@
-using KampusEtkinlik.Api.Enums;
 
-namespace KampusEtkinlik.Api.DTOs.Clubs;
+using KampusEtkinlik.Api.Enums; // EventStatus enumuna erişmemizi sağlar
 
-public sealed class ClubEventStatsResponse
+namespace KampusEtkinlik.Api.DTOs.Clubs; // bu dosyanın Clubs DTOları altında olduğunu belirtir
+
+
+public sealed class ClubEventStatsResponse // kulüp istatistiklerinde her etkinlik için frontend'e dönecek bilgileri taşır
 {
-    public int EventId { get; set; }
+    public int EventId { get; set; } // etkinliğin idsini döndürür
 
-    public string Title { get; set; } = string.Empty;
 
-    public DateTimeOffset StartDate { get; set; }
+    public string Title { get; set; } = string.Empty; // etkinliğin başlığını döndürür
 
-    public EventStatus Status { get; set; }
 
-    public int Capacity { get; set; }
+    public DateTimeOffset StartDate { get; set; } // etkinliğin başlangıç tarihini döndürür
 
-    public int ApprovedRegistrationCount { get; set; }
 
-    public int PendingRegistrationCount { get; set; }
+    public EventStatus Status { get; set; } // etkinliğin Active veya Cancelled durumunu döndürür
 
-    public int RejectedRegistrationCount { get; set; }
 
-    public double RegistrationRate { get; set; }
+    public int Capacity { get; set; } // etkinliğin toplam kapasitesini döndürür
+
+
+    public int ApprovedRegistrationCount { get; set; } // etkinliğe onaylanmış kayıt sayısını döndürür
+
+
+    public int PendingRegistrationCount { get; set; } // etkinlikte onay bekleyen kayıt sayısını döndürür
+
+
+    public int RejectedRegistrationCount { get; set; } // etkinlikte reddedilmiş kayıt sayısını döndürür
+
+
+    public double RegistrationRate { get; set; } // onaylanan kayıtların etkinlik kapasitesine göre yüzdesini döndürür
 }
+
