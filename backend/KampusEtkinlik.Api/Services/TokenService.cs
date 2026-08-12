@@ -7,34 +7,26 @@ using Microsoft.IdentityModel.Tokens; // JWT imzalama anahtarı ve signing ayarl
 namespace KampusEtkinlik.Api.Services; // bu dosyanın Services katmanına ait olduğunu belirtir
 
 
-public sealed class TokenService(
-    IConfiguration configuration) : ITokenService // JWT üretme işini yapan gerçek servistir, ayarları configurationdan alır
+public sealed class TokenService(IConfiguration configuration) : ITokenService 
+// JWT üretme işini yapan gerçek servistir, ayarları configurationdan alır
 {
-    public TokenResult CreateToken(
-        ApplicationUser user, // token oluşturulacak kullanıcıyı alır
-        IEnumerable<string> roles) // kullanıcının rollerini alır
+    public TokenResult CreateToken(ApplicationUser user, IEnumerable<string> roles) 
+    // token oluşturulacak kullanıcıyı alır
+    // kullanıcının rollerini alır
     {
-        var jwtKey = configuration["Jwt:Key"] // JWTyi imzalamak için kullanılan gizli anahtarı alır
-            ?? throw new InvalidOperationException(
-                "Jwt:Key ayarı bulunamadı."
-            );
+        var jwtKey = configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key bulunamadı.");
+        // JWTyi imzalamak için kullanılan gizli anahtarı alır 
 
 
-        var issuer = configuration["Jwt:Issuer"] // tokenı üreten sistem bilgisini alır
-            ?? throw new InvalidOperationException(
-                "Jwt:Issuer ayarı bulunamadı."
-            );
+        var issuer = configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer bulunamadı.");
+        // tokenı üreten sistem bilgisini alır
 
 
-        var audience = configuration["Jwt:Audience"] // tokenın hangi uygulama için üretileceği bilgisini alır
-            ?? throw new InvalidOperationException(
-                "Jwt:Audience ayarı bulunamadı."
-            );
+        var audience = configuration["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience bulunamadı.");
+        // tokenın hangi uygulama için üretileceği bilgisini alır
 
-
-        var durationMinutes =
-            configuration.GetValue<int?>("Jwt:DurationMinutes") ?? 60;
-        // tokenın kaç dakika geçerli olacağını alır, ayar yoksa 60 dakika kullanır
+        var durationMinutes =configuration.GetValue<int?>("Jwt:DurationMinutes") ?? 60;
+        // tokenın kaç dakika geçerli olacağını alır, ayar varsa onu alır yoksa null dönüp 60 dakika kullanır
 
 
         var now = DateTimeOffset.UtcNow; // tokenın oluşturulduğu anı UTC olarak alır
@@ -42,48 +34,44 @@ public sealed class TokenService(
         var expiresAt = now.AddMinutes(durationMinutes); // tokenın biteceği zamanı hesaplar
 
 
-        var claims = new List<Claim> // tokenın içinde taşınacak kullanıcı bilgilerini oluşturur
+        var claims = new List<Claim> 
+        //tokenın içinde taşınacak kullanıcı bilgilerini oluşturur
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id), // JWTnin standart subject alanına kullanıcı idsini ekler
+            new(JwtRegisteredClaimNames.Sub, user.Id),
+            // JWTnin standart subject alanına kullanıcı idsini ekler
 
-            new(ClaimTypes.NameIdentifier, user.Id), // backendde kullanıcı idsini kolayca okuyabilmek için id claimi ekler
+            new(ClaimTypes.NameIdentifier, user.Id),
+            // backendde kullanıcı idsini kolayca okuyabilmek için id claimi ekler
 
-            new(
-                JwtRegisteredClaimNames.Email,
-                user.Email ?? string.Empty
-            ), // kullanıcının epostasını tokena ekler
+            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+                 // kullanıcının epostasını tokena ekler
 
-            new(ClaimTypes.Name, user.FullName), // kullanıcının adını tokena ekler
+            new(ClaimTypes.Name, user.FullName), 
+            // kullanıcının adını tokena ekler
 
-            new(
-                JwtRegisteredClaimNames.Jti,
-                Guid.NewGuid().ToString()
-            ), // her tokena benzersiz bir kimlik verir
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
+            // her tokena benzersiz bir kimlik verir
 
             new(
                 JwtRegisteredClaimNames.Iat,
                 now.ToUnixTimeSeconds().ToString(),
                 ClaimValueTypes.Integer64
-            ) // tokenın oluşturulduğu zamanı tokena ekler
+            ) 
+            // tokenın oluşturulduğu zamanı tokena ekler
         };
 
 
-        claims.AddRange(
-            roles.Select(role =>
-                new Claim(ClaimTypes.Role, role)
-            )
-        ); // kullanıcının rollerini tek tek Role claimi olarak tokena ekler
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+         // kullanıcının rollerini tek tek Role claimi olarak tokena ekler (student ve clubmanager)
 
 
-        var securityKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtKey)
-        ); // jwtKeyi byte dizisine çevirip tokenı imzalamada kullanılacak güvenlik anahtarını oluşturur
-
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+         // jwtKeyi byte dizisine çevirip tokenı imzalamada kullanılacak güvenlik anahtarını oluşturur
+         //configurationdan alıyor jwtkeyi
 
         var signingCredentials = new SigningCredentials(
-            securityKey,
-            SecurityAlgorithms.HmacSha256
-        ); // tokenın hangi anahtar ve algoritmayla imzalanacağını belirler
+            securityKey, SecurityAlgorithms.HmacSha256); 
+            // tokenın hangi anahtar ve algoritmayla imzalanacağını belirler
 
 
         var jwtToken = new JwtSecurityToken(
@@ -96,14 +84,13 @@ public sealed class TokenService(
         );
 
 
-        var accessToken =
-            new JwtSecurityTokenHandler().WriteToken(jwtToken);
+        var accessToken =new JwtSecurityTokenHandler().WriteToken(jwtToken);
         // oluşturulan JWT nesnesini Angulara gönderilecek string token haline çevirir
 
 
-        return new TokenResult(
-            accessToken, // oluşturulan JWTyi döndürür
-            expiresAt // tokenın bitiş tarihini döndürür
-        );
+        return new TokenResult(accessToken, expiresAt); 
+        // oluşturulan JWTyi döndürür
+        // tokenın bitiş tarihini döndürür
+        
     }
 }

@@ -12,31 +12,26 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
         using var scope = services.CreateScope(); // uygulama servisleri içinde geçici bir scope oluşturur
 
 
-        var roleManager =
-            scope.ServiceProvider
-                .GetRequiredService<RoleManager<IdentityRole>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         // rol oluşturma kontrol etme gibi işlemleri yapacak RoleManager servisini DI sisteminden alır
+        //getrequiredservice = servis yoksa hata fırlatır, getservice=servis yoksa null döndürür
 
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+         // kullanıcı bulma oluşturma parola ve rol işlemlerini yapacak UserManager servisini DI sisteminden alır
+         //getrequiredservice = servis yoksa hata fırlatır, getservice=servis yoksa null döndürür
 
-        var userManager =
-            scope.ServiceProvider
-                .GetRequiredService<UserManager<ApplicationUser>>();
-        // kullanıcı bulma oluşturma parola ve rol işlemlerini yapacak UserManager servisini DI sisteminden alır
-
-
-        // Sistemde bulunması gereken rolleri oluşturur.
-        foreach (var roleName in RoleNames.All) // RoleNames içindeki tüm rolleri tek tek gezer
+       
+        foreach (var roleName in RoleNames.All) // RoleNames içindeki tüm rolleri tek tek gezer(kontrol eder)
         {
             if (await roleManager.RoleExistsAsync(roleName)) // rol veritabanında zaten var mı kontrol eder
             {
-                continue; // rol varsa tekrar oluşturmadan sonraki role geçer
+                continue; // rol varsa tekrar oluşturmadan sonraki role geçer (student or manager)
             }
 
 
-            var roleResult = await roleManager.CreateAsync(
-                new IdentityRole(roleName)
-            ); // rol yoksa yeni IdentityRole oluşturup veritabanına kaydeder
-
+            var roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+             // rol yoksa yeni IdentityRole oluşturup veritabanına kaydeder
+             //creareasync bize true ya da false döndürür, rol oluşturulursa true döner, hata olursa false döner ve aşağıdaki if bloğu çalışır
 
             if (!roleResult.Succeeded) // rol oluşturma başarısız olduysa hata bilgilerini hazırlar
             {
@@ -60,8 +55,7 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
         const string managerPassword = "Manager1234"; // test ClubManager hesabının parolası
 
 
-        var managerUser =
-            await userManager.FindByEmailAsync(managerEmail);
+        var managerUser = await userManager.FindByEmailAsync(managerEmail);
         // test yöneticisi daha önce oluşturulmuş mu eposta üzerinden kontrol eder
 
 
@@ -71,18 +65,14 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
             {
                 FullName = "Test Kulüp Yöneticisi", // test kullanıcısının ad soyadı
                 Email = managerEmail, // test kullanıcısının epostası
-                UserName = managerEmail, // Identity kullanıcı adı olarak epostayı kullanır
+                UserName = "manager", // Identity kullanıcı adı olarak epostayı kullanır
                 EmailConfirmed = true, // test hesabının epostasını doğrulanmış kabul eder
-                Department = "Bilgisayar Mühendisliği", // test kullanıcısının bölüm bilgisi
+                Department = "Yazılın Mühendisliği", // test kullanıcısının bölüm bilgisi
                 CreatedAt = DateTimeOffset.UtcNow // kullanıcının oluşturulma tarihini UTC olarak kaydeder
             };
 
 
-            var createUserResult =
-                await userManager.CreateAsync(
-                    managerUser,
-                    managerPassword
-                );
+            var createUserResult = await userManager.CreateAsync(managerUser, managerPassword);
             // kullanıcıyı verilen parola ile Identity üzerinden oluşturur, parola burada hashlenecektir
 
 
@@ -103,18 +93,14 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
         }
 
 
-        var isClubManager =
-            await userManager.IsInRoleAsync(
-                managerUser,
-                RoleNames.ClubManager
-            );
+        var isClubManager =await userManager.IsInRoleAsync(managerUser, RoleNames.ClubManager);
         // test kullanıcısının ClubManager rolüne sahip olup olmadığını kontrol eder
 
 
         if (!isClubManager) // kullanıcı ClubManager değilse rolü ekler
         {
             var addRoleResult =
-                await userManager.AddToRoleAsync(
+                await userManager.AddToRoleAsync( // addRoleResult=Bu kullanıcıyla bu rolü birbirine bağla
                     managerUser,
                     RoleNames.ClubManager
                 );

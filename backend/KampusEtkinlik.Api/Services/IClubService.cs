@@ -8,9 +8,9 @@ public interface IClubService // kulüple ilgili iş kurallarının hangi işlem
 {
     Task<ClubStatsResponse?> GetStatsAsync(
         int id, // istatistikleri alınacak kulübün idsini alır
-        string managerUserId, // isteği yapan kulüp yöneticisinin kullanıcı idsini alır
+        string managerUserId, // isteği yapan kulüp yöneticisinin kullanıcı idsini alır(doğrulama için)
         CancellationToken cancellationToken = default
-    ); // kulübün istatistiklerini getirir, kulüp bulunamazsa veya erişilemiyorsa null dönebilir
+    ); //kulübün istatistiklerini isteği yapan yöneticiye göre getirir, kulüp bulunamazsa veya erişilemiyorsa null dönebilir
 
 
     Task<IReadOnlyList<ClubResponse>> GetAllAsync(
@@ -25,7 +25,7 @@ public interface IClubService // kulüple ilgili iş kurallarının hangi işlem
 
 
     Task<ClubResponse> CreateAsync(
-        string managerUserId, // kulübü oluşturacak yöneticinin kullanıcı idsini alır
+        string managerUserId, // kulübü oluşturacak yöneticinin kullanıcı idsini alır (önlem amaçlı jwt ıd aldım)
         CreateClubRequest request, // frontendden gelen kulüp oluşturma bilgilerini alır
         CancellationToken cancellationToken = default
     ); // gerekli kontrolleri yaptıktan sonra yeni kulüp oluşturur ve sonucunu döndürür

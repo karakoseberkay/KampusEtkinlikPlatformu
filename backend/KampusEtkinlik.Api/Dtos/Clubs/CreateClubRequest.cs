@@ -16,4 +16,5 @@ public sealed class CreateClubRequest // frontendden kulüp oluşturma endpointi
 
     [MaxLength(500)] // logo adresi varsa en fazla 500 karakter olabilir
     public string? LogoUrl { get; set; } // oluşturulacak kulübün logo url bilgisini alır, boş bırakılabilir
-}
+    
+}//requestten müdahale edilemesin diye manageruserıdyi buradan almadım, user kulüp oluştururken manageruseridye atanacak

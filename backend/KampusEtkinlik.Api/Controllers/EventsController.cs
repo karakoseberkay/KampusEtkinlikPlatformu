@@ -44,6 +44,9 @@ public sealed class EventsController(
     > GetPopular(
         [FromQuery] int limit = 10, // URLdeki limit query parametresini alır, gönderilmezse 10 kullanır
         CancellationToken cancellationToken = default
+    
+        
+        
     )
     {
         var events = await eventService.GetPopularAsync(

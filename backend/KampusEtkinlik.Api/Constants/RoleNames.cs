@@ -8,9 +8,9 @@ public static class RoleNames // projede kullanılan rol isimlerini tek bir yerd
     public const string ClubManager = "ClubManager"; // kulüp yöneticisi rolünün sabit adını tutar
 
 
-    public static readonly string[] All = // projedeki bütün rol isimlerini tek listede toplar
-    [
-        Student, // Student rolünü listeye ekler
-        ClubManager // ClubManager rolünü listeye ekler
-    ];
+    public static readonly string[] All = [Student, ClubManager]; 
+    // projedeki bütün rol isimlerini tek listede toplar
+       // Student rolünü listeye ekler
+        // ClubManager rolünü listeye ekler
+   
 }

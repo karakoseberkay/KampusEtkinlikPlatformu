@@ -1,4 +1,3 @@
- 
 using System.ComponentModel.DataAnnotations; // Required ve MaxLength gibi doğrulama attributelarını kullanmamızı sağlar
 using KampusEtkinlik.Api.Enums; // EventVisibility ve EventStatus enumlarına erişmemizi sağlar
 
@@ -7,14 +6,15 @@ namespace KampusEtkinlik.Api.Models; // bu dosyanın Models katmanına ait oldu�
 
 public class Event // veritabanındaki etkinlik bilgisini temsil eden modeldir
 {
-    public int Id { get; set; } // etkinliğin benzersiz idsini tutar
+    public int Id { get; set; } // etkinliğin benzersiz idsini tutar (primary key)
 
 
-    public int ClubId { get; set; } // etkinliğin bağlı olduğu kulübün idsini foreign key olarak tutar
+    public int ClubId { get; set; } 
+    // etkinliğin bağlı olduğu kulübün idsini foreign key olarak tutar (foreign key)
 
 
     public Club Club { get; set; } = null!;
-    // etkinliğin bağlı olduğu Club nesnesine ulaşmamızı sağlayan navigation propertydir
+    // etkinliğin bağlı olduğu Club nesnesine ulaşmamızı sağlayan navigation propertydir (1-N)
 
 
     [Required] // etkinlik başlığının boş olmasını engeller
@@ -55,8 +55,6 @@ public class Event // veritabanındaki etkinlik bilgisini temsil eden modeldir
     // etkinliğin oluşturulduğu zamanı UTC olarak tutar
 
 
-    public ICollection<Registration> Registrations { get; set; }
-        = new List<Registration>();
-    // etkinliğe yapılan kayıtları tutan navigation propertydir, bir etkinliğin birden fazla kaydı olabilir
+    public ICollection<Registration> Registrations { get; set; }= new List<Registration>();
+    // etkinliğe yapılan kayıtları tutan navigation propertydir, bir etkinliğin birden fazla kaydı olabilir (1-N)
 }
- 

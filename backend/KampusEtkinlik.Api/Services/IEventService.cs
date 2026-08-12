@@ -8,19 +8,19 @@ public interface IEventService // etkinlikle ilgili iş kurallarının hangi iş
 {
     Task<IReadOnlyList<PopularEventResponse>> GetPopularAsync(
         int limit, // en fazla kaç popüler etkinlik getirileceğini belirtir
-        CancellationToken cancellationToken = default
-    ); // popüler etkinlikleri frontend'e uygun response listesi olarak getirir
+        CancellationToken cancellationToken = default);
+     // popüler etkinlikleri frontend'e uygun response listesi olarak getirir
 
 
-    Task<IReadOnlyList<EventResponse>> GetAllAsync(
-        CancellationToken cancellationToken = default
-    ); // tüm etkinlikleri frontend'e uygun EventResponse listesi olarak getirir
+    Task<IReadOnlyList<EventResponse>> GetAllAsync( CancellationToken cancellationToken = default);
+       
+     // tüm etkinlikleri frontend'e uygun EventResponse listesi olarak getirir
 
 
     Task<EventResponse?> GetByIdAsync(
         int id, // getirilecek etkinliğin idsini alır
-        CancellationToken cancellationToken = default
-    ); // verilen idye sahip etkinliği getirir, bulunamazsa null döner
+        CancellationToken cancellationToken = default);
+     // verilen idye sahip etkinliği getirir, bulunamazsa null döner
 
 
     Task<EventResponse> CreateAsync(

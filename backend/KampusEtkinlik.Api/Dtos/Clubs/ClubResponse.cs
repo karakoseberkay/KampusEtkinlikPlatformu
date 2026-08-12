@@ -15,10 +15,12 @@ public sealed class ClubResponse // backendden frontend'e dönecek kulüp bilgil
     public string? LogoUrl { get; set; } // kulübün logo url bilgisini döndürür, boş olabilir
 
 
-    public string ManagerUserId { get; set; } = string.Empty; // kulübü yöneten kullanıcının idsini döndürür
+    public string ManagerUserId { get; set; } = string.Empty; 
+    // kulübü yöneten kullanıcının idsini döndürür
 
 
-    public string ManagerFullName { get; set; } = string.Empty; // kulüp yöneticisinin ad soyad bilgisini döndürür
+    public string ManagerFullName { get; set; } = string.Empty; 
+    // kulüp yöneticisinin ad soyad bilgisini döndürür
 
 
     public int EventCount { get; set; } // kulübe ait toplam etkinlik sayısını döndürür

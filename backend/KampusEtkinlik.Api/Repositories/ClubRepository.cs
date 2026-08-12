@@ -5,12 +5,10 @@ using Microsoft.EntityFrameworkCore; // Include AsNoTracking ToListAsync AnyAsyn
 namespace KampusEtkinlik.Api.Repositories; // bu dosyanın Repositories katmanına ait olduğunu belirtir
 
 
-public sealed class ClubRepository(
-    ApplicationDbContext dbContext // veritabanı işlemlerini yapacağımız DbContext nesnesini DI üzerinden alır
-) : IClubRepository // IClubRepositoryde tanımlanan kulüp veritabanı işlemlerini gerçekleştirir
+public sealed class ClubRepository(ApplicationDbContext dbContext ) : IClubRepository 
+// veritabanı işlemlerini yapacağımız DbContext nesnesini DI üzerinden alır
+// IClubRepositoryde tanımlanan kulüp veritabanı işlemlerini gerçekleştirir
 {
-
-
     public async Task<List<Club>> GetAllAsync(
         CancellationToken cancellationToken = default
     )
@@ -33,9 +31,11 @@ public sealed class ClubRepository(
         return await dbContext.Clubs // Clubs tablosu üzerinde sorgu başlatır
             .Include(club => club.ManagerUser) // kulüple beraber yönetici bilgisini getirir
             .Include(club => club.Events) // kulüple beraber etkinliklerini getirir
-            .FirstOrDefaultAsync(
-                club => club.Id == id, // verilen idye sahip ilk kulübü bulur
-                cancellationToken
+            
+            .FirstOrDefaultAsync(   // verilen idye sahip ilk kulübü bulur
+            //burada single da kullanabilirdim ama single bulamazsa hata fırlatır, first bulamazsa null döndürür
+                club => club.Id == id, cancellationToken
+              
             ); // kulüp bulunursa döndürür, bulunamazsa null döndürür
     }
 
@@ -50,6 +50,8 @@ public sealed class ClubRepository(
             .AsNoTracking() // sadece okuma yapılacağı için değişiklik takibini kapatır
             .Include(club => club.Events) // kulübün etkinliklerini de sorguya dahil eder
             .ThenInclude(eventItem => eventItem.Registrations) // her etkinliğin kayıtlarını da sorguya dahil eder
+            //theninclude: önceki include ile getirilen entitynin ilişkili olduğu başka bir entityyi de sorguya dahil eder
+
             .FirstOrDefaultAsync(
                 club => club.Id == id, // verilen idye sahip kulübü bulur
                 cancellationToken
@@ -69,8 +71,8 @@ public sealed class ClubRepository(
             .ToLower(); // büyük küçük harf farkını kaldırmak için küçük harfe çevirir
 
 
-        return await dbContext.Clubs.AnyAsync( // koşula uyan en az bir kulüp var mı kontrol eder ve true false döndürür
-            club =>
+        return await dbContext.Clubs.AnyAsync( club => // koşula uyan en az bir kulüp var mı kontrol eder ve true false döndürür
+                
                 club.Name.ToLower() == normalizedName // aynı isimde kulüp var mı kontrol eder
                 && (
                     !excludedClubId.HasValue // hariç tutulacak kulüp idsi verilmemişse tüm kulüpleri kontrol eder

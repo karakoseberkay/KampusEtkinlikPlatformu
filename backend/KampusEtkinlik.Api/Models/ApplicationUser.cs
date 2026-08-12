@@ -8,7 +8,7 @@ public class ApplicationUser : IdentityUser // IdentityUserı genişleterek proj
 {
     [Required] // FullName alanının boş geçilmesini engeller
     [MaxLength(150)] // FullName veritabanında en fazla 150 karakter olabilir
-    public string FullName { get; set; } = string.Empty; // kullanıcının ad soyad bilgisini tutar
+    public string FullName { get; set; } = string.Empty; // kullanıcının ad soyad bilgisini tutar null olmaması için string.empty kullandım
 
 
     [MaxLength(150)] // Department alanı en fazla 150 karakter olabilir
@@ -20,9 +20,8 @@ public class ApplicationUser : IdentityUser // IdentityUserı genişleterek proj
 
     public ICollection<Club> ManagedClubs { get; set; } = new List<Club>();
     // kullanıcının yönettiği kulüpleri tutan navigation propertydir, bir kullanıcı birden fazla kulüp yönetebilir
+    // ICollection=birden fazla kayıt tutabilen koleksiyon, List=listeleme yapabilen koleksiyon
 
-
-    public ICollection<Registration> Registrations { get; set; }
-        = new List<Registration>();
+    public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
     // kullanıcının etkinlik kayıtlarını tutan navigation propertydir, bir kullanıcının birden fazla kaydı olabilir
 }

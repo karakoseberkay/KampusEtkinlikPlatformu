@@ -15,17 +15,16 @@ public sealed class EventService(
 
 
     public async Task<IReadOnlyList<EventResponse>> GetAllAsync(
-        CancellationToken cancellationToken = default
-    )
-    {
-        var events = await eventRepository.GetAllAsync(
-            cancellationToken
-        ); // tüm etkinlikleri repository üzerinden veritabanından getirir
+        CancellationToken cancellationToken = default){
+    
+    
+        var events = await eventRepository.GetAllAsync(cancellationToken);            
+         // tüm etkinlikleri repository üzerinden veritabanından getirir
 
 
-        return events
-            .Select(MapToResponse) // her Event modelini frontend için EventResponse DTOsuna çevirir
-            .ToList(); // sonuçları liste haline getirir
+        return events.Select(MapToResponse).ToList();
+             // her Event modelini frontend için EventResponse DTOsuna çevirir
+            // sonuçları liste haline getirir
     }
 
 
@@ -36,18 +35,17 @@ public sealed class EventService(
     )
     {
         var safeLimit = Math.Clamp(limit, 1, 50);
-        // limit değerini en az 1 en fazla 50 olacak şekilde sınırlar
+        // limit değerini en az 1 en fazla 50 olacak şekilde sınırlar(önlem)
 
 
-        var events = await eventRepository.GetPopularAsync(
-            safeLimit,
-            cancellationToken
-        ); // popüler etkinlikleri repository üzerinden getirir
+        var events = await eventRepository.GetPopularAsync(safeLimit,cancellationToken);
+                        
+         // popüler etkinlikleri repository üzerinden getirir
 
 
-        return events
-            .Select(MapToPopularResponse) // her etkinliği popüler etkinlik responseuna çevirir
-            .ToList(); // sonuçları liste haline getirir
+        return events.Select(MapToPopularResponse).ToList();
+             // her etkinliği popüler etkinlik responseuna çevirir
+             // sonuçları liste haline getirir
     }
 
 
@@ -63,9 +61,9 @@ public sealed class EventService(
         ); // verilen idye sahip etkinliği repository üzerinden getirir
 
 
-        return eventItem is null
-            ? null // etkinlik bulunamazsa null döndürür
-            : MapToResponse(eventItem); // bulunursa EventResponsea çevirip döndürür
+        return eventItem is null ? null : MapToResponse(eventItem);
+            // etkinlik bulunamazsa null döndürür
+            // bulunursa EventResponsea çevirip döndürür
     }
 
 
@@ -97,7 +95,7 @@ public sealed class EventService(
         {
             throw new KeyNotFoundException(
                 "Etkinliğin bağlanacağı kulüp bulunamadı."
-            ); // olmayan kulübe etkinlik eklenmesini engeller
+            ); // olmayan kulübe etkinlik eklenmesini engeller(önlem)
         }
 
 
@@ -105,7 +103,7 @@ public sealed class EventService(
         {
             throw new UnauthorizedAccessException(
                 "Yalnızca yönettiğiniz kulübe etkinlik ekleyebilirsiniz."
-            ); // başka yöneticinin kulübüne etkinlik eklenmesini engeller
+            ); // başka yöneticinin kulübüne etkinlik eklenmesini engeller(önlem)()403
         }
 
 
@@ -139,27 +137,26 @@ public sealed class EventService(
         ); // etkinliği EF Core tarafında eklenmek üzere hazırlar
 
 
-        await eventRepository.SaveChangesAsync(
-            cancellationToken
-        ); // etkinliği gerçekten PostgreSQL veritabanına kaydeder
+        await eventRepository.SaveChangesAsync(cancellationToken);
+            
+         // etkinliği gerçekten PostgreSQL veritabanına kaydeder
 
 
-        var createdEvent =
-            await eventRepository.GetByIdAsync(
+        var createdEvent = await eventRepository.GetByIdAsync(
+            
                 eventItem.Id,
                 cancellationToken
-            ); // kaydedilen etkinliği kulüp bilgisiyle beraber tekrar veritabanından getirir
+            ); // kaydedilen etkinliği kulüp bilgisiyle beraber tekrar veritabanından getirir(önlem)
 
 
         if (createdEvent is null) // oluşturulan etkinlik tekrar okunamazsa
         {
-            throw new InvalidOperationException(
-                "Etkinlik oluşturuldu ancak tekrar okunamadı."
-            ); // beklenmeyen veri erişim hatasında işlemi durdurur
+            throw new InvalidOperationException("Etkinlik oluşturuldu ancak tekrar okunamadı.");                
+             // beklenmeyen veri erişim hatasında işlemi durdurur
         }
 
 
-        return MapToResponse(createdEvent); // oluşturulan Event modelini EventResponsea çevirip döndürür
+        return MapToResponse(createdEvent); // oluşturulan Event modelini EventResponsa çevirip döndürür
     }
 
 
@@ -179,7 +176,7 @@ public sealed class EventService(
             request.Capacity,
             request.Category,
             request.Visibility
-        ); // yeni bilgilerin iş kurallarına uygun olup olmadığını kontrol eder
+        ); // yeni bilgilerin iş kurallarına uygun olup olmadığını kontrol eder (aşağıki satırlarda)
 
 
         var eventItem = await eventRepository.GetByIdAsync(
@@ -196,17 +193,15 @@ public sealed class EventService(
 
         if (eventItem.Club.ManagerUserId != managerUserId) // etkinliğin kulübünü yöneten kişi işlemi yapan kullanıcı mı kontrol eder
         {
-            throw new UnauthorizedAccessException(
-                "Yalnızca kendi kulübünüze ait etkinliği güncelleyebilirsiniz."
-            ); // başka yöneticinin etkinliğini güncellemeyi engeller
+            throw new UnauthorizedAccessException("Yalnızca kendi kulübünüze ait etkinliği güncelleyebilirsiniz.");                
+             // başka yöneticinin etkinliğini güncellemeyi engeller(önlem)
         }
 
 
         if (eventItem.Status == EventStatus.Cancelled) // etkinlik daha önce iptal edilmiş mi kontrol eder
         {
-            throw new InvalidOperationException(
-                "İptal edilmiş bir etkinlik güncellenemez."
-            ); // iptal edilmiş etkinlik üzerinde değişiklik yapılmasını engeller
+            throw new InvalidOperationException("İptal edilmiş bir etkinlik güncellenemez.");                
+             // iptal edilmiş etkinlik üzerinde değişiklik yapılmasını engeller
         }
 
 
@@ -225,9 +220,8 @@ public sealed class EventService(
         eventItem.Visibility = request.Visibility; // kayıt tipini Public veya ApprovalRequired olarak günceller
 
 
-        await eventRepository.SaveChangesAsync(
-            cancellationToken
-        ); // EF Coreun takip ettiği değişiklikleri veritabanına kaydeder
+        await eventRepository.SaveChangesAsync(cancellationToken);            
+         // EF Coreun takip ettiği değişiklikleri veritabanına kaydeder
 
 
         return MapToResponse(eventItem); // güncellenen etkinliği EventResponsea çevirip döndürür
@@ -253,19 +247,17 @@ public sealed class EventService(
         }
 
 
-        if (eventItem.Club.ManagerUserId != managerUserId) // etkinliğin bağlı olduğu kulübün yöneticisini kontrol eder
+        if (eventItem.Club.ManagerUserId != managerUserId) // etkinliğin bağlı olduğu kulübün yöneticisini kontrol eder(önlem)
         {
-            throw new UnauthorizedAccessException(
-                "Yalnızca kendi kulübünüze ait etkinliği iptal edebilirsiniz."
-            ); // başka yöneticinin etkinliğini iptal etmesini engeller
+            throw new UnauthorizedAccessException("Yalnızca kendi kulübünüze ait etkinliği iptal edebilirsiniz.");                
+             // başka yöneticinin etkinliğini iptal etmesini engeller
         }
 
 
         if (eventItem.Status == EventStatus.Cancelled) // etkinlik zaten iptal edilmiş mi kontrol eder
         {
-            throw new InvalidOperationException(
-                "Etkinlik zaten iptal edilmiş."
-            ); // aynı etkinliğin tekrar iptal edilmesini engeller
+            throw new InvalidOperationException( "Etkinlik zaten iptal edilmiş.");               
+             // aynı etkinliğin tekrar iptal edilmesini engeller
         }
 
 
@@ -273,9 +265,8 @@ public sealed class EventService(
         // etkinliği veritabanından silmek yerine durumunu Cancelled yapar
 
 
-        await eventRepository.SaveChangesAsync(
-            cancellationToken
-        ); // durum değişikliğini PostgreSQL veritabanına kaydeder
+        await eventRepository.SaveChangesAsync(cancellationToken);             
+        // durum değişikliğini PostgreSQL veritabanına kaydeder
 
 
         return MapToResponse(eventItem); // iptal edilen etkinliğin güncel halini frontend'e döndürür
@@ -295,57 +286,54 @@ public sealed class EventService(
     {
         if (string.IsNullOrWhiteSpace(title)) // başlık boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException(
-                "Etkinlik başlığı boş bırakılamaz."
-            );
+            throw new ArgumentException("Etkinlik başlığı boş bırakılamaz." );       
+            
         }
 
 
         if (string.IsNullOrWhiteSpace(description)) // açıklama boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException(
-                "Etkinlik açıklaması boş bırakılamaz."
-            );
+            throw new ArgumentException("Etkinlik açıklaması boş bırakılamaz.");
+                
+            
         }
 
 
         if (string.IsNullOrWhiteSpace(location)) // konum boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException(
-                "Etkinlik konumu boş bırakılamaz."
-            );
+            throw new ArgumentException("Etkinlik konumu boş bırakılamaz.");
+                
+            
         }
 
 
         if (string.IsNullOrWhiteSpace(category)) // kategori boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException(
-                "Etkinlik kategorisi boş bırakılamaz."
-            );
+            throw new ArgumentException("Etkinlik kategorisi boş bırakılamaz.");                
+            
         }
 
 
         if (capacity <= 0) // kapasite sıfır veya negatif mi kontrol eder
         {
-            throw new ArgumentException(
-                "Etkinlik kontenjanı sıfırdan büyük olmalıdır."
-            );
+            throw new ArgumentException("Etkinlik kontenjanı sıfırdan büyük olmalıdır.");
+                            
         }
 
 
         if (startDate.ToUniversalTime() <= DateTimeOffset.UtcNow) // etkinlik tarihi geçmişte veya şu anda mı kontrol eder
         {
-            throw new ArgumentException(
-                "Etkinlik tarihi gelecekte olmalıdır."
-            ); // sadece gelecekteki tarihlerde etkinlik oluşturulmasına veya güncellenmesine izin verir
+            throw new ArgumentException("Etkinlik tarihi gelecekte olmalıdır.");
+                
+             // sadece gelecekteki tarihlerde etkinlik oluşturulmasına veya güncellenmesine izin verir (önlem)
         }
 
 
         if (!Enum.IsDefined(visibility)) // gönderilen visibility değeri EventVisibility enumunda tanımlı mı kontrol eder
         {
-            throw new ArgumentException(
-                "Geçersiz etkinlik görünürlüğü."
-            ); // tanımsız enum değerlerinin kullanılmasını engeller
+            throw new ArgumentException("Geçersiz etkinlik görünürlüğü.");
+                
+             // tanımsız enum değerlerinin kullanılmasını engeller(önlem)
         }
     }
 
@@ -392,28 +380,22 @@ public sealed class EventService(
     {
         var approvedRegistrationCount =
             eventItem.Registrations.Count(registration =>
-                registration.ApprovalStatus
-                == RegistrationApprovalStatus.Approved
-            );
+                registration.ApprovalStatus == RegistrationApprovalStatus.Approved);
+                
+            
         // etkinliğin Approved durumundaki kayıtlarını sayar
 
 
-        var remainingCapacity = Math.Max(
-            eventItem.Capacity - approvedRegistrationCount,
-            0
-        );
+        var remainingCapacity = Math.Max(eventItem.Capacity - approvedRegistrationCount, 0);  //alt sınır 0                    
+       
         // kapasiteden onaylı kayıtları çıkararak kalan kontenjanı hesaplar, sonucun negatif olmasını engeller
 
 
         var registrationRate =
-            eventItem.Capacity > 0 // kapasite varsa kayıt oranını hesaplar
-                ? Math.Round(
-                    approvedRegistrationCount
-                    * 100.0
-                    / eventItem.Capacity,
-                    2
-                ) // Approved kayıtların kapasiteye göre yüzdesini hesaplar ve 2 basamağa yuvarlar
-                : 0; // kapasite 0 ise sıfıra bölmeyi engeller
+            eventItem.Capacity > 0 ? Math.Round(approvedRegistrationCount * 100.0 / eventItem.Capacity, 2): 0;//(divisionbyzero)
+                // kapasite varsa kayıt oranını hesaplar    
+                 // Approved kayıtların kapasiteye göre yüzdesini hesaplar ve 2 basamağa yuvarlar
+                 // kapasite 0 ise sıfıra bölmeyi engeller
 
 
         return new PopularEventResponse // hesaplanan bilgileri frontend'e uygun responsea dönüştürür
@@ -436,8 +418,8 @@ public sealed class EventService(
 
             Capacity = eventItem.Capacity, // etkinlik kapasitesi
 
-            ApprovedRegistrationCount =
-                approvedRegistrationCount, // onaylanmış kayıt sayısı
+            ApprovedRegistrationCount = approvedRegistrationCount,
+                 // onaylanmış kayıt sayısı
 
             RemainingCapacity = remainingCapacity, // kalan boş kontenjan
 

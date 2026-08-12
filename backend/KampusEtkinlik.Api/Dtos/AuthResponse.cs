@@ -1,5 +1,4 @@
-namespace KampusEtkinlik.Api.Dtos; // bu dosyanın Dtos klasörüne ait olduğunu belirtir
-
+namespace KampusEtkinlik.Api.Dtos; 
 
 public sealed record AuthResponse( // register login ve me işlemlerinden frontend'e dönecek kullanıcı ve token bilgilerini taşır
     string UserId, // kullanıcının idsini döndürür

@@ -30,16 +30,15 @@ using System.Text.Json.Serialization; //Bu satır .NET’in JSON dönüştürme 
 
 var builder = WebApplication.CreateBuilder(args); // uygulamayı hazırlayacağımız bir builder nesnesi oluşturuyor
 
-builder.Services.AddControllers() //Controller’ların çalışması için gerekli altyapıyı ekliyor ve API’de enum değerlerinin daha anlaşılır JSON metinleri olarak gönderilmesini sağlıyor
-    .AddJsonOptions(options =>
-    {
+builder.Services.AddControllers().AddJsonOptions(options =>{ 
+//Controller’ların çalışması için gerekli altyapıyı ekliyor ve API’de enum değerlerinin daha anlaşılır JSON metinleri olarak gönderilmesini sağlıyor
+    
         options.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter()
-        );
+            new JsonStringEnumConverter());
     });
 
-builder.Services.AddOpenApi(options => //Swagger’a bu API’nin JWT Bearer kullandığını tanıtır
-{
+builder.Services.AddOpenApi(options =>{ //Swagger’a bu API’nin JWT Bearer kullandığını tanıtır
+
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); // tek bir endpoint’i değil, OpenAPI belgesinin genelini düzenlediği için document transform kullanılıyor ve bu kod swaggera jwt yöntemini genel olarak tanıtır
     options.AddOperationTransformer<BearerSecurityRequirementTransformer>(); // sweagerın endpointleri tek tek birbirinden ayrı inceleyip tokwn istiyen endpointi görsel olarak göstermesini sağlar yani hangi endpointin jwt istediğini belirler
 });
@@ -73,8 +72,8 @@ builder.Services.AddDataProtection(); // Bu satır, uygulamanın veri koruma hiz
 
 builder.Services.AddCors(options => // anguların gelip bağlanmasını sağlayan cors ayarlarını yapıyor, anguların localhost:4200 portundan gelen istekleri kabul etmesini sağlıyor
 {
-    options.AddPolicy(
-        "AngularClient", // bu policy ismi ile anguların bağlanmasını sağlıyoruz, farklı porta farklı isim varilir
+    options.AddPolicy("AngularClient", 
+        // bu policy ismi ile anguların bağlanmasını sağlıyoruz, farklı porta farklı isim varilir
         policy => //koşulların yazıldığı yer
         {
             policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod(); //header: bearer gibi ek bilgiler, method: post get put delete
@@ -82,8 +81,8 @@ builder.Services.AddCors(options => // anguların gelip bağlanmasını sağlaya
     ); // .allowanyorigins yazılabilir ama bu bütün web adreslerine izin verir
 });
 
-var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")// postgre ile bağlantıyı sağlıyor(veri tabanı detayları defaultconnection altında appsettings.jsonda yazıyor)
+var connectionString =builder.Configuration.GetConnectionString("DefaultConnection")
+// postgre ile bağlantıyı sağlıyor(veri tabanı detayları defaultconnection altında appsettings.jsonda yazıyor)
     //veri tabanı bilgileri user secrets ile gizlendi gösteren terminal kodu: dotnet user-secrets list --project backend/KampusEtkinlik.Api
     ?? throw new InvalidOperationException( "veri tabanı bağlantı bilgisi bulunamadı.");
 
@@ -93,8 +92,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>//her http isteği
     //connectionstringi postgresql ile bağlayan yapı
 });
 
-builder.Services
-    .AddIdentityCore<ApplicationUser>(options => // kullanıcının eposta parolalarına kurallar ekler
+builder.Services.AddIdentityCore<ApplicationUser>(options => // kullanıcının eposta parolalarına kurallar ekler
     {
         options.User.RequireUniqueEmail = true; //benzersiz e posta
 
@@ -207,7 +205,7 @@ MapOpenApi
 → API açıklamasını JSON olarak hazırlar
 
 UseSwaggerUI
-→ o açıklamayı okunabilir web ekranına çevirir
+→ o açıklamayı okunabilir web ekranına çevirir(sweager)
 */
 
 app.UseHttpsRedirection(); // http isteklerini https kullanmaya yönlendirir
@@ -236,8 +234,8 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
         CancellationToken cancellationToken // işlem iptal edilmek istenirse kullanılabilecek token
     )
     {
-        var authenticationSchemes =
-            await authenticationSchemeProvider.GetAllSchemesAsync(); // sistemde kayıtlı tüm authentication yöntemlerini getirir
+        var authenticationSchemes =await authenticationSchemeProvider.GetAllSchemesAsync(); 
+        // sistemde kayıtlı tüm authentication yöntemlerini getirir
             ////await: bu iş tamamlanınca sonucu ver, sonra aşağı devam et
 
         var hasBearerScheme = authenticationSchemes.Any(
@@ -284,12 +282,14 @@ internal sealed class BearerSecurityRequirementTransformer : IOpenApiOperationTr
         var endpointMetadata = context.Description.ActionDescriptor.EndpointMetadata; //endpointMetadata endpoint üzerindeki authorize gibi attributeları taşır
 
 
-        var requiresAuthorization = endpointMetadata.OfType<IAuthorizeData>() // authorize bilgilerini seçer
-                .Any(); // en az bir authorize varsa true olur
+        var requiresAuthorization = endpointMetadata.OfType<IAuthorizeData>().Any(); 
+        // authorize bilgilerini seçer
+                 // en az bir authorize varsa true olur
 
 
-        var allowsAnonymous =endpointMetadata.OfType<IAllowAnonymous>() // allowanonymous bilgilerini seçer
-                .Any(); // allowanonymous varsa true olur
+        var allowsAnonymous =endpointMetadata.OfType<IAllowAnonymous>().Any(); 
+        // allowanonymous bilgilerini seçer
+                 // allowanonymous varsa true olur
 
 
         if (!requiresAuthorization || allowsAnonymous) // endpoint token istemiyorsa security bilgisi eklemeden çık
@@ -301,10 +301,9 @@ internal sealed class BearerSecurityRequirementTransformer : IOpenApiOperationTr
         operation.Security ??= []; // endpointin security listesi yoksa boş liste oluşturur
 
 
-        operation.Security.Add(
-            new OpenApiSecurityRequirement // bu endpointin Bearer JWT gerektirdiğini swaggera ekler
-            {
-                [
+        operation.Security.Add(new OpenApiSecurityRequirement{[
+             // bu endpointin Bearer JWT gerektirdiğini swaggera ekler
+            
                     new OpenApiSecuritySchemeReference("Bearer", context.Document) // yukarıda tanımladığımız Bearer güvenlik şemasını kullanır 
                     // // mevcut yukarıda tanımladığımız openapi (bearer) dokümanındaki Bearer tanımına referans verir
                     

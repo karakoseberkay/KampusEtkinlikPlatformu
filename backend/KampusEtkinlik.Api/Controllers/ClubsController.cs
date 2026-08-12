@@ -1,4 +1,3 @@
-
 using System.Security.Claims; // JWT doğrulandıktan sonra kullanıcı id gibi claim bilgilerini okumamızı sağlar
 using KampusEtkinlik.Api.Constants; // RoleNames.ClubManager gibi rol sabitlerine erişmemizi sağlar
 using KampusEtkinlik.Api.DTOs.Clubs; // kulüp request ve response DTOlarına erişmemizi sağlar
@@ -78,11 +77,10 @@ public sealed class ClubsController(
 
         if (managerUserId is null) // tokenda kullanıcı idsi bulunamazsa
         {
-            return Unauthorized(
-                new
+            return Unauthorized(new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği yok."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -100,8 +98,7 @@ public sealed class ClubsController(
 
             if (stats is null) // kulüp bulunamazsa
             {
-                return NotFound(
-                    new
+                return NotFound( new
                     {
                         message = "Kulüp bulunamadı."
                     }
@@ -115,12 +112,10 @@ public sealed class ClubsController(
         catch (UnauthorizedAccessException exception)
         {
             return StatusCode(
-                StatusCodes.Status403Forbidden,
-                new
+                StatusCodes.Status403Forbidden, new
                 {
                     message = exception.Message
-                }
-            );
+                });
             // kullanıcı ClubManager olsa bile başka yöneticinin kulübüne erişmeye çalışırsa 403 Forbidden döndürür
         }
     }
@@ -155,16 +150,16 @@ public sealed class ClubsController(
         {
             var club = await clubService.CreateAsync(
                 managerUserId,
-                request,
+                request, //frontendden gelen kulüp bilgileri
                 cancellationToken
             );
-            // giriş yapan yöneticinin idsi ve kulüp bilgileriyle yeni kulüp oluşturur
+            // giriş yapan yöneticinin idsi ve kulüp bilgileriyle yeni kulüp oluşturur, işi servise devrediyor
 
 
             return CreatedAtAction(
-                nameof(GetById), // oluşturulan kulübün hangi endpointten tekrar alınabileceğini belirtir
+                nameof(GetById), // oluşturulan kulübün hangi endpointten tekrar alınabileceğini belirtir(önlem amaçlı böyle)
                 new { id = club.Id }, // oluşturulan kulübün idsini route parametresi olarak verir
-                club // oluşturulan kulüp bilgisini response bodyde döndürür
+                club // oluşturulan kulüp bilgisini response bodyde döndürür(201 döndürmesi için ok değil)
             );
             // başarılı oluşturma işleminde 201 Created döndürür
         }
@@ -199,7 +194,7 @@ public sealed class ClubsController(
 
     public async Task<ActionResult<ClubResponse>> Update(
         int id, // güncellenecek kulübün idsini routetan alır
-        [FromBody] UpdateClubRequest request, // yeni kulüp bilgilerini request bodyden alır
+        [FromBody] UpdateClubRequest request, // yeni kulüp bilgilerini request bodyden(frontendden) alır
         CancellationToken cancellationToken
     )
     {
@@ -209,11 +204,9 @@ public sealed class ClubsController(
 
         if (managerUserId is null) // tokenda kullanıcı idsi yoksa
         {
-            return Unauthorized(
-                new
+            return Unauthorized(new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message = "Token içerisinde kullanıcı kimliği bulunamadı."
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -227,13 +220,12 @@ public sealed class ClubsController(
                 request,
                 cancellationToken
             );
-            // kulüp idsini yönetici idsini ve yeni bilgileri service gönderir
+            // kulüp idsini yönetici idsini ve yeni bilgileri service gönderir işlenmiş veriyi alır(güncellenmiş kulüp)
 
 
             if (club is null) // güncellenecek kulüp bulunamazsa
             {
-                return NotFound(
-                    new
+                return NotFound(new
                     {
                         message = "Kulüp bulunamadı."
                     }
@@ -246,36 +238,31 @@ public sealed class ClubsController(
 
         catch (ArgumentException exception)
         {
-            return BadRequest(
-                new
-                {
+            return BadRequest(new{
+                 
                     message = exception.Message
-                }
-            );
+                
+                });
             // geçersiz veri durumunda 400 Bad Request döndürür
         }
 
         catch (UnauthorizedAccessException exception)
         {
-            return StatusCode(
-                StatusCodes.Status403Forbidden,
-                new
-                {
+            return StatusCode(StatusCodes.Status403Forbidden, new{
+                 
                     message = exception.Message
-                }
-            );
+                
+                });
             // kullanıcı başka yöneticinin kulübünü güncellemeye çalışırsa 403 Forbidden döndürür
         }
 
         catch (InvalidOperationException exception)
         {
-            return Conflict(
-                new
+            return Conflict(new
                 {
                     message = exception.Message
                 }
-            );
-            // aynı isimde başka kulüp bulunması gibi çakışmalarda 409 Conflict döndürür
+            );// aynı isimde başka kulüp bulunması gibi çakışmalarda 409 Conflict döndürür
         }
     }
 
@@ -287,19 +274,16 @@ public sealed class ClubsController(
     public async Task<IActionResult> Delete(
         int id, // silinecek kulübün idsini routetan alır
         CancellationToken cancellationToken
-    )
-    {
+    ){
         var managerUserId = GetCurrentUserId();
         // işlemi yapan yöneticinin kullanıcı idsini JWTden alır
 
 
         if (managerUserId is null) // tokenda kullanıcı idsi bulunamazsa
         {
-            return Unauthorized(
-                new
+            return Unauthorized(new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -317,9 +301,7 @@ public sealed class ClubsController(
 
             if (!deleted) // kulüp bulunamadığı için silinemediyse
             {
-                return NotFound(
-                    new
-                    {
+                return NotFound(new {
                         message = "Kulüp bulunamadı."
                     }
                 ); // 404 Not Found döndürür
@@ -330,27 +312,22 @@ public sealed class ClubsController(
             // silme başarılıysa response body göndermeden 204 No Content döndürür
         }
 
-        catch (UnauthorizedAccessException exception)
-        {
-            return StatusCode(
-                StatusCodes.Status403Forbidden,
-                new
-                {
-                    message = exception.Message
-                }
-            );
+        catch (UnauthorizedAccessException exception){
+            return StatusCode(StatusCodes.Status403Forbidden, new{
+            
+                message = exception.Message
+            
+                });
             // kullanıcı başka yöneticinin kulübünü silmeye çalışırsa 403 Forbidden döndürür
         }
 
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(
-                new
-                {
+        catch (InvalidOperationException exception){
+            return Conflict(new {
+                 
                     message = exception.Message
-                }
-            );
-            // etkinliği olan kulübün silinmesi gibi iş kuralı çakışmalarında 409 Conflict döndürür
+                
+            });
+            //(serviste) etkinliği olan kulübün silinmesi gibi iş kuralı çakışmalarında 409 Conflict döndürür
         }
     }
 
@@ -361,6 +338,7 @@ public sealed class ClubsController(
         return User.FindFirstValue(
                    ClaimTypes.NameIdentifier
                ) // önce NameIdentifier claimindeki kullanıcı idsini arar
-               ?? User.FindFirstValue("sub"); // bulunamazsa JWTnin standart sub claiminden kullanıcı idsini almaya çalışır
+               ?? User.FindFirstValue("sub"); // bulunamazsa JWTnin standart subject claiminden kullanıcı idsini almaya çalışır
+               //ikiside olmazsa null döner
     }
 }

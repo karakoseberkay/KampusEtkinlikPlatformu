@@ -20,19 +20,18 @@ public sealed class AuthController(
 {
 
 
-    [AllowAnonymous] // bu endpointi kullanmak için giriş yapmış olmak gerekmez
+    [AllowAnonymous] // bu endpointi kullanmak için giriş yapmış olmak gerekmez ve jwt gerekmez
     [HttpPost("register")] // POST /api/Auth/register endpointini oluşturur
 
-    public async Task<ActionResult> Register(
-        RegisterRequest request) // frontendden gelen kayıt bilgilerini alır
+    public async Task<ActionResult> Register(RegisterRequest request)
+     // frontendden gelen kayıt bilgilerini alır
     {
         var email = request.Email
             .Trim() // epostanın başındaki ve sonundaki boşlukları temizler
             .ToLowerInvariant(); // epostayı küçük harfe çevirerek standart hale getirir
 
 
-        var existingUser =
-            await userManager.FindByEmailAsync(email);
+        var existingUser = await userManager.FindByEmailAsync(email);
         // aynı epostayla kayıtlı kullanıcı var mı Identity üzerinden kontrol eder
 
 
@@ -42,6 +41,7 @@ public sealed class AuthController(
             {
                 message = "Bu e-posta adresi zaten kullanılıyor."
             }); // 409 Conflict döndürür
+            //400 olmamasının sebebi kullanıcı zaten var, yani istemci hatası değil, çakışma durumu
         }
 
 
@@ -71,7 +71,7 @@ public sealed class AuthController(
         {
             return BadRequest(new
             {
-                errors = createResult.Errors.Select(error => new
+                errors = createResult.Errors.Select(error => new //select ile hataları tek tek dönüştürür
                 {
                     error.Code, // hatanın kodu
                     error.Description // hatanın açıklaması
@@ -80,10 +80,7 @@ public sealed class AuthController(
         }
 
 
-        var roleResult = await userManager.AddToRoleAsync(
-            user,
-            RoleNames.Student
-        );
+        var roleResult = await userManager.AddToRoleAsync(user, RoleNames.Student);
         // yeni kayıt olan kullanıcıya varsayılan olarak Student rolünü verir
 
 
@@ -106,6 +103,7 @@ public sealed class AuthController(
 
         return Ok(await CreateAuthResponseAsync(user));
         // kayıt başarılıysa kullanıcı bilgileri + roller + JWT içeren AuthResponse döndürür
+        //böylece kullanıcı kayıt olduktan sonra otomatik olarak giriş yapmış olur
     }
 
 
@@ -113,8 +111,8 @@ public sealed class AuthController(
     [AllowAnonymous] // giriş yapmak için önceden JWT gerekmez
     [HttpPost("login")] // POST /api/Auth/login endpointini oluşturur
 
-    public async Task<ActionResult<AuthResponse>> Login(
-        LoginRequest request) // frontendden gelen eposta ve parola bilgilerini alır
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
+     // frontendden gelen eposta ve parola bilgilerini alır
     {
         var email = request.Email
             .Trim() // epostanın gereksiz boşluklarını temizler
@@ -141,7 +139,6 @@ public sealed class AuthController(
             );
         // girilen parolayı kullanıcının veritabanındaki BCrypt hash değeri ile doğrular
 
-
         if (!isPasswordValid) // parola yanlışsa
         {
             return Unauthorized(new
@@ -149,8 +146,6 @@ public sealed class AuthController(
                 message = "E-posta veya şifre hatalı."
             }); // güvenlik için kullanıcı bulunamadığında verilen mesajla aynı mesajı döndürür
         }
-
-
         return Ok(await CreateAuthResponseAsync(user));
         // giriş başarılıysa kullanıcı bilgileri + roller + yeni JWT döndürür
     }
@@ -162,17 +157,14 @@ public sealed class AuthController(
 
     public async Task<ActionResult<AuthResponse>> GetCurrentUser()
     {
-        var userId = User.FindFirstValue(
-            ClaimTypes.NameIdentifier
-        );
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         // doğrulanmış JWT içindeki NameIdentifier claiminden kullanıcı idsini alır
-
+        
 
         if (string.IsNullOrWhiteSpace(userId)) // tokendan kullanıcı idsi alınamazsa
         {
             return Unauthorized(); // 401 döndürür
         }
-
 
         var user = await userManager.FindByIdAsync(userId);
         // tokendan aldığımız id ile gerçek kullanıcıyı veritabanından bulur
@@ -190,19 +182,15 @@ public sealed class AuthController(
 
 
 
-    private async Task<AuthResponse> CreateAuthResponseAsync(
-        ApplicationUser user) // kullanıcı için ortak auth cevabını oluşturan yardımcı metottur
+    private async Task<AuthResponse> CreateAuthResponseAsync(ApplicationUser user)
+     //kullanıcı için ortak auth cevabını oluşturan yardımcı metottur
     {
         var roles = await userManager.GetRolesAsync(user);
         // kullanıcının Student veya ClubManager gibi rollerini Identityden alır
-
-
-        var tokenResult = tokenService.CreateToken(
-            user,
-            roles
-        );
+        
+        var tokenResult = tokenService.CreateToken(user,roles);
         // kullanıcı ve rollerini TokenServicee göndererek yeni JWT oluşturur
-
+     
 
         return new AuthResponse(
             user.Id, // kullanıcı idsi
