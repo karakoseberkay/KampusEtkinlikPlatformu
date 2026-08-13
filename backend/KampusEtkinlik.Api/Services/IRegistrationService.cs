@@ -21,7 +21,8 @@ public interface IRegistrationService // etkinlik kayıtlarıyla ilgili iş kura
     Task<IReadOnlyList<RegistrationResponse>> GetForEventAsync(
         int eventId, // kayıtları görüntülenecek etkinliğin idsini alır
         string managerUserId, // işlemi yapan kulüp yöneticisinin kullanıcı idsini alır
-        RegistrationApprovalStatus? approvalStatus = null, // istersek kayıtları Pending Approved veya Rejected durumuna göre filtreler
+        RegistrationApprovalStatus? approvalStatus = null, 
+        // istersek kayıtları Pending Approved veya Rejected durumuna göre filtreler
         CancellationToken cancellationToken = default
     ); // belirtilen etkinliğin kayıtlarını getirir
 

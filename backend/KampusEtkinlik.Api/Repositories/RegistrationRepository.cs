@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore; // Include Where CountAsync AsNoTracking gi
 namespace KampusEtkinlik.Api.Repositories; // bu dosyanın Repositories katmanına ait olduğunu belirtir
 
 
-public sealed class RegistrationRepository(
-    ApplicationDbContext dbContext // kayıt veritabanı işlemlerini yapacağımız DbContexti DI üzerinden alır
-) : IRegistrationRepository // IRegistrationRepositoryde tanımlanan kayıt veritabanı işlemlerini gerçekleştirir
-{
+public sealed class RegistrationRepository(ApplicationDbContext dbContext) : IRegistrationRepository{
+     // kayıt veritabanı işlemlerini yapacağımız DbContexti DI üzerinden alır
+ // IRegistrationRepositoryde tanımlanan kayıt veritabanı işlemlerini gerçekleştirir
+
 
 
     public async Task<Registration?> GetByIdAsync(
@@ -24,10 +24,10 @@ public sealed class RegistrationRepository(
             .Include(registration => registration.Event) // kayıtla beraber etkinlik bilgisini de getirir
             .ThenInclude(eventItem => eventItem.Club) // etkinliğin bağlı olduğu kulüp bilgisini de getirir
 
-            .FirstOrDefaultAsync(
-                registration => registration.Id == id, // verilen idye sahip kaydı arar
-                cancellationToken
-            ); // kayıt bulunursa döndürür, bulunamazsa null döndürür
+            .FirstOrDefaultAsync(registration => registration.Id == id,cancellationToken);
+                 // verilen idye sahip kaydı arar
+                
+             // kayıt bulunursa döndürür, bulunamazsa null döndürür
     }
 
 
@@ -41,10 +41,10 @@ public sealed class RegistrationRepository(
         return await dbContext.Registrations // Registrations tablosu üzerinde sorgu başlatır
             .AsNoTracking() // sadece kontrol amaçlı okunduğu için EF Coreun değişiklik takibi yapmasını engeller
 
-            .FirstOrDefaultAsync(
-                registration =>
-                    registration.UserId == userId // kayıt belirtilen kullanıcıya mı ait
-                    && registration.EventId == eventId, // ve belirtilen etkinliğe mi ait kontrol eder
+            .FirstOrDefaultAsync(registration =>registration.UserId == userId && registration.EventId == eventId,
+                
+                     // kayıt belirtilen kullanıcıya mı ait
+                     // ve belirtilen etkinliğe mi ait kontrol eder
                 cancellationToken
             ); // eşleşen kayıt varsa döndürür, yoksa null döndürür
     }
@@ -64,12 +64,12 @@ public sealed class RegistrationRepository(
             .Include(registration => registration.Event) // kayıt olunan etkinliği getirir
                 .ThenInclude(eventItem => eventItem.Club) // etkinliğin bağlı olduğu kulüp bilgisini de getirir
 
-            .Where(registration =>
-                registration.UserId == userId
+            .Where(registration => registration.UserId == userId
+                
             ) // sadece belirtilen kullanıcıya ait kayıtları filtreler
 
-            .OrderByDescending(registration =>
-                registration.RegisteredAt
+            .OrderByDescending(registration =>registration.RegisteredAt
+                
             ) // kayıtları en yeni kayıt tarihinden eskiye doğru sıralar
 
             .ToListAsync(cancellationToken); // sorguyu çalıştırıp kayıtları liste olarak getirir
@@ -91,29 +91,27 @@ public sealed class RegistrationRepository(
             .Include(registration => registration.Event) // kayıt olunan etkinlik bilgisini getirir
                 .ThenInclude(eventItem => eventItem.Club) // etkinliğin kulüp bilgisini de getirir
 
-            .Where(registration =>
-                registration.EventId == eventId
+            .Where(registration => registration.EventId == eventId
+                
             ); // sadece belirtilen etkinliğe ait kayıtları sorguya dahil eder
 
 
         if (approvalStatus.HasValue) // approvalStatus filtresi verilmiş mi kontrol eder
         {
-            query = query.Where(registration =>
-                registration.ApprovalStatus
-                == approvalStatus.Value
-            );
+            query = query.Where(registration =>registration.ApprovalStatus == approvalStatus.Value);
+                
+                
+            
             // filtre verilmişse sadece istenen Pending Approved veya Rejected kayıtları sorguya ekler
         }
 
 
-        return await query
-            .OrderBy(registration =>
-                registration.ApprovalStatus
-            ) // kayıtları önce onay durumuna göre sıralar
+        return await query.OrderBy(registration => registration.ApprovalStatus)
+             // kayıtları önce onay durumuna göre sıralar
 
-            .ThenBy(registration =>
-                registration.RegisteredAt
-            ) // aynı durumdaki kayıtları kayıt tarihine göre sıralar
+            .ThenBy(registration => registration.RegisteredAt)
+                
+             // aynı durumdaki kayıtları kayıt tarihine göre sıralar
 
             .ToListAsync(cancellationToken); // hazırlanan sorguyu çalıştırıp sonucu liste olarak getirir
     }
@@ -126,12 +124,12 @@ public sealed class RegistrationRepository(
     )
     {
         return dbContext.Registrations.CountAsync(
-            registration =>
-                registration.EventId == eventId // sadece belirtilen etkinliğin kayıtlarını alır
-                && registration.ApprovalStatus
-                    == RegistrationApprovalStatus.Approved, // sadece Approved kayıtları sayar
-            cancellationToken
-        );
+            registration => registration.EventId == eventId
+                 // sadece belirtilen etkinliğin kayıtlarını alır
+                && registration.ApprovalStatus == RegistrationApprovalStatus.Approved,
+                     // sadece Approved kayıtları sayar
+            cancellationToken);
+        
         // etkinliğin toplam onaylanmış kayıt sayısını veritabanında hesaplayıp döndürür
     }
 
@@ -142,18 +140,15 @@ public sealed class RegistrationRepository(
         CancellationToken cancellationToken = default
     )
     {
-        await dbContext.Registrations.AddAsync(
-            registration,
-            cancellationToken
-        ); // kaydı EF Core tarafında eklenmek üzere hazırlar, henüz veritabanına yazmaz
+        await dbContext.Registrations.AddAsync(registration, cancellationToken);
+            
+         // kaydı EF Core tarafında eklenmek üzere hazırlar, henüz veritabanına yazmaz
     }
 
 
 
-    public Task<int> SaveChangesAsync(
-        CancellationToken cancellationToken = default
-    )
-    {
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default){
+    
         return dbContext.SaveChangesAsync(cancellationToken);
         // kayıt ekleme veya ApprovalStatus değişikliklerini PostgreSQL veritabanına kaydeder
     }

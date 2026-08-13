@@ -24,30 +24,30 @@ public sealed class RegistrationService(
 
         if (eventItem is null) // etkinlik bulunamazsa
         {
-            throw new KeyNotFoundException(
-                "Kayıt olunacak etkinlik bulunamadı."
-            );
+            throw new KeyNotFoundException("Kayıt olunacak etkinlik bulunamadı.");
+                
+            
         }
 
 
         if (eventItem.Status == EventStatus.Cancelled) // etkinlik iptal edilmiş mi kontrol eder
         {
-            throw new InvalidOperationException(
-                "İptal edilmiş bir etkinliğe kayıt olunamaz."
-            );
+            throw new InvalidOperationException("İptal edilmiş bir etkinliğe kayıt olunamaz.");
+                
+            
         }
 
 
         if (eventItem.StartDate <= DateTimeOffset.UtcNow) // etkinlik başlamış veya geçmiş mi kontrol eder
         {
-            throw new InvalidOperationException(
-                "Başlamış veya geçmiş bir etkinliğe kayıt olunamaz."
-            );
+            throw new InvalidOperationException("Başlamış veya geçmiş bir etkinliğe kayıt olunamaz.");
+                
+            
         }
 
 
-        var existingRegistration =
-            await registrationRepository.GetByUserAndEventAsync(
+        var existingRegistration = await registrationRepository.GetByUserAndEventAsync(
+            
                 userId,
                 eventId,
                 cancellationToken
@@ -57,14 +57,14 @@ public sealed class RegistrationService(
 
         if (existingRegistration is not null) // daha önce kayıt varsa
         {
-            throw new InvalidOperationException(
-                "Bu etkinliğe daha önce kayıt oldunuz."
-            );
+            throw new InvalidOperationException("Bu etkinliğe daha önce kayıt oldunuz." );
+                
+           
         }
 
 
-        var approvedCount =
-            await registrationRepository.CountApprovedByEventAsync(
+        var approvedCount = await registrationRepository.CountApprovedByEventAsync(
+           
                 eventId,
                 cancellationToken
             );
@@ -73,14 +73,14 @@ public sealed class RegistrationService(
 
         if (approvedCount >= eventItem.Capacity) // onaylı kayıt sayısı kapasiteye ulaşmış mı kontrol eder
         {
-            throw new InvalidOperationException(
-                "Etkinlik kontenjanı dolmuştur."
-            );
+            throw new InvalidOperationException("Etkinlik kontenjanı doldu.");
+                
+            
         }
 
 
-        var approvalStatus =
-            eventItem.Visibility == EventVisibility.Public
+        var approvalStatus = eventItem.Visibility == EventVisibility.Public
+            
                 ? RegistrationApprovalStatus.Approved
                 : RegistrationApprovalStatus.Pending;
         // Public etkinlikte direkt Approved, ApprovalRequired etkinlikte Pending oluşturur
@@ -95,30 +95,29 @@ public sealed class RegistrationService(
         };
 
 
-        await registrationRepository.AddAsync(
-            registration,
-            cancellationToken
-        ); // yeni kaydı eklenmek üzere hazırlar
+        await registrationRepository.AddAsync(registration, cancellationToken);
+            
+         // yeni kaydı eklenmek üzere hazırlar
 
 
-        await registrationRepository.SaveChangesAsync(
-            cancellationToken
-        ); // yeni kaydı PostgreSQL veritabanına kaydeder
+        await registrationRepository.SaveChangesAsync(cancellationToken);
+            
+         // yeni kaydı PostgreSQL veritabanına kaydeder
 
 
-        var createdRegistration =
-            await registrationRepository.GetByIdAsync(
+        var createdRegistration = await registrationRepository.GetByIdAsync(
+            
                 registration.Id,
                 cancellationToken
             );
-        // oluşturulan kaydı User Event ve Club bilgileriyle beraber tekrar getirir
+        // oluşturulan kaydı User Event ve Club bilgileriyle beraber tekrar getirir(önlem)
 
 
         if (createdRegistration is null)
         {
-            throw new InvalidOperationException(
-                "Kayıt oluşturuldu ancak tekrar okunamadı."
-            );
+            throw new InvalidOperationException("Kayıt oluşturuldu ancak tekrar okunamadı.");
+                
+            
         }
 
 
@@ -132,16 +131,16 @@ public sealed class RegistrationService(
         CancellationToken cancellationToken = default
     )
     {
-        var registrations =
-            await registrationRepository.GetByUserIdAsync(
+        var registrations = await registrationRepository.GetByUserIdAsync(
+           
                 userId,
                 cancellationToken
             ); // kullanıcının bütün etkinlik kayıtlarını getirir
 
 
-        return registrations
-            .Select(MapToResponse) // Registration modellerini response DTOlarına çevirir
-            .ToList();
+        return registrations.Select(MapToResponse).ToList();
+             // Registration modellerini response DTOlarına çevirir
+            
     }
 
 
@@ -160,31 +159,31 @@ public sealed class RegistrationService(
 
         if (eventItem is null)
         {
-            throw new KeyNotFoundException(
-                "Etkinlik bulunamadı."
-            );
+            throw new KeyNotFoundException("Etkinlik bulunamadı.");
+                
+            
         }
 
 
         if (eventItem.Club.ManagerUserId != managerUserId) // etkinlik bu managerın kulübüne mi ait kontrol eder
         {
-            throw new UnauthorizedAccessException(
-                "Yalnızca kendi kulübünüze ait kayıtları görüntüleyebilirsiniz."
-            );
+            throw new UnauthorizedAccessException( "Yalnızca kendi kulübünüze ait kayıtları görüntüleyebilirsiniz.");
+               
+            
         }
 
 
-        var registrations =
-            await registrationRepository.GetByEventIdAsync(
+        var registrations = await registrationRepository.GetByEventIdAsync(
+           
                 eventId,
                 approvalStatus,
                 cancellationToken
             ); // etkinlik kayıtlarını varsa durum filtresiyle beraber getirir
 
 
-        return registrations
-            .Select(MapToResponse)
-            .ToList();
+        return registrations.Select(MapToResponse).ToList();
+            
+            
     }
 
 
@@ -194,8 +193,7 @@ public sealed class RegistrationService(
         CancellationToken cancellationToken = default
     )
     {
-        var registration =
-            await registrationRepository.GetByIdAsync(
+        var registration = await registrationRepository.GetByIdAsync(
                 registrationId,
                 cancellationToken
             ); // onaylanacak kaydı ilişkili bilgilerle beraber getirir
@@ -203,38 +201,37 @@ public sealed class RegistrationService(
 
         if (registration is null)
         {
-            throw new KeyNotFoundException(
-                "Kayıt talebi bulunamadı."
-            );
+            throw new KeyNotFoundException("Kayıt talebi bulunamadı." );
+                
+           
         }
 
 
-        EnsureManagerOwnsEvent(
-            registration,
-            managerUserId
-        ); // managerın gerçekten bu etkinliğin kulübünü yönetip yönetmediğini kontrol eder
+        EnsureManagerOwnsEvent(registration, managerUserId); //(kodu aşağıda)
+        // managerın gerçekten bu etkinliğin kulübünü yönetip yönetmediğini kontrol eder
 
 
-        if (registration.ApprovalStatus
-            != RegistrationApprovalStatus.Pending)
-        {
-            throw new InvalidOperationException(
-                "Yalnızca bekleyen kayıt talepleri onaylanabilir."
-            );
+        if (registration.ApprovalStatus != RegistrationApprovalStatus.Pending){
+           
+        
+            throw new InvalidOperationException("Yalnızca bekleyen kayıt talepleri onaylanabilir.");
+                
+            
         }
 
 
-        if (registration.Event.Status
-            == EventStatus.Cancelled)
-        {
-            throw new InvalidOperationException(
-                "İptal edilmiş etkinliğin kayıt talebi onaylanamaz."
-            );
+        if (registration.Event.Status == EventStatus.Cancelled){
+            //etkinlik iptal edilmişse o etkinliğin bekleyen kaydı onaylanamaz
+           
+        
+            throw new InvalidOperationException("İptal edilmiş etkinliğin kayıt talebi onaylanamaz.");
+                
+            
         }
 
 
-        var approvedCount =
-            await registrationRepository.CountApprovedByEventAsync(
+        var approvedCount = await registrationRepository.CountApprovedByEventAsync(
+           
                 registration.EventId,
                 cancellationToken
             ); // etkinliğin mevcut Approved kayıt sayısını getirir
@@ -242,20 +239,19 @@ public sealed class RegistrationService(
 
         if (approvedCount >= registration.Event.Capacity)
         {
-            throw new InvalidOperationException(
-                "Etkinlik kontenjanı dolmuştur."
-            );
+            throw new InvalidOperationException("Etkinlik kontenjanı dolmuştur.");
+                
+            
         }
 
 
-        registration.ApprovalStatus =
-            RegistrationApprovalStatus.Approved;
+        registration.ApprovalStatus = RegistrationApprovalStatus.Approved;
+            
         // Pending kaydı Approved durumuna geçirir
 
 
-        await registrationRepository.SaveChangesAsync(
-            cancellationToken
-        ); // durum değişikliğini veritabanına kaydeder
+        await registrationRepository.SaveChangesAsync(cancellationToken);
+         // durum değişikliğini veritabanına kaydeder
 
 
         return MapToResponse(registration);
@@ -268,8 +264,7 @@ public sealed class RegistrationService(
         CancellationToken cancellationToken = default
     )
     {
-        var registration =
-            await registrationRepository.GetByIdAsync(
+        var registration = await registrationRepository.GetByIdAsync(
                 registrationId,
                 cancellationToken
             ); // reddedilecek kaydı getirir
@@ -277,35 +272,33 @@ public sealed class RegistrationService(
 
         if (registration is null)
         {
-            throw new KeyNotFoundException(
-                "Kayıt talebi bulunamadı."
-            );
+            throw new KeyNotFoundException("Kayıt talebi bulunamadı.");
+                
+            
         }
 
 
-        EnsureManagerOwnsEvent(
-            registration,
-            managerUserId
-        ); // managerın bu etkinliğin kulübünü yönettiğini kontrol eder
+        EnsureManagerOwnsEvent(registration, managerUserId);            
+         // managerın bu etkinliğin kulübünü yönettiğini kontrol eder
 
 
-        if (registration.ApprovalStatus
-            != RegistrationApprovalStatus.Pending)
-        {
-            throw new InvalidOperationException(
-                "Yalnızca bekleyen kayıt talepleri reddedilebilir."
-            );
-        }
+        if (registration.ApprovalStatus != RegistrationApprovalStatus.Pending)
+            
+        { throw new InvalidOperationException("Yalnızca bekleyen kayıt talepleri reddedilebilir.");}
+           
+                
+            
+        
 
 
-        registration.ApprovalStatus =
-            RegistrationApprovalStatus.Rejected;
+        registration.ApprovalStatus = RegistrationApprovalStatus.Rejected;
+           
         // Pending kaydı Rejected durumuna geçirir
 
 
-        await registrationRepository.SaveChangesAsync(
-            cancellationToken
-        ); // durum değişikliğini veritabanına kaydeder
+        await registrationRepository.SaveChangesAsync(cancellationToken);
+            
+         // durum değişikliğini veritabanına kaydeder
 
 
         return MapToResponse(registration);
@@ -317,40 +310,38 @@ public sealed class RegistrationService(
         string managerUserId // işlemi yapan yöneticinin idsini alır
     )
     {
-        if (registration.Event.Club.ManagerUserId
-            != managerUserId)
+        if (registration.Event.Club.ManagerUserId != managerUserId)
+           
         {
-            throw new UnauthorizedAccessException(
-                "Yalnızca kendi kulübünüze ait kayıt taleplerini yönetebilirsiniz."
-            );
+            throw new UnauthorizedAccessException("Yalnızca kendi kulübünüze ait kayıt taleplerini yönetebilirsiniz.");
         }
         // manager başka kulübün etkinlik kayıtlarını yönetmeye çalışırsa işlemi engeller
     }
 
 
-    private static RegistrationResponse MapToResponse(
-        Registration registration // responsea çevrilecek Registration modelini alır
-    )
-    {
+    private static RegistrationResponse MapToResponse(Registration registration){
+         // responsea çevrilecek Registration modelini alır
+    
+    
         return new RegistrationResponse
         {
             Id = registration.Id, // kayıt idsi
 
             UserId = registration.UserId, // kayıt olan kullanıcının idsi
 
-            UserFullName =
-                registration.User?.FullName
-                ?? string.Empty, // kullanıcı adı soyadı
+            UserFullName = registration.User?.FullName ?? string.Empty,//name null ise boş döndür
+               
+                // kullanıcı adı soyadı
 
             EventId = registration.EventId, // etkinlik idsi
 
-            EventTitle =
-                registration.Event?.Title
-                ?? string.Empty, // etkinlik başlığı
+            EventTitle = registration.Event?.Title ?? string.Empty, 
+               
+               // etkinlik başlığı
 
-            ClubName =
-                registration.Event?.Club?.Name
-                ?? string.Empty, // etkinliğin bağlı olduğu kulübün adı
+            ClubName = registration.Event?.Club?.Name ?? string.Empty, 
+               
+               // etkinliğin bağlı olduğu kulübün adı
 
             RegisteredAt = registration.RegisteredAt, // kayıt zamanı
 

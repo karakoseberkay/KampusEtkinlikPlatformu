@@ -13,21 +13,19 @@ namespace KampusEtkinlik.Api.Controllers; // bu dosyanın Controllers katmanına
 [Route("api/[controller]")] // controllerın ana routeunu /api/Registrations olarak oluşturur
 [Authorize] // controllerdaki endpointlere varsayılan olarak geçerli JWT ile giriş yapılmasını zorunlu tutar
 
-public sealed class RegistrationsController(
-    IRegistrationService registrationService // kayıt iş kurallarını çalıştırmak için servisi DI üzerinden alır
-) : ControllerBase
-{
+public sealed class RegistrationsController(IRegistrationService registrationService) : ControllerBase{
+     // kayıt iş kurallarını çalıştırmak için servisi DI üzerinden alır
+
+
 
 
     [HttpGet("me")] // GET /api/Registrations/me endpointini oluşturur
-    [Authorize(Roles = RoleNames.Student)] // sadece Student rolündeki kullanıcının kendi kayıtlarını görmesine izin verir
+    [Authorize(Roles = RoleNames.Student)] 
+    // sadece Student rolündeki kullanıcının kendi kayıtlarını görmesine izin verir
 
-    public async Task<
-        ActionResult<IReadOnlyList<RegistrationResponse>>
-    > GetMine(
-        CancellationToken cancellationToken
-    )
-    {
+    public async Task<ActionResult<IReadOnlyList<RegistrationResponse>>        
+    > GetMine(CancellationToken cancellationToken ){   
+     
         var userId = GetCurrentUserId();
         // giriş yapan öğrencinin kullanıcı idsini JWT claimlerinden alır
 
@@ -37,15 +35,15 @@ public sealed class RegistrationsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
 
 
-        var registrations =
-            await registrationService.GetMineAsync(
+        var registrations = await registrationService.GetMineAsync(
+           
                 userId,
                 cancellationToken
             );
@@ -59,7 +57,8 @@ public sealed class RegistrationsController(
 
 
     [HttpPut("{id:int}/approve")] // PUT /api/Registrations/5/approve endpointini oluşturur
-    [Authorize(Roles = RoleNames.ClubManager)] // sadece ClubManager rolündeki kullanıcıların kayıt onaylamasına izin verir
+    [Authorize(Roles = RoleNames.ClubManager)] 
+    // sadece ClubManager rolündeki kullanıcıların kayıt onaylamasına izin verir
 
     public async Task<ActionResult<RegistrationResponse>> Approve(
         int id, // onaylanacak registration kaydının idsini routetan alır
@@ -75,8 +74,8 @@ public sealed class RegistrationsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -84,8 +83,8 @@ public sealed class RegistrationsController(
 
         try
         {
-            var registration =
-                await registrationService.ApproveAsync(
+            var registration = await registrationService.ApproveAsync(
+                
                     id,
                     managerUserId,
                     cancellationToken
@@ -110,8 +109,8 @@ public sealed class RegistrationsController(
 
         catch (UnauthorizedAccessException exception)
         {
-            return StatusCode(
-                StatusCodes.Status403Forbidden,
+            return StatusCode(StatusCodes.Status403Forbidden,
+                
                 new
                 {
                     message = exception.Message
@@ -151,8 +150,8 @@ public sealed class RegistrationsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -160,8 +159,8 @@ public sealed class RegistrationsController(
 
         try
         {
-            var registration =
-                await registrationService.RejectAsync(
+            var registration =await registrationService.RejectAsync(
+                
                     id,
                     managerUserId,
                     cancellationToken
@@ -212,10 +211,9 @@ public sealed class RegistrationsController(
 
     private string? GetCurrentUserId() // giriş yapan kullanıcının idsini JWT claimlerinden alan yardımcı metottur
     {
-        return User.FindFirstValue(
-                   ClaimTypes.NameIdentifier
-               ) // önce NameIdentifier claimindeki kullanıcı idsini arar
-               ?? User.FindFirstValue("sub"); // bulunamazsa JWTnin standart sub claimindeki kullanıcı idsini almaya çalışır
+        return User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");                   
+                // önce NameIdentifier claimindeki kullanıcı idsini arar
+               // bulunamazsa JWTnin standart sub claimindeki kullanıcı idsini almaya çalışır
     }
 }
  

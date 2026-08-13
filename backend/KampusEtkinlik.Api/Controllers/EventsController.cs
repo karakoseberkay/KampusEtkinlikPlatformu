@@ -1,4 +1,3 @@
- 
 using System.Security.Claims; // JWT doğrulandıktan sonra kullanıcı id gibi claim bilgilerini okumamızı sağlar
 using KampusEtkinlik.Api.Constants; // RoleNames.ClubManager gibi rol sabitlerine erişmemizi sağlar
 using KampusEtkinlik.Api.DTOs.Events; // Event request ve response DTOlarına erişmemizi sağlar
@@ -13,22 +12,20 @@ namespace KampusEtkinlik.Api.Controllers; // bu dosyanın Controllers katmanına
 [Route("api/[controller]")] // controllerın ana routeunu /api/Events olarak oluşturur
 [Authorize] // controllerdaki endpointlere varsayılan olarak geçerli JWT ile giriş yapılmasını zorunlu tutar
 
-public sealed class EventsController(
-    IEventService eventService // etkinlik iş kurallarını çalıştırmak için IEventService'i DI üzerinden alır
-) : ControllerBase
-{
+public sealed class EventsController(IEventService eventService) : ControllerBase{
+     // etkinlik iş kurallarını çalıştırmak için IEventService'i DI üzerinden alır
+
+
 
 
     [HttpGet] // GET /api/Events endpointini oluşturur
-    public async Task<
-        ActionResult<IReadOnlyList<EventResponse>>
-    > GetAll(
-        CancellationToken cancellationToken
-    )
-    {
-        var events = await eventService.GetAllAsync(
-            cancellationToken
-        ); // tüm etkinlikleri service üzerinden getirir
+    public async Task< ActionResult<IReadOnlyList<EventResponse>>
+       
+    > GetAll(CancellationToken cancellationToken){
+    
+        var events = await eventService.GetAllAsync(cancellationToken);
+            
+         // tüm etkinlikleri service üzerinden getirir
 
 
         return Ok(events); // etkinlikleri 200 OK ile frontend'e döndürür
@@ -37,12 +34,11 @@ public sealed class EventsController(
 
 
     [HttpGet("popular")] // GET /api/Events/popular endpointini oluşturur
-    [AllowAnonymous] // controllerda Authorize olsa bile bu endpointin JWT olmadan kullanılmasına izin verir
+    [AllowAnonymous] // controllerda Authorize olsa bile bu endpointin JWT olmadan kullanılmasına izin verir(istisna)
 
-    public async Task<
-        ActionResult<IReadOnlyList<PopularEventResponse>>
+    public async Task<ActionResult<IReadOnlyList<PopularEventResponse>>
     > GetPopular(
-        [FromQuery] int limit = 10, // URLdeki limit query parametresini alır, gönderilmezse 10 kullanır
+        [FromQuery] int limit = 10, //limit query parametresini alır, gönderilmezse 10 kullanır
         CancellationToken cancellationToken = default
     
         
@@ -89,7 +85,8 @@ public sealed class EventsController(
 
 
     [HttpPost] // POST /api/Events endpointini oluşturur
-    [Authorize(Roles = RoleNames.ClubManager)] // sadece ClubManager rolündeki kullanıcıların etkinlik oluşturmasına izin verir
+    [Authorize(Roles = RoleNames.ClubManager)] 
+    // sadece ClubManager rolündeki kullanıcıların etkinlik oluşturmasına izin verir
 
     public async Task<ActionResult<EventResponse>> Create(
         [FromBody] CreateEventRequest request, // frontendden gönderilen JSON etkinlik bilgilerini request DTOsuna dönüştürür
@@ -105,8 +102,8 @@ public sealed class EventsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -159,7 +156,8 @@ public sealed class EventsController(
 
 
     [HttpPut("{id:int}")] // PUT /api/Events/5 endpointini oluşturur
-    [Authorize(Roles = RoleNames.ClubManager)] // sadece ClubManager rolündeki kullanıcıların etkinlik güncellemesine izin verir
+    [Authorize(Roles = RoleNames.ClubManager)] 
+    // sadece ClubManager rolündeki kullanıcıların etkinlik güncellemesine izin verir
 
     public async Task<ActionResult<EventResponse>> Update(
         int id, // güncellenecek etkinliğin idsini routetan alır
@@ -176,8 +174,8 @@ public sealed class EventsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -250,8 +248,8 @@ public sealed class EventsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message = "Token içerisinde kullanıcı kimliği bulunamadı."
+                       
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -300,10 +298,9 @@ public sealed class EventsController(
 
     private string? GetCurrentUserId() // giriş yapan kullanıcının idsini JWT claimlerinden alan yardımcı metottur
     {
-        return User.FindFirstValue(
-                   ClaimTypes.NameIdentifier
-               ) // önce NameIdentifier claimindeki kullanıcı idsini arar
-               ?? User.FindFirstValue("sub"); // bulunamazsa standart JWT sub claiminden kullanıcı idsini almaya çalışır
+        return User.FindFirstValue( ClaimTypes.NameIdentifier ?? User.FindFirstValue("sub")); 
+                  
+                // önce NameIdentifier claimindeki kullanıcı idsini arar
+               // bulunamazsa standart JWT sub claiminden kullanıcı idsini almaya çalışır
     }
 }
- 

@@ -33,8 +33,8 @@ public sealed class EventRegistrationsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -42,8 +42,7 @@ public sealed class EventRegistrationsController(
 
         try
         {
-            var registration =
-                await registrationService.RegisterAsync(
+            var registration = await registrationService.RegisterAsync(
                     userId,
                     eventId,
                     cancellationToken
@@ -80,15 +79,15 @@ public sealed class EventRegistrationsController(
 
 
     [HttpGet("{eventId:int}/registrations")] // GET /api/events/5/registrations endpointini oluşturur
-    [Authorize(Roles = RoleNames.ClubManager)] // sadece ClubManager rolündeki kullanıcıların etkinlik kayıtlarını görmesine izin verir
+    [Authorize(Roles = RoleNames.ClubManager)] 
+    // sadece ClubManager rolündeki kullanıcıların etkinlik kayıtlarını görmesine izin verir
 
-    public async Task<
-        ActionResult<IReadOnlyList<RegistrationResponse>>
+    public async Task<ActionResult<IReadOnlyList<RegistrationResponse>>
     > GetForEvent(
         int eventId, // kayıtları görüntülenecek etkinliğin idsini routetan alır
 
-        [FromQuery]
-        RegistrationApprovalStatus? approvalStatus, // query stringden isteğe bağlı Pending Approved veya Rejected filtresi alır
+        [FromQuery]RegistrationApprovalStatus? approvalStatus,
+         // query stringden isteğe bağlı Pending Approved veya Rejected filtresi alır
 
         CancellationToken cancellationToken
     )
@@ -102,8 +101,8 @@ public sealed class EventRegistrationsController(
             return Unauthorized(
                 new
                 {
-                    message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                        
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -111,8 +110,7 @@ public sealed class EventRegistrationsController(
 
         try
         {
-            var registrations =
-                await registrationService.GetForEventAsync(
+            var registrations = await registrationService.GetForEventAsync(
                     eventId,
                     managerUserId,
                     approvalStatus,
@@ -138,8 +136,7 @@ public sealed class EventRegistrationsController(
 
         catch (UnauthorizedAccessException exception)
         {
-            return StatusCode(
-                StatusCodes.Status403Forbidden,
+            return StatusCode(StatusCodes.Status403Forbidden,
                 new
                 {
                     message = exception.Message
@@ -152,9 +149,8 @@ public sealed class EventRegistrationsController(
 
     private string? GetCurrentUserId() // giriş yapan kullanıcının idsini JWT claimlerinden alan yardımcı metottur
     {
-        return User.FindFirstValue(
-                   ClaimTypes.NameIdentifier
-               ) // önce NameIdentifier claimindeki kullanıcı idsini arar
-               ?? User.FindFirstValue("sub"); // bulunamazsa standart JWT sub claiminden kullanıcı idsini almaya çalışır
+        return User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub"); 
+                // önce NameIdentifier claimindeki kullanıcı idsini arar
+              // bulunamazsa standart JWT sub claiminden kullanıcı idsini almaya çalışır
     }
 }
