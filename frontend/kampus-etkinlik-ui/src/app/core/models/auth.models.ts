@@ -7,7 +7,7 @@ export interface RegisterRequest {
   fullName: string;
   email: string;
   password: string;
-  department: string;
+  department: string | null;
 }
 
 export interface AuthResponse {

@@ -62,7 +62,7 @@ export class RegisterPage {
       department: [
         '',
         [
-          Validators.required,
+          
           Validators.maxLength(150)
         ]
       ],

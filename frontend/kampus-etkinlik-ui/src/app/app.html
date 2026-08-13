@@ -1,1 +1,81 @@
-<router-outlet />
+<header>
+
+  <h2>Kampüs Etkinlik Platformu</h2>
+
+  <nav>
+
+    <a routerLink="/popular-events">
+      Popüler Etkinlikler
+    </a>
+
+    @if (auth.isAuthenticated()) {
+
+      <a routerLink="/home">
+        Ana Sayfa
+      </a>
+
+      <a routerLink="/clubs">
+        Kulüpler
+      </a>
+
+      <a routerLink="/events">
+        Etkinlikler
+      </a>
+
+
+      @if (auth.hasRole('Student')) {
+
+        <a routerLink="/my-registrations">
+          Kayıtlarım
+        </a>
+
+      }
+
+
+      @if (auth.hasRole('ClubManager')) {
+
+        <a routerLink="/club-manage">
+          Kulüp Yönetimi
+        </a>
+
+        <a routerLink="/event-manage">
+          Etkinlik Yönetimi
+        </a>
+
+      }
+
+
+      <span>
+        {{ auth.currentUser()?.fullName }}
+      </span>
+
+      <button
+        type="button"
+        (click)="auth.logout()"
+      >
+        Çıkış Yap
+      </button>
+
+    } @else {
+
+      <a routerLink="/login">
+        Giriş Yap
+      </a>
+
+      <a routerLink="/register">
+        Kayıt Ol
+      </a>
+
+    }
+
+  </nav>
+
+</header>
+
+
+<hr>
+
+
+<main>
+  <router-outlet />
+</main>
