@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore; // DbContext DbSet ilişki index gibi EF Co
 namespace KampusEtkinlik.Api.Data; // bu dosyanın Data katmanına ait olduğunu belirtir
 
 
-public class ApplicationDbContext : IdentityDbContext // uygulama ile veritabanı arasındaki EF Core merkezidir, Identity tablolarını da yönetir
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser> // uygulama ile veritabanı arasındaki EF Core merkezidir, Identity tablolarını da yönetir
 {
     public ApplicationDbContext(DbContextOptions options) : base(options)
     // Program.csde belirlediğimiz PostgreSQL bağlantı ayarlarını DbContextOptionsa alır
