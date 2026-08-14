@@ -1,7 +1,8 @@
 import {
   Component,
   inject,
-  OnInit
+  OnInit,
+  signal
 } from '@angular/core';
 
 import {
@@ -40,74 +41,77 @@ import {
   template: `
     <h1>Etkinlik Detayı</h1>
 
-    @if (loading) {
+
+    @if (loading()) {
       <p>Yükleniyor...</p>
     }
 
-    @if (errorMessage) {
-      <p>{{ errorMessage }}</p>
+
+    @if (errorMessage()) {
+      <p>{{ errorMessage() }}</p>
     }
 
-    @if (event) {
+
+    @if (event(); as eventItem) {
 
       <p>
         <strong>ID:</strong>
-        {{ event.id }}
+        {{ eventItem.id }}
       </p>
 
       <p>
         <strong>Başlık:</strong>
-        {{ event.title }}
+        {{ eventItem.title }}
       </p>
 
       <p>
         <strong>Açıklama:</strong>
-        {{ event.description }}
+        {{ eventItem.description }}
       </p>
 
       <p>
         <strong>Kulüp:</strong>
-        {{ event.clubName }}
+        {{ eventItem.clubName }}
       </p>
 
       <p>
         <strong>Kulüp ID:</strong>
-        {{ event.clubId }}
+        {{ eventItem.clubId }}
       </p>
 
       <p>
         <strong>Tarih:</strong>
-        {{ event.startDate }}
+        {{ eventItem.startDate }}
       </p>
 
       <p>
         <strong>Konum:</strong>
-        {{ event.location }}
+        {{ eventItem.location }}
       </p>
 
       <p>
         <strong>Kapasite:</strong>
-        {{ event.capacity }}
+        {{ eventItem.capacity }}
       </p>
 
       <p>
         <strong>Kategori:</strong>
-        {{ event.category }}
+        {{ eventItem.category }}
       </p>
 
       <p>
         <strong>Katılım Tipi:</strong>
-        {{ event.visibility }}
+        {{ eventItem.visibility }}
       </p>
 
       <p>
         <strong>Durum:</strong>
-        {{ event.status }}
+        {{ eventItem.status }}
       </p>
 
       <p>
         <strong>Oluşturulma Tarihi:</strong>
-        {{ event.createdAt }}
+        {{ eventItem.createdAt }}
       </p>
 
 
@@ -115,7 +119,7 @@ import {
 
         <button
           type="button"
-          [disabled]="registering"
+          [disabled]="registering()"
           (click)="register()"
         >
           Kayıt Ol
@@ -124,8 +128,8 @@ import {
       }
 
 
-      @if (successMessage) {
-        <p>{{ successMessage }}</p>
+      @if (successMessage()) {
+        <p>{{ successMessage() }}</p>
       }
 
     }
@@ -147,15 +151,20 @@ export class EventDetail
     inject(RegistrationService);
 
 
-  event: EventResponse | null = null;
+  readonly event =
+    signal<EventResponse | null>(null);
 
-  loading = false;
+  readonly loading =
+    signal(false);
 
-  registering = false;
+  readonly registering =
+    signal(false);
 
-  errorMessage = '';
+  readonly errorMessage =
+    signal('');
 
-  successMessage = '';
+  readonly successMessage =
+    signal('');
 
 
   ngOnInit(): void {
@@ -165,11 +174,19 @@ export class EventDetail
         this.route.snapshot.paramMap.get('id')
       );
 
-    if (!Number.isInteger(id) || id <= 0) {
-      this.errorMessage =
-        'Geçersiz etkinlik ID.';
+
+    if (
+      !Number.isInteger(id)
+      || id <= 0
+    ) {
+
+      this.errorMessage.set(
+        'Geçersiz etkinlik ID.'
+      );
+
       return;
     }
+
 
     this.loadEvent(id);
   }
@@ -179,30 +196,35 @@ export class EventDetail
     id: number
   ): void {
 
-    this.loading = true;
+    this.loading.set(true);
 
-    this.errorMessage = '';
+    this.errorMessage.set('');
+
 
     this.eventService
       .getById(id)
       .subscribe({
 
         next: event => {
-          this.event = event;
-          this.loading = false;
+
+          this.event.set(event);
+
+          this.loading.set(false);
         },
+
 
         error: (
           error: HttpErrorResponse
         ) => {
 
-          this.errorMessage =
+          this.errorMessage.set(
             getApiErrorMessage(
               error,
               'Etkinlik alınamadı.'
-            );
+            )
+          );
 
-          this.loading = false;
+          this.loading.set(false);
         }
 
       });
@@ -211,39 +233,48 @@ export class EventDetail
 
   register(): void {
 
-    if (!this.event) {
+    const eventItem =
+      this.event();
+
+
+    if (!eventItem) {
       return;
     }
 
-    this.registering = true;
 
-    this.errorMessage = '';
+    this.registering.set(true);
 
-    this.successMessage = '';
+    this.errorMessage.set('');
+
+    this.successMessage.set('');
+
 
     this.registrationService
-      .register(this.event.id)
+      .register(eventItem.id)
       .subscribe({
 
         next: registration => {
 
-          this.successMessage =
-            `Kayıt oluşturuldu. Durum: ${registration.approvalStatus}`;
+          this.successMessage.set(
+            `Kayıt oluşturuldu. Durum: ${registration.approvalStatus}`
+          );
 
-          this.registering = false;
+          this.registering.set(false);
         },
+
 
         error: (
           error: HttpErrorResponse
         ) => {
 
-          this.errorMessage =
+          this.errorMessage.set(
             getApiErrorMessage(
               error,
               'Etkinliğe kayıt olunamadı.'
-            );
+            )
+          );
 
-          this.registering = false;
+          this.registering.set(false);
         }
 
       });

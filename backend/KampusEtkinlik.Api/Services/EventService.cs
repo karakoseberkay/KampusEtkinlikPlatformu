@@ -3,6 +3,7 @@ using KampusEtkinlik.Api.DTOs.Events; // Event request response ve popular event
 using KampusEtkinlik.Api.Enums; // EventStatus EventVisibility ve RegistrationApprovalStatus enumlarına erişmemizi sağlar
 using KampusEtkinlik.Api.Models; // Event modeline erişmemizi sağlar
 using KampusEtkinlik.Api.Repositories; // Event ve Club repositorylerine erişmemizi sağlar
+using KampusEtkinlik.Api.DTOs.Common;
 
 namespace KampusEtkinlik.Api.Services; // bu dosyanın Services katmanına ait olduğunu belirtir
 
@@ -426,5 +427,74 @@ public sealed class EventService(
             RegistrationRate = registrationRate // etkinliğin doluluk oranı
         };
     }
+
+    public async Task<PagedResponse<EventResponse>> GetPagedAsync(
+    string? search,
+    string? category,
+    int? clubId,
+    DateTimeOffset? dateFrom,
+    DateTimeOffset? dateTo,
+    bool upcomingOnly,
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken = default
+)
+{
+    var safePage =
+        Math.Max(page, 1);
+
+
+    var safePageSize =
+        Math.Clamp(
+            pageSize,
+            1,
+            50
+        );
+
+
+    var result =
+        await eventRepository.GetPagedAsync(
+            search,
+            category,
+            clubId,
+            dateFrom,
+            dateTo,
+            upcomingOnly,
+            safePage,
+            safePageSize,
+            cancellationToken
+        );
+
+
+    var totalPages =
+        result.TotalCount == 0
+            ? 0
+            : (int)Math.Ceiling(
+                result.TotalCount
+                /
+                (double)safePageSize
+            );
+
+
+    return new PagedResponse<EventResponse>
+    {
+        Items =
+            result.Items
+                .Select(MapToResponse)
+                .ToList(),
+
+        Page =
+            safePage,
+
+        PageSize =
+            safePageSize,
+
+        TotalCount =
+            result.TotalCount,
+
+        TotalPages =
+            totalPages
+    };
+}
 }
  

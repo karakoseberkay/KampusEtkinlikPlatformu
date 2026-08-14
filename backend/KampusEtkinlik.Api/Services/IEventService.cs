@@ -1,5 +1,6 @@
  
 using KampusEtkinlik.Api.DTOs.Events; // Event request response ve popular event DTOlarına erişmemizi sağlar
+using KampusEtkinlik.Api.DTOs.Common;
 
 namespace KampusEtkinlik.Api.Services; // bu dosyanın Services katmanına ait olduğunu belirtir
 
@@ -43,5 +44,18 @@ public interface IEventService // etkinlikle ilgili iş kurallarının hangi iş
         string managerUserId, // iptal işlemini yapan kulüp yöneticisinin kullanıcı idsini alır
         CancellationToken cancellationToken = default
     ); // etkinliği fiziksel olarak silmek yerine durumunu Cancelled yapar, bulunamazsa null döner
+
+    Task<PagedResponse<EventResponse>> GetPagedAsync(
+    string? search,
+    string? category,
+    int? clubId,
+    DateTimeOffset? dateFrom,
+    DateTimeOffset? dateTo,
+    bool upcomingOnly,
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken = default
+);
+
 }
  

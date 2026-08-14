@@ -8,60 +8,209 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 
-import { finalize } from 'rxjs';
+import {
+  RouterLink
+} from '@angular/router';
 
 import {
   AuthService
 } from '../../core/services/auth.service';
 
+import {
+  getApiErrorMessage
+} from '../../core/utils/api-error';
+
+
 @Component({
-  selector: 'app-home-page',
+  selector: 'app-home',
   standalone: true,
-  templateUrl: './home.html',
-  styleUrl: './home.scss'
+
+  imports: [
+    RouterLink
+  ],
+
+  template: `
+    <h1>Ana Sayfa</h1>
+
+
+    @if (auth.currentUser(); as user) {
+
+      <p>
+        <strong>Kullanıcı:</strong>
+        {{ user.fullName }}
+      </p>
+
+      <p>
+        <strong>E-posta:</strong>
+        {{ user.email }}
+      </p>
+
+      <p>
+        <strong>Kullanıcı ID:</strong>
+        {{ user.userId }}
+      </p>
+
+      <p>
+        <strong>Roller:</strong>
+        {{ user.roles.join(', ') }}
+      </p>
+
+      <p>
+        <strong>Token Bitiş:</strong>
+        {{ user.expiresAtUtc }}
+      </p>
+
+    }
+
+
+    <button
+      type="button"
+      [disabled]="refreshing()"
+      (click)="refreshCurrentUser()"
+    >
+      Kullanıcı Bilgilerimi Yenile
+    </button>
+
+
+    @if (successMessage()) {
+      <p>{{ successMessage() }}</p>
+    }
+
+
+    @if (errorMessage()) {
+      <p>{{ errorMessage() }}</p>
+    }
+
+
+    <h2>Genel İşlemler</h2>
+
+    <p>
+      <a routerLink="/popular-events">
+        Popüler Etkinlikler
+      </a>
+    </p>
+
+    <p>
+      <a routerLink="/events">
+        Etkinlikler
+      </a>
+    </p>
+
+    <p>
+      <a routerLink="/clubs">
+        Kulüpler
+      </a>
+    </p>
+
+
+    @if (auth.hasRole('Student')) {
+
+      <h2>Öğrenci İşlemleri</h2>
+
+      <p>
+        <a routerLink="/events">
+          Etkinliğe Kayıt Ol
+        </a>
+      </p>
+
+      <p>
+        <a routerLink="/my-registrations">
+          Kayıtlarım
+        </a>
+      </p>
+
+    }
+
+
+    @if (auth.hasRole('ClubManager')) {
+
+      <h2>Kulüp Yöneticisi İşlemleri</h2>
+
+      <p>
+        <a routerLink="/club-manage">
+          Yeni Kulüp Oluştur
+        </a>
+      </p>
+
+      <p>
+        <a routerLink="/clubs">
+          Kulüplerimi Yönet
+        </a>
+      </p>
+
+      <p>
+        <a routerLink="/event-manage">
+          Yeni Etkinlik Oluştur
+        </a>
+      </p>
+
+      <p>
+        <a routerLink="/events">
+          Etkinliklerimi Yönet
+        </a>
+      </p>
+
+    }
+  `
 })
 export class HomePage {
-  readonly authService =
+
+  readonly auth =
     inject(AuthService);
 
-  readonly testingToken =
+
+  readonly refreshing =
     signal(false);
 
-  readonly successMessage =
-    signal<string | null>(null);
-
   readonly errorMessage =
-    signal<string | null>(null);
+    signal('');
 
-  testProtectedEndpoint(): void {
-    this.testingToken.set(true);
-    this.successMessage.set(null);
-    this.errorMessage.set(null);
+  readonly successMessage =
+    signal('');
 
-    this.authService
+
+  refreshCurrentUser(): void {
+
+    if (this.refreshing()) {
+      return;
+    }
+
+
+    this.refreshing.set(true);
+
+    this.errorMessage.set('');
+
+    this.successMessage.set('');
+
+
+    this.auth
       .getMe()
-      .pipe(
-        finalize(() => {
-          this.testingToken.set(false);
-        })
-      )
       .subscribe({
-        next: response => {
+
+        next: () => {
+
           this.successMessage.set(
-            `JWT doğrulandı. Kullanıcı: ${response.fullName}`
+            'Kullanıcı bilgileri yenilendi.'
           );
+
+          this.refreshing.set(false);
         },
+
+
         error: (
           error: HttpErrorResponse
         ) => {
-          this.errorMessage.set(
-            `JWT testi başarısız: ${error.status}`
-          );
-        }
-      });
-  }
 
-  logout(): void {
-    this.authService.logout();
+          this.errorMessage.set(
+            getApiErrorMessage(
+              error,
+              'Kullanıcı bilgileri alınamadı.'
+            )
+          );
+
+          this.refreshing.set(false);
+        }
+
+      });
   }
 }

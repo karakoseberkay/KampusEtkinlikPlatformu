@@ -30,5 +30,18 @@ public interface IEventRepository // etkinlik veritabanı işlemlerinin hangi me
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);        
      // etkinlik üzerindeki ekleme ve güncelleme değişikliklerini veritabanına kaydeder
+
+    Task<(List<Event> Items, int TotalCount)> GetPagedAsync(
+    string? search,
+    string? category,
+    int? clubId,
+    DateTimeOffset? dateFrom,
+    DateTimeOffset? dateTo,
+    bool upcomingOnly,
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken = default
+);
+
 }
  

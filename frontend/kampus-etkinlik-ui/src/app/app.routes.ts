@@ -1,23 +1,14 @@
-import { Routes } from '@angular/router';
-import { PopularEvents } from './pages/popular-events/popular-events';
-import { LoginPage } from './pages/login/login';
-import { RegisterPage } from './pages/register/register';
-import { HomePage } from './pages/home/home';
+import {
+  Routes
+} from '@angular/router';
 
-import { Clubs } from './pages/clubs/clubs';
-import { ClubDetail } from './pages/club-detail/club-detail';
-import { ClubManage } from './pages/club-manage/club-manage';
-import { ClubStats } from './pages/club-stats/club-stats';
+import {
+  authGuard
+} from './core/guards/auth.guard';
 
-import { Events } from './pages/events/events';
-import { EventDetail } from './pages/event-detail/event-detail';
-import { EventManage } from './pages/event-manage/event-manage';
-
-import { MyRegistrations } from './pages/my-registrations/my-registrations';
-import { EventRegistrations } from './pages/event-registrations/event-registrations';
-
-import { authGuard } from './core/guards/auth.guard';
-import { guestGuard } from './core/guards/guest.guard';
+import {
+  guestGuard
+} from './core/guards/guest.guard';
 
 import {
   studentGuard,
@@ -26,102 +17,269 @@ import {
 
 
 export const routes: Routes = [
-{
-  path: 'popular-events',
-  component: PopularEvents
-},
+
   {
     path: '',
     pathMatch: 'full',
     redirectTo: 'home'
   },
 
+
   {
     path: 'login',
-    component: LoginPage,
-    canActivate: [guestGuard]
+    title: 'Giriş Yap',
+    canActivate: [
+      guestGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/login/login'
+      ).then(
+        module =>
+          module.LoginPage
+      )
   },
+
 
   {
     path: 'register',
-    component: RegisterPage,
-    canActivate: [guestGuard]
+    title: 'Kayıt Ol',
+    canActivate: [
+      guestGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/register/register'
+      ).then(
+        module =>
+          module.RegisterPage
+      )
   },
+
+
+  {
+    path: 'popular-events',
+    title: 'Popüler Etkinlikler',
+    loadComponent: () =>
+      import(
+        './pages/popular-events/popular-events'
+      ).then(
+        module =>
+          module.PopularEvents
+      )
+  },
+
 
   {
     path: 'home',
-    component: HomePage,
-    canActivate: [authGuard]
+    title: 'Ana Sayfa',
+    canActivate: [
+      authGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/home/home'
+      ).then(
+        module =>
+          module.HomePage
+      )
   },
+
 
   {
     path: 'clubs',
-    component: Clubs,
-    canActivate: [authGuard]
+    title: 'Kulüpler',
+    canActivate: [
+      authGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/clubs/clubs'
+      ).then(
+        module =>
+          module.Clubs
+      )
   },
 
-  {
-    path: 'clubs/:id',
-    component: ClubDetail,
-    canActivate: [authGuard]
-  },
-
-  {
-    path: 'club-manage',
-    component: ClubManage,
-    canActivate: [clubManagerGuard]
-  },
-
-  {
-    path: 'club-manage/:id',
-    component: ClubManage,
-    canActivate: [clubManagerGuard]
-  },
 
   {
     path: 'clubs/:id/stats',
-    component: ClubStats,
-    canActivate: [clubManagerGuard]
+    title: 'Kulüp İstatistikleri',
+    canActivate: [
+      clubManagerGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/club-stats/club-stats'
+      ).then(
+        module =>
+          module.ClubStats
+      )
   },
+
+
+  {
+    path: 'clubs/:id',
+    title: 'Kulüp Detayı',
+    canActivate: [
+      authGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/club-detail/club-detail'
+      ).then(
+        module =>
+          module.ClubDetail
+      )
+  },
+
+
+  {
+    path: 'club-manage',
+    title: 'Kulüp Oluştur',
+    canActivate: [
+      clubManagerGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/club-manage/club-manage'
+      ).then(
+        module =>
+          module.ClubManage
+      )
+  },
+
+
+  {
+    path: 'club-manage/:id',
+    title: 'Kulüp Güncelle',
+    canActivate: [
+      clubManagerGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/club-manage/club-manage'
+      ).then(
+        module =>
+          module.ClubManage
+      )
+  },
+
 
   {
     path: 'events',
-    component: Events,
-    canActivate: [authGuard]
+    title: 'Etkinlikler',
+    canActivate: [
+      authGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/events/events'
+      ).then(
+        module =>
+          module.Events
+      )
   },
 
-  {
-    path: 'events/:id',
-    component: EventDetail,
-    canActivate: [authGuard]
-  },
-
-  {
-    path: 'event-manage',
-    component: EventManage,
-    canActivate: [clubManagerGuard]
-  },
-
-  {
-    path: 'event-manage/:id',
-    component: EventManage,
-    canActivate: [clubManagerGuard]
-  },
-
-  {
-    path: 'my-registrations',
-    component: MyRegistrations,
-    canActivate: [studentGuard]
-  },
 
   {
     path: 'events/:id/registrations',
-    component: EventRegistrations,
-    canActivate: [clubManagerGuard]
+    title: 'Etkinlik Kayıtları',
+    canActivate: [
+      clubManagerGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/event-registrations/event-registrations'
+      ).then(
+        module =>
+          module.EventRegistrations
+      )
   },
+
+
+  {
+    path: 'events/:id',
+    title: 'Etkinlik Detayı',
+    canActivate: [
+      authGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/event-detail/event-detail'
+      ).then(
+        module =>
+          module.EventDetail
+      )
+  },
+
+
+  {
+    path: 'event-manage',
+    title: 'Etkinlik Oluştur',
+    canActivate: [
+      clubManagerGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/event-manage/event-manage'
+      ).then(
+        module =>
+          module.EventManage
+      )
+  },
+
+
+  {
+    path: 'event-manage/:id',
+    title: 'Etkinlik Güncelle',
+    canActivate: [
+      clubManagerGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/event-manage/event-manage'
+      ).then(
+        module =>
+          module.EventManage
+      )
+  },
+
+
+  {
+    path: 'my-registrations',
+    title: 'Kayıtlarım',
+    canActivate: [
+      studentGuard
+    ],
+    loadComponent: () =>
+      import(
+        './pages/my-registrations/my-registrations'
+      ).then(
+        module =>
+          module.MyRegistrations
+      )
+  },
+
+  {
+  path: 'user-management',
+  canActivate: [
+    clubManagerGuard
+  ],
+  loadComponent: () =>
+    import(
+      './pages/user-management/user-management'
+    )
+      .then(
+        module =>
+          module.UserManagement
+      )
+},
+
 
   {
     path: '**',
     redirectTo: 'home'
   }
+
 ];

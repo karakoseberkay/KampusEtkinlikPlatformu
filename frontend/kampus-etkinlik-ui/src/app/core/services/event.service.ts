@@ -18,7 +18,9 @@ import {
 
 import {
   CreateEventRequest,
+  EventPageQuery,
   EventResponse,
+  PagedResponse,
   PopularEventResponse,
   UpdateEventRequest
 } from '../models/api.models';
@@ -28,13 +30,114 @@ import {
   providedIn: 'root'
 })
 export class EventService {
+
   private readonly http =
     inject(HttpClient);
 
 
   getAll(): Observable<EventResponse[]> {
+
     return this.http.get<EventResponse[]>(
       `${API_BASE_URL}/Events`
+    );
+  }
+
+
+  getPaged(
+    query: EventPageQuery
+  ): Observable<PagedResponse<EventResponse>> {
+
+    let params =
+      new HttpParams();
+
+
+    if (query.search) {
+
+      params =
+        params.set(
+          'search',
+          query.search
+        );
+
+    }
+
+
+    if (query.category) {
+
+      params =
+        params.set(
+          'category',
+          query.category
+        );
+
+    }
+
+
+    if (query.clubId !== undefined) {
+
+      params =
+        params.set(
+          'clubId',
+          query.clubId.toString()
+        );
+
+    }
+
+
+    if (query.dateFrom) {
+
+      params =
+        params.set(
+          'dateFrom',
+          query.dateFrom
+        );
+
+    }
+
+
+    if (query.dateTo) {
+
+      params =
+        params.set(
+          'dateTo',
+          query.dateTo
+        );
+
+    }
+
+
+    if (query.upcomingOnly !== undefined) {
+
+      params =
+        params.set(
+          'upcomingOnly',
+          query.upcomingOnly.toString()
+        );
+
+    }
+
+
+    params =
+      params.set(
+        'page',
+        (query.page ?? 1).toString()
+      );
+
+
+    params =
+      params.set(
+        'pageSize',
+        (query.pageSize ?? 10).toString()
+      );
+
+
+    return this.http.get<
+      PagedResponse<EventResponse>
+    >(
+      `${API_BASE_URL}/Events/paged`,
+      {
+        params
+      }
     );
   }
 
@@ -42,9 +145,14 @@ export class EventService {
   getPopular(
     limit = 10
   ): Observable<PopularEventResponse[]> {
+
     const params =
       new HttpParams()
-        .set('limit', limit);
+        .set(
+          'limit',
+          limit.toString()
+        );
+
 
     return this.http.get<
       PopularEventResponse[]
@@ -60,6 +168,7 @@ export class EventService {
   getById(
     id: number
   ): Observable<EventResponse> {
+
     return this.http.get<EventResponse>(
       `${API_BASE_URL}/Events/${id}`
     );
@@ -69,6 +178,7 @@ export class EventService {
   create(
     request: CreateEventRequest
   ): Observable<EventResponse> {
+
     return this.http.post<EventResponse>(
       `${API_BASE_URL}/Events`,
       request
@@ -80,6 +190,7 @@ export class EventService {
     id: number,
     request: UpdateEventRequest
   ): Observable<EventResponse> {
+
     return this.http.put<EventResponse>(
       `${API_BASE_URL}/Events/${id}`,
       request
@@ -90,6 +201,7 @@ export class EventService {
   cancel(
     id: number
   ): Observable<EventResponse> {
+
     return this.http.put<EventResponse>(
       `${API_BASE_URL}/Events/${id}/cancel`,
       {}

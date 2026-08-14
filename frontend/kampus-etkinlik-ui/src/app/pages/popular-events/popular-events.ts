@@ -1,7 +1,8 @@
 import {
   Component,
   inject,
-  OnInit
+  OnInit,
+  signal
 } from '@angular/core';
 
 import {
@@ -24,22 +25,29 @@ import {
 @Component({
   selector: 'app-popular-events',
   standalone: true,
+
   template: `
     <h1>Popüler Etkinlikler</h1>
 
-    @if (loading) {
+    @if (loading()) {
       <p>Yükleniyor...</p>
     }
 
-    @if (errorMessage) {
-      <p>{{ errorMessage }}</p>
+    @if (errorMessage()) {
+      <p>{{ errorMessage() }}</p>
     }
 
-    @if (!loading && events.length === 0) {
-      <p>Gösterilecek popüler etkinlik bulunamadı.</p>
+    @if (
+      !loading()
+      && events().length === 0
+      && !errorMessage()
+    ) {
+      <p>
+        Gösterilecek popüler etkinlik bulunamadı.
+      </p>
     }
 
-    @if (events.length > 0) {
+    @if (events().length > 0) {
 
       <table>
 
@@ -61,7 +69,10 @@ import {
 
         <tbody>
 
-          @for (event of events; track event.id) {
+          @for (
+            event of events();
+            track event.id
+          ) {
 
             <tr>
               <td>{{ event.id }}</td>
@@ -72,9 +83,15 @@ import {
               <td>{{ event.category }}</td>
               <td>{{ event.visibility }}</td>
               <td>{{ event.capacity }}</td>
-              <td>{{ event.approvedRegistrationCount }}</td>
-              <td>{{ event.remainingCapacity }}</td>
-              <td>{{ event.registrationRate }}%</td>
+              <td>
+                {{ event.approvedRegistrationCount }}
+              </td>
+              <td>
+                {{ event.remainingCapacity }}
+              </td>
+              <td>
+                {{ event.registrationRate }}%
+              </td>
             </tr>
 
           }
@@ -86,16 +103,21 @@ import {
     }
   `
 })
-export class PopularEvents implements OnInit {
+export class PopularEvents
+  implements OnInit {
 
   private readonly eventService =
     inject(EventService);
 
-  events: PopularEventResponse[] = [];
 
-  loading = false;
+  readonly events =
+    signal<PopularEventResponse[]>([]);
 
-  errorMessage = '';
+  readonly loading =
+    signal(false);
+
+  readonly errorMessage =
+    signal('');
 
 
   ngOnInit(): void {
@@ -105,26 +127,35 @@ export class PopularEvents implements OnInit {
 
   loadEvents(): void {
 
-    this.loading = true;
-    this.errorMessage = '';
+    this.loading.set(true);
+
+    this.errorMessage.set('');
+
 
     this.eventService
       .getPopular(10)
       .subscribe({
 
         next: events => {
-          this.events = events;
-          this.loading = false;
+
+          this.events.set(events);
+
+          this.loading.set(false);
         },
 
-        error: (error: HttpErrorResponse) => {
-          this.errorMessage =
+
+        error: (
+          error: HttpErrorResponse
+        ) => {
+
+          this.errorMessage.set(
             getApiErrorMessage(
               error,
               'Popüler etkinlikler alınamadı.'
-            );
+            )
+          );
 
-          this.loading = false;
+          this.loading.set(false);
         }
 
       });

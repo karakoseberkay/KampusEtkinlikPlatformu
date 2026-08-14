@@ -1,7 +1,9 @@
 import {
   Component,
+  computed,
   inject,
-  OnInit
+  OnInit,
+  signal
 } from '@angular/core';
 
 import {
@@ -28,6 +30,7 @@ import {
   template: `
     <h1>Kayıtlarım</h1>
 
+
     <button
       type="button"
       (click)="loadRegistrations()"
@@ -35,23 +38,66 @@ import {
       Yenile
     </button>
 
-    @if (loading) {
+
+    @if (loading()) {
       <p>Yükleniyor...</p>
     }
 
-    @if (errorMessage) {
-      <p>{{ errorMessage }}</p>
+
+    @if (errorMessage()) {
+      <p>{{ errorMessage() }}</p>
     }
 
-    @if (!loading && registrations.length === 0) {
-      <p>Henüz etkinlik kaydınız bulunmuyor.</p>
+
+    @if (!loading() && !errorMessage()) {
+
+      <h2>Katılım Bilgileri</h2>
+
+      <p>
+        <strong>Toplam Kayıt:</strong>
+        {{ totalRegistrationCount() }}
+      </p>
+
+      <p>
+        <strong>Toplam Katılım:</strong>
+        {{ approvedCount() }}
+      </p>
+
+      <p>
+        <strong>Bekleyen:</strong>
+        {{ pendingCount() }}
+      </p>
+
+      <p>
+        <strong>Reddedilen:</strong>
+        {{ rejectedCount() }}
+      </p>
+
     }
 
-    @if (registrations.length > 0) {
+
+    @if (
+      !loading()
+      && registrations().length === 0
+      && !errorMessage()
+    ) {
+
+      <p>
+        Henüz etkinlik kaydınız bulunmuyor.
+      </p>
+
+    }
+
+
+    @if (registrations().length > 0) {
+
+      <h2>Kayıt Geçmişi</h2>
+
 
       <table>
 
         <thead>
+
           <tr>
             <th>Kayıt ID</th>
             <th>Etkinlik ID</th>
@@ -60,17 +106,22 @@ import {
             <th>Kayıt Tarihi</th>
             <th>Durum</th>
           </tr>
+
         </thead>
+
 
         <tbody>
 
           @for (
-            registration of registrations;
+            registration of registrations();
             track registration.id
           ) {
 
             <tr>
-              <td>{{ registration.id }}</td>
+
+              <td>
+                {{ registration.id }}
+              </td>
 
               <td>
                 {{ registration.eventId }}
@@ -91,6 +142,7 @@ import {
               <td>
                 {{ registration.approvalStatus }}
               </td>
+
             </tr>
 
           }
@@ -109,23 +161,76 @@ export class MyRegistrations
     inject(RegistrationService);
 
 
-  registrations: RegistrationResponse[] = [];
+  readonly registrations =
+    signal<RegistrationResponse[]>([]);
 
-  loading = false;
 
-  errorMessage = '';
+  readonly loading =
+    signal(false);
+
+
+  readonly errorMessage =
+    signal('');
+
+
+  readonly totalRegistrationCount =
+    computed(
+      () =>
+        this.registrations().length
+    );
+
+
+  readonly approvedCount =
+    computed(
+      () =>
+        this.registrations()
+          .filter(
+            registration =>
+              registration.approvalStatus
+                === 'Approved'
+          )
+          .length
+    );
+
+
+  readonly pendingCount =
+    computed(
+      () =>
+        this.registrations()
+          .filter(
+            registration =>
+              registration.approvalStatus
+                === 'Pending'
+          )
+          .length
+    );
+
+
+  readonly rejectedCount =
+    computed(
+      () =>
+        this.registrations()
+          .filter(
+            registration =>
+              registration.approvalStatus
+                === 'Rejected'
+          )
+          .length
+    );
 
 
   ngOnInit(): void {
+
     this.loadRegistrations();
   }
 
 
   loadRegistrations(): void {
 
-    this.loading = true;
+    this.loading.set(true);
 
-    this.errorMessage = '';
+    this.errorMessage.set('');
+
 
     this.registrationService
       .getMine()
@@ -133,23 +238,26 @@ export class MyRegistrations
 
         next: registrations => {
 
-          this.registrations =
-            registrations;
+          this.registrations.set(
+            registrations
+          );
 
-          this.loading = false;
+          this.loading.set(false);
         },
+
 
         error: (
           error: HttpErrorResponse
         ) => {
 
-          this.errorMessage =
+          this.errorMessage.set(
             getApiErrorMessage(
               error,
               'Kayıtlar alınamadı.'
-            );
+            )
+          );
 
-          this.loading = false;
+          this.loading.set(false);
         }
 
       });

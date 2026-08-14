@@ -63,11 +63,11 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
         {
             managerUser = new ApplicationUser
             {
-                FullName = "Test Kulüp Yöneticisi", // test kullanıcısının ad soyadı
+                FullName = "Admin", // test kullanıcısının ad soyadı
                 Email = managerEmail, // test kullanıcısının epostası
-                UserName = "manager", // Identity kullanıcı adı olarak epostayı kullanır
+                UserName = "Admin", // Identity kullanıcı adı olarak epostayı kullanır
                 EmailConfirmed = true, // test hesabının epostasını doğrulanmış kabul eder
-                Department = "Yazılın Mühendisliği", // test kullanıcısının bölüm bilgisi
+                Department = "Yönetim", // test kullanıcısının bölüm bilgisi
                 CreatedAt = DateTimeOffset.UtcNow // kullanıcının oluşturulma tarihini UTC olarak kaydeder
             };
 

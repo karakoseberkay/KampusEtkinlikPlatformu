@@ -129,3 +129,34 @@ export interface RegistrationResponse {
   registeredAt: string;
   approvalStatus: RegistrationApprovalStatus;
 }
+
+export interface UserResponse {
+  id: string;
+  fullName: string;
+  email: string;
+  department: string | null;
+  roles: string[];
+}
+
+export interface UpdateUserRoleRequest {
+  role: 'Student' | 'ClubManager';
+}
+
+export interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface EventPageQuery {
+  search?: string;
+  category?: string;
+  clubId?: number;
+  dateFrom?: string;
+  dateTo?: string;
+  upcomingOnly?: boolean;
+  page?: number;
+  pageSize?: number;
+}

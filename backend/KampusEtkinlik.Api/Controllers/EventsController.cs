@@ -4,6 +4,7 @@ using KampusEtkinlik.Api.DTOs.Events; // Event request ve response DTOlarına er
 using KampusEtkinlik.Api.Services; // IEventService üzerinden etkinlik iş mantığına erişmemizi sağlar
 using Microsoft.AspNetCore.Authorization; // Authorize ve AllowAnonymous attributelarını kullanmamızı sağlar
 using Microsoft.AspNetCore.Mvc; // ControllerBase route HTTP method ve response yapılarını kullanmamızı sağlar
+using KampusEtkinlik.Api.DTOs.Common;
 
 namespace KampusEtkinlik.Api.Controllers; // bu dosyanın Controllers katmanına ait olduğunu belirtir
 
@@ -30,6 +31,54 @@ public sealed class EventsController(IEventService eventService) : ControllerBas
 
         return Ok(events); // etkinlikleri 200 OK ile frontend'e döndürür
     }
+
+    [HttpGet("paged")]
+public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
+    [FromQuery] string? search,
+    [FromQuery] string? category,
+    [FromQuery] int? clubId,
+    [FromQuery] DateTimeOffset? dateFrom,
+    [FromQuery] DateTimeOffset? dateTo,
+    [FromQuery] bool upcomingOnly = false,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10,
+    CancellationToken cancellationToken = default
+)
+{
+    if (
+        dateFrom.HasValue
+        &&
+        dateTo.HasValue
+        &&
+        dateFrom.Value > dateTo.Value
+    )
+    {
+        return BadRequest(
+            new
+            {
+                message =
+                    "Başlangıç tarihi bitiş tarihinden sonra olamaz."
+            }
+        );
+    }
+
+
+    var result =
+        await eventService.GetPagedAsync(
+            search,
+            category,
+            clubId,
+            dateFrom,
+            dateTo,
+            upcomingOnly,
+            page,
+            pageSize,
+            cancellationToken
+        );
+
+
+    return Ok(result);
+}
 
 
 

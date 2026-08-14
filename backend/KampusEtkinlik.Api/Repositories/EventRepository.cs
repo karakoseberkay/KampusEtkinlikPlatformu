@@ -72,6 +72,131 @@ public sealed class EventRepository(ApplicationDbContext dbContext) : IEventRepo
              // etkinlik bulunursa döndürür, bulunamazsa null döndürür
     }
 
+    public async Task<(List<Event> Items, int TotalCount)> GetPagedAsync(
+    string? search,
+    string? category,
+    int? clubId,
+    DateTimeOffset? dateFrom,
+    DateTimeOffset? dateTo,
+    bool upcomingOnly,
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken = default
+)
+{
+    var query = dbContext.Events
+        .AsNoTracking()
+        .Include(eventItem => eventItem.Club)
+        .AsQueryable();
+
+
+    if (upcomingOnly)
+    {
+        query = query.Where(eventItem =>
+            eventItem.Status == EventStatus.Active
+            &&
+            eventItem.StartDate > DateTimeOffset.UtcNow
+        );
+    }
+
+
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        var searchPattern =
+            $"%{search.Trim()}%";
+
+
+        query = query.Where(eventItem =>
+            EF.Functions.ILike(
+                eventItem.Title,
+                searchPattern
+            )
+            ||
+            EF.Functions.ILike(
+                eventItem.Description,
+                searchPattern
+            )
+            ||
+            EF.Functions.ILike(
+                eventItem.Location,
+                searchPattern
+            )
+        );
+    }
+
+
+    if (!string.IsNullOrWhiteSpace(category))
+    {
+        var categoryValue =
+            category.Trim();
+
+
+        query = query.Where(eventItem =>
+            EF.Functions.ILike(
+                eventItem.Category,
+                categoryValue
+            )
+        );
+    }
+
+
+    if (clubId.HasValue)
+    {
+        query = query.Where(eventItem =>
+            eventItem.ClubId == clubId.Value
+        );
+    }
+
+
+    if (dateFrom.HasValue)
+    {
+        var from =
+            dateFrom.Value.ToUniversalTime();
+
+
+        query = query.Where(eventItem =>
+            eventItem.StartDate >= from
+        );
+    }
+
+
+    if (dateTo.HasValue)
+    {
+        var to =
+            dateTo.Value.ToUniversalTime();
+
+
+        query = query.Where(eventItem =>
+            eventItem.StartDate <= to
+        );
+    }
+
+
+    var totalCount =
+        await query.CountAsync(
+            cancellationToken
+        );
+
+
+    var items =
+        await query
+            .OrderBy(eventItem =>
+                eventItem.StartDate
+            )
+            .Skip(
+                (page - 1) * pageSize
+            )
+            .Take(pageSize)
+            .ToListAsync(
+                cancellationToken
+            );
+
+
+    return (
+        items,
+        totalCount
+    );
+}
 
 
     public async Task AddAsync(
