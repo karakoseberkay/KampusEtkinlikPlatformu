@@ -1,18 +1,8 @@
-export type EventVisibility =
-  | 'Public'
-  | 'ApprovalRequired';
+export type EventVisibility = 'Public' | 'ApprovalRequired'; // etkinliğin katılım tiplerini tutar
+export type EventStatus = 'Active' | 'Cancelled'; // etkinliğin durumlarını tutar
+export type RegistrationApprovalStatus = 'Pending' | 'Approved' | 'Rejected'; // etkinlik kayıt durumlarını tutar
 
-export type EventStatus =
-  | 'Active'
-  | 'Cancelled';
-
-export type RegistrationApprovalStatus =
-  | 'Pending'
-  | 'Approved'
-  | 'Rejected';
-
-
-export interface ClubResponse {
+export interface ClubResponse { // backendden dönen kulüp bilgilerini tutar
   id: number;
   name: string;
   description: string | null;
@@ -22,22 +12,19 @@ export interface ClubResponse {
   eventCount: number;
 }
 
-
-export interface CreateClubRequest {
+export interface CreateClubRequest { // kulüp oluştururken backende gönderilecek verileri tutar
   name: string;
   description: string | null;
   logoUrl: string | null;
 }
 
-
-export interface UpdateClubRequest {
+export interface UpdateClubRequest { // kulüp güncellerken backende gönderilecek verileri tutar
   name: string;
   description: string | null;
   logoUrl: string | null;
 }
 
-
-export interface ClubEventStatsResponse {
+export interface ClubEventStatsResponse { // kulübün etkinlik bazlı istatistiklerini tutar
   eventId: number;
   title: string;
   startDate: string;
@@ -49,8 +36,7 @@ export interface ClubEventStatsResponse {
   registrationRate: number;
 }
 
-
-export interface ClubStatsResponse {
+export interface ClubStatsResponse { // backendden dönen genel kulüp istatistiklerini tutar
   clubId: number;
   clubName: string;
   totalEventCount: number;
@@ -63,8 +49,7 @@ export interface ClubStatsResponse {
   events: ClubEventStatsResponse[];
 }
 
-
-export interface EventResponse {
+export interface EventResponse { // backendden dönen etkinlik bilgilerini tutar
   id: number;
   clubId: number;
   clubName: string;
@@ -79,8 +64,7 @@ export interface EventResponse {
   createdAt: string;
 }
 
-
-export interface PopularEventResponse {
+export interface PopularEventResponse { // backendden dönen popüler etkinlik bilgilerini tutar
   id: number;
   clubId: number;
   clubName: string;
@@ -95,8 +79,7 @@ export interface PopularEventResponse {
   registrationRate: number;
 }
 
-
-export interface CreateEventRequest {
+export interface CreateEventRequest { // etkinlik oluştururken backende gönderilecek verileri tutar
   clubId: number;
   title: string;
   description: string;
@@ -107,8 +90,7 @@ export interface CreateEventRequest {
   visibility: EventVisibility;
 }
 
-
-export interface UpdateEventRequest {
+export interface UpdateEventRequest { // etkinlik güncellerken backende gönderilecek verileri tutar
   title: string;
   description: string;
   startDate: string;
@@ -118,8 +100,7 @@ export interface UpdateEventRequest {
   visibility: EventVisibility;
 }
 
-
-export interface RegistrationResponse {
+export interface RegistrationResponse { // backendden dönen etkinlik kayıt bilgilerini tutar
   id: number;
   userId: string;
   userFullName: string;
@@ -130,7 +111,7 @@ export interface RegistrationResponse {
   approvalStatus: RegistrationApprovalStatus;
 }
 
-export interface UserResponse {
+export interface UserResponse { // backendden dönen kullanıcı bilgilerini tutar(kullanıcı yönetim ekranı için)
   id: string;
   fullName: string;
   email: string;
@@ -138,11 +119,11 @@ export interface UserResponse {
   roles: string[];
 }
 
-export interface UpdateUserRoleRequest {
+export interface UpdateUserRoleRequest { // kullanıcı rolü değiştirirken backende gönderilecek veriyi tutar
   role: 'Student' | 'ClubManager';
 }
 
-export interface PagedResponse<T> {
+export interface PagedResponse<T> { // sayfalama kullanılan endpointlerden dönen verileri tutar
   items: T[];
   page: number;
   pageSize: number;
@@ -150,7 +131,7 @@ export interface PagedResponse<T> {
   totalPages: number;
 }
 
-export interface EventPageQuery {
+export interface EventPageQuery { // etkinlikleri ararken filtreleme ve sayfalama parametrelerini tutar
   search?: string;
   category?: string;
   clubId?: number;

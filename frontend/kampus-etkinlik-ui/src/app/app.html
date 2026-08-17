@@ -1,108 +1,48 @@
 <h1>Kampüs Etkinlik Platformu</h1>
 
 <nav>
+  <a routerLink="/popular-events">Popüler Etkinlikler</a> <!-- popüler etkinlikler sayfasına yönlendirir -->
 
-  <a routerLink="/popular-events">
-    Popüler Etkinlikler
-  </a>
-
-  @if (auth.isAuthenticated()) {
-
+  @if (auth.isAuthenticated()) { <!-- kullanıcı giriş yaptıysa gösterilecek menüler -->
     |
-
-    <a routerLink="/home">
-      Ana Sayfa
-    </a>
-
+    <a routerLink="/home">Ana Sayfa</a>
     |
-
-    <a routerLink="/clubs">
-      Kulüpler
-    </a>
-
+    <a routerLink="/clubs">Kulüpler</a>
     |
+    <a routerLink="/events">Etkinlikler</a>
 
-    <a routerLink="/events">
-      Etkinlikler
-    </a>
-
-
-    @if (auth.hasRole('Student')) {
-
+    @if (auth.hasRole('Student')) { <!-- Student rolündeki kullanıcıya özel menü -->
       |
-
-      <a routerLink="/my-registrations">
-        Kayıtlarım
-      </a>
-
+      <a routerLink="/my-registrations">Kayıtlarım</a>
     }
 
+    @if (auth.hasRole('ClubManager')) { <!-- ClubManager rolündeki kullanıcıya özel menüler -->
+      |
+      <a routerLink="/club-manage">Kulüp Oluştur</a>
+      |
+      <a routerLink="/event-manage">Etkinlik Oluştur</a>
+    }
 
-    @if (auth.hasRole('ClubManager')) {
-
-  <a routerLink="/club-manage">
-    Kulüp Oluştur
-  </a>
-
-  |
-
-  <a routerLink="/event-manage">
-    Etkinlik Oluştur
-  </a>
-
-  |
-
-}
-
-
-@if (
-  auth.hasRole('ClubManager')
-  &&
-  auth.currentUser()?.email === 'manager@kampus.com'
-) {
-
-  <a routerLink="/user-management">
-    Kullanıcı Yönetimi
-  </a>
-
-  |
-
-}
-
+    @if (
+      auth.hasRole('ClubManager') &&
+      auth.currentUser()?.email === 'manager@kampus.com'
+    ) { <!-- sadece admin hesabına kullanıcı yönetimini gösterir -->
+      |
+      <a routerLink="/user-management">Kullanıcı Yönetimi</a>
+    }
 
     |
-
-    <span>
-      {{ auth.currentUser()?.fullName }}
-    </span>
-
+    <span>{{ auth.currentUser()?.fullName }}</span> <!-- giriş yapan kullanıcının adını gösterir -->
     |
-
-    <button
-      type="button"
-      (click)="auth.logout()"
-    >
-      Çıkış Yap
-    </button>
-
-  } @else {
-
+    <button type="button" (click)="auth.logout()">Çıkış Yap</button> <!-- kullanıcı oturumunu kapatır -->
+  } @else { <!-- kullanıcı giriş yapmadıysa gösterilecek menüler -->
     |
-
-    <a routerLink="/login">
-      Giriş Yap
-    </a>
-
+    <a routerLink="/login">Giriş Yap</a>
     |
-
-    <a routerLink="/register">
-      Kayıt Ol
-    </a>
-
+    <a routerLink="/register">Kayıt Ol</a>
   }
-
 </nav>
 
 <hr>
 
-<router-outlet />
+<router-outlet /> <!-- aktif routeun componentini burada gösterir -->

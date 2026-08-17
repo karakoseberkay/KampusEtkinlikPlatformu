@@ -1,45 +1,31 @@
 import { isPlatformBrowser } from '@angular/common';
-import {
-  Injectable,
-  PLATFORM_ID,
-  inject
-} from '@angular/core';
-
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { AuthResponse } from '../models/auth.models';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root'//bu servis uygulama genelinde tek dosya olduğu belirtiliyor yani bunun yardımcısı ya da eki yok demek
 })
 export class AuthStorageService {
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly platformId = inject(PLATFORM_ID); // kodun tarayıcıda mı çalıştığını kontrol etmek için kullanılır
+  private readonly storageKey = 'kampus_etkinlik_auth'; // kullanıcı oturumunun localStorageda tutulacağı keyi belirler
 
-  private readonly storageKey =
-    'kampus_etkinlik_auth';
-
-  save(session: AuthResponse): void {
+  save(session: AuthResponse): void { // kullanıcı oturumunu localStoragea kaydeder
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    localStorage.setItem(
-      this.storageKey,
-      JSON.stringify(session)
-    );
+    localStorage.setItem(this.storageKey, JSON.stringify(session)); // session bilgisini jsona çevirerek kaydeder
   }
 
-  getValidSession(): AuthResponse | null {
+  getValidSession(): AuthResponse | null { // kayıtlı oturumun geçerli olup olmadığını kontrol eder
     const session = this.read();
 
     if (session === null) {
       return null;
     }
 
-    const expirationTime =
-      new Date(session.expiresAtUtc).getTime();
-
-    const isExpired =
-      Number.isNaN(expirationTime)
-      || expirationTime <= Date.now();
+    const expirationTime = new Date(session.expiresAtUtc).getTime(); // tokenın bitiş zamanını milisaniyeye çevirir
+    const isExpired = Number.isNaN(expirationTime) || expirationTime <= Date.now(); // tokenın süresi dolmuş mu kontrol eder
 
     if (isExpired) {
       this.clear();
@@ -49,12 +35,11 @@ export class AuthStorageService {
     return session;
   }
 
-  getAccessToken(): string | null {
-    return this.getValidSession()?.accessToken
-      ?? null;
+  getAccessToken(): string | null { // geçerli oturum varsa JWT tokenı döndürür
+    return this.getValidSession()?.accessToken ?? null;
   }
 
-  clear(): void {
+  clear(): void { // localStoragedaki kullanıcı oturumunu siler
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -62,29 +47,27 @@ export class AuthStorageService {
     localStorage.removeItem(this.storageKey);
   }
 
-  private read(): AuthResponse | null {
+  private read(): AuthResponse | null { // localStoragedaki kullanıcı oturumunu okuyup kontrol eder
     if (!isPlatformBrowser(this.platformId)) {
       return null;
     }
 
-    const storedValue =
-      localStorage.getItem(this.storageKey);
+    const storedValue = localStorage.getItem(this.storageKey);
 
     if (!storedValue) {
       return null;
     }
 
     try {
-      const parsedValue =
-        JSON.parse(storedValue) as AuthResponse;
+      const parsedValue = JSON.parse(storedValue) as AuthResponse; // json olarak tutulan session bilgisini tekrar objeye çevirir
 
       const isValid =
-        typeof parsedValue.userId === 'string'
-        && typeof parsedValue.fullName === 'string'
-        && typeof parsedValue.email === 'string'
-        && Array.isArray(parsedValue.roles)
-        && typeof parsedValue.accessToken === 'string'
-        && typeof parsedValue.expiresAtUtc === 'string';
+        typeof parsedValue.userId === 'string' &&
+        typeof parsedValue.fullName === 'string' &&
+        typeof parsedValue.email === 'string' &&
+        Array.isArray(parsedValue.roles) &&
+        typeof parsedValue.accessToken === 'string' &&
+        typeof parsedValue.expiresAtUtc === 'string'; // localStoragedan gelen verinin beklediğimiz yapıda olup olmadığını kontrol eder
 
       if (!isValid) {
         this.clear();
@@ -93,7 +76,7 @@ export class AuthStorageService {
 
       return parsedValue;
     } catch {
-      this.clear();
+      this.clear(); // json bozuksa sessionı temizler
       return null;
     }
   }

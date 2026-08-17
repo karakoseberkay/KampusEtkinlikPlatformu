@@ -1,91 +1,51 @@
 <main class="auth-page">
   <section class="auth-card">
-    <a
-      class="brand"
-      routerLink="/"
-    >
-      KampüsEtkinlik
-    </a>
+    <a class="brand" routerLink="/">KampüsEtkinlik</a> <!-- ana sayfaya yönlendirir -->
 
     <header class="auth-header">
-      <span class="eyebrow">
-        Tekrar hoş geldin
-      </span>
-
+      <span class="eyebrow">Tekrar hoş geldin</span>
       <h1>Hesabına giriş yap</h1>
-
-      <p>
-        Kulüpleri ve kampüs etkinliklerini
-        tek merkezden takip et.
-      </p>
+      <p>Kulüpleri ve kampüs etkinliklerini tek merkezden takip et.</p>
     </header>
 
-    <form
-      class="auth-form"
-      [formGroup]="form"
-      (ngSubmit)="submit()"
-      novalidate
-    >
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate> <!-- login formunu form değişkenine bağlar ve gönderildiğinde submit metodunu çalıştırır -->
       <div class="form-field">
-        <label for="email">
-          E-posta
-        </label>
-
+        <label for="email">E-posta</label>
         <input
           id="email"
           type="email"
           formControlName="email"
-          placeholder="ornek@student.com"
+          placeholder="E posta adresiniz"
           autocomplete="email"
         />
 
-        @if (
-          form.controls.email.touched
-          && form.controls.email.invalid
-        ) {
-          <small class="field-error">
-            Geçerli bir e-posta adresi gir.
-          </small>
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <small class="field-error">Geçerli bir e-posta adresi gir.</small> <!-- email alanı hatalıysa validation mesajını gösterir -->
         }
       </div>
 
       <div class="form-field">
-        <label for="password">
-          Şifre
-        </label>
-
+        <label for="password">Şifre</label>
         <input
           id="password"
           type="password"
           formControlName="password"
-          placeholder="En az 8 karakter"
+          placeholder="Parola"
           autocomplete="current-password"
         />
 
-        @if (
-          form.controls.password.touched
-          && form.controls.password.invalid
-        ) {
-          <small class="field-error">
-            Şifre en az 8 karakter olmalıdır.
-          </small>
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <small class="field-error">Şifre en az 8 karakter olmalıdır.</small> <!-- şifre alanı hatalıysa validation mesajını gösterir -->
         }
       </div>
 
       @if (errorMessage()) {
-        <div
-          class="alert alert-error"
-          role="alert"
-        >
+        <div class="alert alert-error" role="alert">
           {{ errorMessage() }}
-        </div>
+        </div> <!-- login işleminde hata oluşursa hata mesajını gösterir -->
       }
 
-      <button
-        class="primary-button"
-        type="submit"
-        [disabled]="loading()"
-      >
+      <button class="primary-button" type="submit" [disabled]="loading()"> <!-- login işlemi devam ederken butona tekrar basılmasını engeller -->
         @if (loading()) {
           Giriş yapılıyor...
         } @else {
@@ -96,10 +56,7 @@
 
     <p class="auth-footer">
       Henüz hesabın yok mu?
-
-      <a routerLink="/register">
-        Kayıt ol
-      </a>
+      <a routerLink="/register">Kayıt ol</a> <!-- kayıt sayfasına yönlendirir -->
     </p>
   </section>
 </main>

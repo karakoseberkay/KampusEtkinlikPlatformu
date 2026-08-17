@@ -1,1 +1,2 @@
-export const API_BASE_URL = 'https://localhost:7047/api';
+export const API_BASE_URL = 'https://localhost:7047/api'; // backend api adresini tutar
+// tek yerden değiştirebilmek için base url yazdım bu sayede backend adresi değişirse sadece burayı değiştirmek yeterli olur

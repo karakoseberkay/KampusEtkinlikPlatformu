@@ -1,32 +1,21 @@
 import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-import {
-  CanActivateFn,
-  Router
-} from '@angular/router';
+export const authGuard: CanActivateFn = (_route, state) => {
+  const authService = inject(AuthService); // kullanıcının oturum bilgilerine erişmemizi sağlar
+  const router = inject(Router); // kullanıcıyı farklı routelara yönlendirmemizi sağlar
 
-import {
-  AuthService
-} from '../services/auth.service';
+  if (authService.hasValidSession()) {
+    return true; // geçerli oturum varsa kullanıcının sayfaya erişmesine izin verir
+  }
 
-export const authGuard: CanActivateFn =
-  (_route, state) => {
-    const authService =
-      inject(AuthService);
-
-    const router =
-      inject(Router);
-
-    if (authService.hasValidSession()) {
-      return true;
-    }
-
-    return router.createUrlTree(
-      ['/login'],
-      {
-        queryParams: {
-          returnUrl: state.url
-        }
+  return router.createUrlTree(
+    ['/login'],
+    {
+      queryParams: {
+        returnUrl: state.url // giriş yaptıktan sonra kullanıcının gitmek istediği sayfaya dönebilmek için url bilgisini taşır
       }
-    );
-  };
+    }
+  );
+};

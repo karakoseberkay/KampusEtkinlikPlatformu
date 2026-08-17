@@ -1,285 +1,130 @@
-import {
-  Routes
-} from '@angular/router';
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard'; // giriş yapmış kullanıcı kontrolünü sağlar
+import { guestGuard } from './core/guards/guest.guard'; // sadece giriş yapmamış kullanıcıların erişmesini sağlar
+import { studentGuard, clubManagerGuard, adminGuard } from './core/guards/role.guard'; // rol bazlı sayfa erişimlerini kontrol eder
 
-import {
-  authGuard
-} from './core/guards/auth.guard';
-
-import {
-  guestGuard
-} from './core/guards/guest.guard';
-
-import {
-  studentGuard,
-  clubManagerGuard
-} from './core/guards/role.guard';
-
-
+// uygulamadaki sayfa yollarını ve bu sayfalara kimlerin erişebileceğini tanımlar
 export const routes: Routes = [
-
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'home'
+    redirectTo: 'home' // boş urlde kullanıcıyı ana sayfaya yönlendirir
   },
-
-
   {
     path: 'login',
     title: 'Giriş Yap',
-    canActivate: [
-      guestGuard
-    ],
+    canActivate: [guestGuard], // giriş yapmış kullanıcı login sayfasına tekrar giremez
     loadComponent: () =>
-      import(
-        './pages/login/login'
-      ).then(
-        module =>
-          module.LoginPage
-      )
+      import('./pages/login/login').then(module => module.LoginPage)//bütün sayfaları yüklemek yerine sadece logini yükler (lazy loading)
   },
-
-
   {
     path: 'register',
     title: 'Kayıt Ol',
-    canActivate: [
-      guestGuard
-    ],
+    canActivate: [guestGuard], // giriş yapmış kullanıcı kayıt sayfasına tekrar giremez
     loadComponent: () =>
-      import(
-        './pages/register/register'
-      ).then(
-        module =>
-          module.RegisterPage
-      )
+      import('./pages/register/register').then(module => module.RegisterPage)//bütün sayfaları yüklemek yerine sadece registerı yükler (lazy loading)
   },
-
-
   {
     path: 'popular-events',
     title: 'Popüler Etkinlikler',
     loadComponent: () =>
-      import(
-        './pages/popular-events/popular-events'
-      ).then(
-        module =>
-          module.PopularEvents
-      )
+      import('./pages/popular-events/popular-events').then(module => module.PopularEvents)
+    //bütün sayfaları yüklemek yerine sadece populereventsi yükler (lazy loading)
   },
-
-
   {
     path: 'home',
     title: 'Ana Sayfa',
-    canActivate: [
-      authGuard
-    ],
+    canActivate: [authGuard], // sadece giriş yapmış kullanıcılar erişebilir
     loadComponent: () =>
-      import(
-        './pages/home/home'
-      ).then(
-        module =>
-          module.HomePage
-      )
+      import('./pages/home/home').then(module => module.HomePage)
   },
-
-
   {
     path: 'clubs',
     title: 'Kulüpler',
-    canActivate: [
-      authGuard
-    ],
+    canActivate: [authGuard],
     loadComponent: () =>
-      import(
-        './pages/clubs/clubs'
-      ).then(
-        module =>
-          module.Clubs
-      )
+      import('./pages/clubs/clubs').then(module => module.Clubs)
   },
-
-
   {
     path: 'clubs/:id/stats',
     title: 'Kulüp İstatistikleri',
-    canActivate: [
-      clubManagerGuard
-    ],
+    canActivate: [clubManagerGuard], // sadece ClubManager rolü erişebilir
     loadComponent: () =>
-      import(
-        './pages/club-stats/club-stats'
-      ).then(
-        module =>
-          module.ClubStats
-      )
+      import('./pages/club-stats/club-stats').then(module => module.ClubStats)
   },
-
-
   {
     path: 'clubs/:id',
     title: 'Kulüp Detayı',
-    canActivate: [
-      authGuard
-    ],
+    canActivate: [authGuard],
     loadComponent: () =>
-      import(
-        './pages/club-detail/club-detail'
-      ).then(
-        module =>
-          module.ClubDetail
-      )
+      import('./pages/club-detail/club-detail').then(module => module.ClubDetail)
   },
-
-
   {
-    path: 'club-manage',
+    path: 'club-manage',//aynı urlyi kullanarak hem kulübü oluşturup hemde int göndererek güncelleme yapılabiliyor
     title: 'Kulüp Oluştur',
-    canActivate: [
-      clubManagerGuard
-    ],
+    canActivate: [clubManagerGuard],
     loadComponent: () =>
-      import(
-        './pages/club-manage/club-manage'
-      ).then(
-        module =>
-          module.ClubManage
-      )
+      import('./pages/club-manage/club-manage').then(module => module.ClubManage)
   },
-
-
   {
     path: 'club-manage/:id',
     title: 'Kulüp Güncelle',
-    canActivate: [
-      clubManagerGuard
-    ],
+    canActivate: [clubManagerGuard],
     loadComponent: () =>
-      import(
-        './pages/club-manage/club-manage'
-      ).then(
-        module =>
-          module.ClubManage
-      )
+      import('./pages/club-manage/club-manage').then(module => module.ClubManage)
   },
-
-
   {
-    path: 'events',
+    path: 'events', //liste
     title: 'Etkinlikler',
-    canActivate: [
-      authGuard
-    ],
+    canActivate: [authGuard],
     loadComponent: () =>
-      import(
-        './pages/events/events'
-      ).then(
-        module =>
-          module.Events
-      )
+      import('./pages/events/events').then(module => module.Events)
   },
-
-
   {
-    path: 'events/:id/registrations',
+    path: 'events/:id/registrations',//eventin kaydı
     title: 'Etkinlik Kayıtları',
-    canActivate: [
-      clubManagerGuard
-    ],
+    canActivate: [clubManagerGuard], // etkinliğin kayıtlarını sadece ClubManager görüntüleyebilir
     loadComponent: () =>
-      import(
-        './pages/event-registrations/event-registrations'
-      ).then(
-        module =>
-          module.EventRegistrations
-      )
+      import('./pages/event-registrations/event-registrations').then(module => module.EventRegistrations)
   },
-
-
   {
-    path: 'events/:id',
+    path: 'events/:id',//detay
     title: 'Etkinlik Detayı',
-    canActivate: [
-      authGuard
-    ],
+    canActivate: [authGuard],
     loadComponent: () =>
-      import(
-        './pages/event-detail/event-detail'
-      ).then(
-        module =>
-          module.EventDetail
-      )
+      import('./pages/event-detail/event-detail').then(module => module.EventDetail)
   },
-
-
   {
-    path: 'event-manage',
+    path: 'event-manage',//oluşturma
     title: 'Etkinlik Oluştur',
-    canActivate: [
-      clubManagerGuard
-    ],
+    canActivate: [clubManagerGuard],
     loadComponent: () =>
-      import(
-        './pages/event-manage/event-manage'
-      ).then(
-        module =>
-          module.EventManage
-      )
+      import('./pages/event-manage/event-manage').then(module => module.EventManage)
   },
-
-
   {
-    path: 'event-manage/:id',
+    path: 'event-manage/:id',//güncelleme
     title: 'Etkinlik Güncelle',
-    canActivate: [
-      clubManagerGuard
-    ],
+    canActivate: [clubManagerGuard],
     loadComponent: () =>
-      import(
-        './pages/event-manage/event-manage'
-      ).then(
-        module =>
-          module.EventManage
-      )
+      import('./pages/event-manage/event-manage').then(module => module.EventManage)
   },
-
-
   {
     path: 'my-registrations',
     title: 'Kayıtlarım',
-    canActivate: [
-      studentGuard
-    ],
+    canActivate: [studentGuard], // sadece Student rolü kendi kayıtlarını görüntüleyebilir
+    //manager urlye elle yazsa bile guard onu içeri almaz
     loadComponent: () =>
-      import(
-        './pages/my-registrations/my-registrations'
-      ).then(
-        module =>
-          module.MyRegistrations
-      )
+      import('./pages/my-registrations/my-registrations').then(module => module.MyRegistrations)
   },
-
   {
-  path: 'user-management',
-  canActivate: [
-    clubManagerGuard
-  ],
-  loadComponent: () =>
-    import(
-      './pages/user-management/user-management'
-    )
-      .then(
-        module =>
-          module.UserManagement
-      )
-},
-
-
+    path: 'user-management',
+    title: 'Kullanıcı Yönetimi',
+    canActivate: [adminGuard], // sadece manager@kampus.com admin hesabı erişebilir
+    loadComponent: () =>
+      import('./pages/user-management/user-management').then(module => module.UserManagement)
+  },
   {
     path: '**',
-    redirectTo: 'home'
+    redirectTo: 'home' // tanımlanmamış bir urle gidilirse ana sayfaya yönlendirir
   }
-
 ];
