@@ -14,7 +14,8 @@ export class UserService {
     return this.http.get<UserResponse[]>(`${API_BASE_URL}/Users`);
   }
 
-  updateRole(userId: string, request: UpdateUserRoleRequest): Observable<UserResponse> { // verilen kullanıcının rolünü değiştirmek için isteği backende gönderir
+  updateRole(userId: string, request: UpdateUserRoleRequest): Observable<UserResponse> { 
     return this.http.put<UserResponse>(`${API_BASE_URL}/Users/${userId}/role`, request);
+  // verilen kullanıcının rolünü değiştirmek için isteği backende gönderir
   }
 }

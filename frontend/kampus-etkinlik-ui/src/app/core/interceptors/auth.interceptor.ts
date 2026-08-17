@@ -9,13 +9,14 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const isBackendRequest = request.url.startsWith(API_BASE_URL); // isteğin bizim backende gidip gitmediğini kontrol eder
 
   if (!accessToken || !isBackendRequest) {
-    return next(request); // token yoksa veya istek bizim backende gitmiyorsa isteği değiştirmeden devam ettirir
+    return next(request); 
+    // token yoksa veya istek bizim backende gitmiyorsa isteği değiştirmeden devam ettirir(önlem)
   }
 
   const authorizedRequest = request.clone({
-    setHeaders: {
-      Authorization: `Bearer ${accessToken}` // JWT tokenı Authorization headerına ekler
-    }
+    setHeaders: {Authorization: `Bearer ${accessToken}`}
+       // JWT tokenı Authorization headerına ekler
+    
   });
 
   return next(authorizedRequest); // token eklenmiş isteği bir sonraki aşamaya gönderir

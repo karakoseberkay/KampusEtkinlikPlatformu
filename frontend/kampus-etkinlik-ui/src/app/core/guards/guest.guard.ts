@@ -10,5 +10,6 @@ export const guestGuard: CanActivateFn = () => {
     return true; // giriş yapılmamışsa login ve register sayfalarına erişmesine izin verir
   }
 
-  return router.createUrlTree(['/home']); // kullanıcı giriş yapmışsa ana sayfaya yönlendirir
+  return router.createUrlTree(['/home']);
+   // kullanıcı giriş yapmışsa ana sayfaya yönlendirir
 };

@@ -17,7 +17,7 @@ import {
 export class EventService {
   private readonly http = inject(HttpClient); // backende http istekleri göndermemizi sağlar
 
-  getAll(): Observable<EventResponse[]> { // tüm etkinlikleri backendden getirir
+  getAll(): Observable<EventResponse[]> { // tüm etkinlikleri backendden getirir(filtresiz)
     return this.http.get<EventResponse[]>(`${API_BASE_URL}/Events`);
   }
 
@@ -52,18 +52,18 @@ export class EventService {
     params = params.set('pageSize', (query.pageSize ?? 10).toString()); // sayfa boyutu verilmezse 10 kullanır
 
     return this.http.get<PagedResponse<EventResponse>>(
-      `${API_BASE_URL}/Events/paged`,
-      { params }
-    );
+      `${API_BASE_URL}/Events/paged`, { params });
+      
+    
   }
 
   getPopular(limit = 10): Observable<PopularEventResponse[]> { // en popüler etkinlikleri backendden getirir
     const params = new HttpParams().set('limit', limit.toString());
 
     return this.http.get<PopularEventResponse[]>(
-      `${API_BASE_URL}/Events/popular`,
-      { params }
-    );
+      `${API_BASE_URL}/Events/popular`, { params });
+      
+    
   }
 
   getById(id: number): Observable<EventResponse> { // verilen idye sahip etkinliği backendden getirir

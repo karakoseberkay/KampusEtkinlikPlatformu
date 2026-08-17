@@ -10,7 +10,7 @@ export const authGuard: CanActivateFn = (_route, state) => {
     return true; // geçerli oturum varsa kullanıcının sayfaya erişmesine izin verir
   }
 
-  return router.createUrlTree(
+  return router.createUrlTree(//yoksa login sayfasına paslar, ama adresi saklar böylece giriş yaptığı anda o adrese yönlendirir
     ['/login'],
     {
       queryParams: {

@@ -36,7 +36,8 @@ export const adminGuard: CanActivateFn = () => {
     !authService.hasRole('ClubManager') ||
     user.email.toLowerCase() !== 'manager@kampus.com'
   ) {
-    return router.createUrlTree(['/home']); // sadece manager@kampus.com admin hesabına izin verir
+    return router.createUrlTree(['/home']); 
+    // sadece manager@kampus.com admin hesabına izin verir
   }
 
   return true;

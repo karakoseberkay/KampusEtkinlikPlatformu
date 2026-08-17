@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 export function getApiErrorMessage(
-  error: HttpErrorResponse,
-  fallback = 'İşlem sırasında bir hata oluştu.'
+  error: HttpErrorResponse,//backendden gelen hata
+  fallback = 'İşlem sırasında bir hata oluştu.' //hiçbir uygun hata mesajı bulunamazsa gösterilecek varsayılan mesaj
 ): string { // backendden gelen hata cevaplarını kullanıcıya gösterilecek mesaja çevirir
 
   if (error.status === 0) {
@@ -28,7 +28,7 @@ export function getApiErrorMessage(
 
   if (errors && typeof errors === 'object') { // validation hataları object olarak geldiyse içindeki mesajları alır
     const messages = Object.values(errors)
-      .flatMap(value => Array.isArray(value) ? value : [value])
+      .flatMap(value => Array.isArray(value) ? value : [value])//iç içe dizileri tek dize haline getiriyor
       .filter(value => typeof value === 'string');
 
     if (messages.length > 0) {

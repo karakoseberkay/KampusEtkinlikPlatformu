@@ -2,10 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../config/api.config';
-import {
-  RegistrationApprovalStatus,
-  RegistrationResponse
-} from '../models/api.models';
+import {RegistrationApprovalStatus, RegistrationResponse} from '../models/api.models';
+ 
+
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +15,7 @@ export class RegistrationService {
   register(eventId: number): Observable<RegistrationResponse> { // öğrenciyi verilen etkinliğe kaydeder
     return this.http.post<RegistrationResponse>(
       `${API_BASE_URL}/events/${eventId}/register`,
-      {}
+      {} //boş body gidiyor çünkü hangi etkinliğw kayıt olacağı urldeki idden belli, kimin kayıt olacağıda jwtden belli
     );
   }
 
@@ -24,27 +23,23 @@ export class RegistrationService {
     return this.http.get<RegistrationResponse[]>(`${API_BASE_URL}/Registrations/me`);
   }
 
-  getForEvent(
-    eventId: number,
-    approvalStatus?: RegistrationApprovalStatus
-  ): Observable<RegistrationResponse[]> { // verilen etkinliğin kayıtlarını durum filtresiyle beraber getirir
+  getForEvent(eventId: number, approvalStatus?: RegistrationApprovalStatus)
+  : Observable<RegistrationResponse[]> { // verilen etkinliğin kayıtlarını durum filtresiyle beraber getirir
     let params = new HttpParams();
 
     if (approvalStatus) {
       params = params.set('approvalStatus', approvalStatus);
     }
 
-    return this.http.get<RegistrationResponse[]>(
-      `${API_BASE_URL}/events/${eventId}/registrations`,
-      { params }
-    );
+    return this.http.get<RegistrationResponse[]>(`${API_BASE_URL}/events/${eventId}/registrations`, { params }); 
+      
+    
   }
 
   approve(id: number): Observable<RegistrationResponse> { // verilen kayıt talebini onaylar
-    return this.http.put<RegistrationResponse>(
-      `${API_BASE_URL}/Registrations/${id}/approve`,
-      {}
-    );
+    
+    return this.http.put<RegistrationResponse>(`${API_BASE_URL}/Registrations/${id}/approve`,{});  
+    
   }
 
   reject(id: number): Observable<RegistrationResponse> { // verilen kayıt talebini reddeder
