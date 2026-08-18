@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { getApiErrorMessage } from '../../core/utils/api-error';
 
+
 @Component({
   selector: 'app-home',
   standalone: true,

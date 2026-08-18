@@ -88,9 +88,9 @@ export class Clubs implements OnInit {
   ownsClub(club: ClubResponse): boolean { // giriş yapan kullanıcının verilen kulübün yöneticisi olup olmadığını kontrol eder
     const user = this.auth.currentUser();
 
-    return !!user &&
-      this.auth.hasRole('ClubManager') &&
-      club.managerUserId === user.userId;
+    return !!user && this.auth.hasRole('ClubManager') && club.managerUserId === user.userId;
+      
+     
   }
 
   loadClubs(): void { // tüm kulüpleri backendden getirir

@@ -14,8 +14,8 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class LoginPage {
   private readonly formBuilder = inject(FormBuilder); // form oluşturmamızı sağlar
-  private readonly authService = inject(AuthService); // login işlemini yapmamızı sağlar
-  private readonly router = inject(Router); // kullanıcıyı farklı routelara yönlendirmemizi sağlar
+  private readonly authService = inject(AuthService); // login isteğini backende göndermeyi sağlar
+  private readonly router = inject(Router); // login başarılı olunca kullanıcıyı farklı routelara yönlendirmemizi sağlar
   private readonly activatedRoute = inject(ActivatedRoute); // mevcut routeun parametrelerine erişmemizi sağlar
 
   readonly loading = signal(false); // giriş işleminin devam edip etmediğini tutar
@@ -44,8 +44,8 @@ export class LoginPage {
       return;
     }
 
-    this.loading.set(true);
-    this.errorMessage.set(null);
+    this.loading.set(true);//loading başlıyor
+    this.errorMessage.set(null);//hata temizleniyor
 
     this.authService
       .login(this.form.getRawValue()) // form verilerini AuthService üzerinden backende gönderir
@@ -56,9 +56,9 @@ export class LoginPage {
         next: () => {
           const requestedReturnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl'); // authGuarddan gelen dönüş urlini alır
 
-          const returnUrl = requestedReturnUrl?.startsWith('/')
-            ? requestedReturnUrl
-            : '/home';
+          const returnUrl = requestedReturnUrl?.startsWith('/') ? requestedReturnUrl : '/home';
+            
+            
 
           void this.router.navigateByUrl(returnUrl); // kullanıcıyı gitmek istediği sayfaya veya ana sayfaya yönlendirir
         },
@@ -77,11 +77,11 @@ export class LoginPage {
       return 'E-posta veya şifre hatalı.';
     }
 
-    if (typeof error.error?.message === 'string') {
+    if (typeof error.error?.message === 'string') {//object
       return error.error.message;
     }
 
-    if (typeof error.error === 'string') {
+    if (typeof error.error === 'string') {//string
       return error.error;
     }
 

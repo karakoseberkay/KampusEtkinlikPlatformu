@@ -72,6 +72,7 @@ export class PopularEvents implements OnInit {
     this.loadEvents();
   }
 
+  
   loadEvents(): void { // en popüler 10 etkinliği backendden getirir
     this.loading.set(true);
     this.errorMessage.set('');

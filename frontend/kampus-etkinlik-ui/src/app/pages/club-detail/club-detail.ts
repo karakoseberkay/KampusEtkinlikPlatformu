@@ -34,12 +34,12 @@ export class ClubDetail implements OnInit {
   private readonly route = inject(ActivatedRoute); // urldeki kulüp id bilgisine erişmemizi sağlar
   private readonly clubService = inject(ClubService); // kulüp servisindeki metodlara erişmemizi sağlar
 
-  readonly club = signal<ClubResponse | null>(null); // backendden gelen kulüp bilgisini tutar
+  readonly club = signal<ClubResponse | null>(null); // backendden gelen kulüp bilgisini tutar, başta veri olmadığı için null olarak başlıyor
   readonly loading = signal(false); // kulüp bilgisi yüklenirken işlemin devam edip etmediğini tutar
   readonly errorMessage = signal(''); // kullanıcıya gösterilecek hata mesajını tutar
 
   ngOnInit(): void { // sayfa açıldığında urldeki idye göre kulüp bilgisini getirir
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = Number(this.route.snapshot.paramMap.get('id'));//number ile string inte çevriliyor
 
     if (!Number.isInteger(id) || id <= 0) {
       this.errorMessage.set('Geçersiz kulüp ID.');
