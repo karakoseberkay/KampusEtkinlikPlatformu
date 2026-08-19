@@ -209,7 +209,7 @@ export class Events implements OnInit {
       return false;
     }
 
-    return this.clubs().some(
+    return this.clubs().some(//bu dizide bu koşulu sağlayan en az 1 eleman var mı
       club => club.id === event.clubId && club.managerUserId === user.userId
     );
   }

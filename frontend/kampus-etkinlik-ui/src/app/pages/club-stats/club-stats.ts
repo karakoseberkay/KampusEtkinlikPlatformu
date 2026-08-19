@@ -41,22 +41,24 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
       } @else {
         <svg width="750" [attr.height]="getChartHeight(statsItem.events.length)"> <!-- etkinlik kayıt oranlarını svg grafik olarak gösterir -->
           @for (event of statsItem.events; track event.eventId; let index = $index) {
-            <text x="0" [attr.y]="getTextY(index)">
-              {{ event.title }}
-            </text>
+           <text x="0" [attr.y]="getTextY(index)">
+               {{ event.title }}
+           </text>
 
             <rect
-              x="200"
+              x="350"
               [attr.y]="getBarY(index)"
               [attr.width]="getBarWidth(event.registrationRate)"
               height="20"
             ></rect>
 
             <text
+            
               [attr.x]="getBarTextX(event.registrationRate)"
               [attr.y]="getTextY(index)"
             >
-              {{ event.registrationRate }}%
+            
+              {{event.registrationRate }}%
             </text>
           }
         </svg>
@@ -159,11 +161,11 @@ export class ClubStats implements OnInit {
   }
 
   getBarWidth(registrationRate: number): number { // kayıt oranına göre çubuğun genişliğini hesaplar
-    const rate = Math.max(0, Math.min(registrationRate, 100));
+    const rate = Math.max(1, Math.min(registrationRate, 100));
     return rate * 4;
   }
 
   getBarTextX(registrationRate: number): number { // yüzde yazısının çubuğun sonunda görünmesini sağlar
-    return 210 + this.getBarWidth(registrationRate);
+    return 360 + this.getBarWidth(registrationRate);
   }
 }

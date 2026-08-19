@@ -264,7 +264,7 @@ export class EventManage implements OnInit {
 
     if (this.isEditMode() && this.eventId) {
       const request: UpdateEventRequest = {
-        ...commonRequest
+        ...commonRequest //commonRequest içindeki bütün alanları buraya kopyalıyor
       };
 
       this.updateEvent(this.eventId, request);

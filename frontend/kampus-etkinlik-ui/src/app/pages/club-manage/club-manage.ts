@@ -11,7 +11,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <h1>{{ isEditMode() ? 'Kulüp Güncelle' : 'Kulüp Oluştur' }}</h1>
+    <h1>{{ isEditMode() ? 'Kulüp Güncelle' : 'Kulüp Oluştur' }}</h1>//editmode=true kulübü güncelle - false kulüp oluştur
 
     @if (loading()) {
       <p>Yükleniyor...</p>
@@ -174,7 +174,7 @@ export class ClubManage implements OnInit {
       next: club => {
         this.successMessage.set('Kulüp güncellendi.');
 
-        this.form.patchValue({
+        this.form.patchValue({//mevcut bilgileri yerleştirme
           name: club.name,
           description: club.description ?? '',
           logoUrl: club.logoUrl ?? ''
