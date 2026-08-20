@@ -16,10 +16,10 @@ import {
 })
 export class EventService {
   private readonly http = inject(HttpClient); // backende http istekleri göndermemizi sağlar
-
+/*
   getAll(): Observable<EventResponse[]> { // tüm etkinlikleri backendden getirir(filtresiz)
     return this.http.get<EventResponse[]>(`${API_BASE_URL}/Events`);
-  }
+  }*/
 
   getPaged(query: EventPageQuery): Observable<PagedResponse<EventResponse>> { // etkinlikleri filtreli ve sayfalı şekilde backendden getirir
     let params = new HttpParams();

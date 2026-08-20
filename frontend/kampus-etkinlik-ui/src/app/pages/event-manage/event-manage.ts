@@ -79,8 +79,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
       <div>
         <label for="visibility">Katılım Tipi</label>
         <select id="visibility" formControlName="visibility">
-          <option value="Public">Public</option>
-          <option value="ApprovalRequired">ApprovalRequired</option>
+          <option value="Public">Herkese açık</option>
+          <option value="ApprovalRequired">Onay gerekli</option>
         </select>
       </div>
 

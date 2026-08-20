@@ -45,26 +45,20 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
     CancellationToken cancellationToken = default
 )
 {
-    if (
-        dateFrom.HasValue
-        &&
-        dateTo.HasValue
-        &&
-        dateFrom.Value > dateTo.Value
-    )
-    {
+    if (dateFrom.HasValue && dateTo.HasValue && dateFrom.Value > dateTo.Value){
+        
         return BadRequest(
             new
             {
-                message =
-                    "Başlangıç tarihi bitiş tarihinden sonra olamaz."
+                message ="Başlangıç tarihi bitiş tarihinden sonra olamaz."
+                    
             }
         );
     }
 
 
-    var result =
-        await eventService.GetPagedAsync(
+    var result = await eventService.GetPagedAsync(
+       
             search,
             category,
             clubId,

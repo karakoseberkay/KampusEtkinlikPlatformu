@@ -3,9 +3,9 @@ namespace KampusEtkinlik.Api.Constants; // bu dosyanın Constants klasörüne ai
 
 public static class RoleNames // projede kullanılan rol isimlerini tek bir yerde tutar
 {
-    public const string Student = "Student"; // öğrenci rolünün sabit adını tutar
+    public const string Student = "Öğrenci"; // öğrenci rolünün sabit adını tutar
 
-    public const string ClubManager = "ClubManager"; // kulüp yöneticisi rolünün sabit adını tutar
+    public const string ClubManager = "Topluluk Yöneticisi"; // kulüp yöneticisi rolünün sabit adını tutar
 
 
     public static readonly string[] All = [Student, ClubManager]; 

@@ -35,7 +35,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
       <p><strong>Durum:</strong> {{ eventItem.status }}</p>
       <p><strong>Oluşturulma Tarihi:</strong> {{ eventItem.createdAt }}</p>
 
-      @if (auth.hasRole('Student')) { <!-- sadece Student rolündeki kullanıcıya kayıt ol butonunu gösterir -->
+      @if (auth.hasRole('Student') || auth.hasRole('ClubManager')) { <!-- sadece Student rolündeki kullanıcıya kayıt ol butonunu gösterir -->
         <button
           type="button"
           [disabled]="registering()"

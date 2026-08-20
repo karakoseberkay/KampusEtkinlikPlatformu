@@ -11,7 +11,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    <h1>{{ isEditMode() ? 'Kulüp Güncelle' : 'Kulüp Oluştur' }}</h1>//editmode=true kulübü güncelle - false kulüp oluştur
+    <h1>{{ isEditMode() ? 'Kulüp Güncelle' : 'Kulüp Oluştur' }}</h1> <!--editmode=true kulübü güncelle - false kulüp oluştur-->
 
     @if (loading()) {
       <p>Yükleniyor...</p>

@@ -17,7 +17,7 @@ public sealed class EventRegistrationsController(
 ) : ControllerBase
 {
     [HttpPost("{eventId:int}/register")] // POST /api/events/5/register endpointini oluşturur
-    [Authorize(Roles = RoleNames.Student)] // sadece Student rolündeki kullanıcıların etkinliğe kayıt olmasına izin verir
+    [Authorize(Roles = "Student,ClubManager")] //Student ve clubmanager rolündeki kullanıcıların etkinliğe kayıt olmasına izin verir
 
     public async Task<ActionResult> Register(
         int eventId, // kayıt olunacak etkinliğin idsini routetan alır
