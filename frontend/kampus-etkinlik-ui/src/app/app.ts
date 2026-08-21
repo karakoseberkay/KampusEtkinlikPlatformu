@@ -1,14 +1,14 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { AuthService } from './core/services/auth.service'; // giriş yapan kullanıcı bilgilerine ve rol kontrollerine erişmemizi sağlar
+import { Component, inject } from '@angular/core'; // Angular componenti oluşturmak ve servis inject etmek için gerekli araçları içe aktarır.
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router'; // Sayfa yönlendirmeleri, aktif link kontrolü ve route içeriğini göstermek için kullanılır.
+import { AuthService } from './core/services/auth.service'; // Giriş yapan kullanıcının bilgilerine ve rol kontrollerine erişmek için kullanılır.
 
-@Component({
-  selector: 'app-root',//html etiketi
-  standalone: true,//bu componentin eski Angular yapısındaki NgModulea bağlı olmadan kendi başına çalıştığını söylüyor
-  imports: [RouterOutlet, RouterLink], // sayfa geçişlerini ve route içeriklerini kullanmamızı sağlar
-  templateUrl: './app.html',//Bu componentin HTMLi app.html dosyasında
-  styleUrl: './app.scss'
+@Component({ // Bu classın Angular componenti olduğunu belirtir.
+  selector: 'app-root', // Uygulamanın ana componentinin HTML selector adını belirler.
+  standalone: true, // Componentin NgModule kullanmadan bağımsız çalışmasını sağlar.
+  imports: [RouterOutlet, RouterLink, RouterLinkActive], // Template içinde router-outlet, routerLink ve routerLinkActive kullanılmasını sağlar.
+  templateUrl: './app.html', // Componentin HTML dosyasını belirtir.
+  styleUrl: './app.scss' // Componentin SCSS dosyasını belirtir.
 })
-export class App {
-  readonly auth = inject(AuthService); // AuthServicei bu component içinde kullanmamızı sağlar
+export class App { // Uygulamanın en üst seviyedeki ana component classıdır.
+  readonly auth = inject(AuthService); // Kullanıcı giriş durumu ve rol kontrolleri için AuthService'i enjekte eder.
 }

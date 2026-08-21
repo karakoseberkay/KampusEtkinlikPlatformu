@@ -9,22 +9,38 @@
     sans-serif;
 
   color: #0f172a;
+
   background: #f8fafc;
+
   font-synthesis: none;
+
   text-rendering: optimizeLegibility;
 }
+
 
 html,
 body {
   min-height: 100%;
+
   margin: 0;
 }
 
+
 body {
   min-width: 320px;
+
+  background-color: #f8fafc;
 }
 
+
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
+}
+
+
+* {
+  box-sizing: border-box;
 }

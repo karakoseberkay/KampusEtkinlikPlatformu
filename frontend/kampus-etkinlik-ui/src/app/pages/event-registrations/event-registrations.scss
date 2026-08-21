@@ -1,0 +1,348 @@
+/* ==================================================
+   ETKİNLİK KAYITLARI SAYFASI
+   ================================================== */
+
+.event-registrations-page {
+  width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
+}
+
+
+/* ==================================================
+   SAYFA BAŞLIĞI
+   ================================================== */
+
+.page-header {
+  display: flex; // Başlık ile yenile butonunu yan yana dizer.
+  align-items: center; // Başlık ve butonu dikey olarak ortalar.
+  justify-content: space-between; // Başlığı sola, butonu sağa yerleştirir.
+  gap: 20px; // Başlık ile buton arasında boşluk bırakır.
+  margin-bottom: 28px; // Başlık ile filtre alanı arasında boşluk bırakır.
+}
+
+.page-header h1 {
+  margin: 0 0 6px; // Başlığın varsayılan marginini düzenler.
+  color: #003267; // Başlığı CampusBody lacivert rengine boyar.
+  font-size: 30px; // Ana başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.page-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 14px; // Açıklama yazı boyutunu belirler.
+}
+
+.refresh-button {
+  min-height: 40px; // Yenile butonunun minimum yüksekliğini belirler.
+  padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #003267; // Butonun arka planını CampusBody laciverti yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: none; // Tarayıcının varsayılan borderını kaldırır.
+  border-radius: 6px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.refresh-button:hover:not(:disabled) {
+  background-color: #00234b; // Mouse üzerine geldiğinde butonu daha koyu lacivert yapar.
+}
+
+.refresh-button:disabled {
+  opacity: 0.6; // Veri yüklenirken butonu soluk gösterir.
+  cursor: not-allowed; // Kullanıcıya butonun kullanılamadığını gösterir.
+}
+
+
+/* ==================================================
+   FİLTRE
+   ================================================== */
+
+.filter-card {
+  max-width: 500px; // Basit filtre kartının gereksiz yere bütün ekranı kaplamasını engeller.
+  margin-bottom: 28px; // Filtre kartı ile sonraki içerik arasında boşluk bırakır.
+  background-color: #ffffff; // Filtre kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına ince border ekler.
+  border-radius: 8px; // Kart köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.filter-header {
+  padding: 18px 20px; // Filtre başlık bölümünün içerisine boşluk verir.
+  border-bottom: 1px solid #e7edf3; // Başlık ile select alanı arasına çizgi ekler.
+}
+
+.filter-header h2 {
+  margin: 0 0 5px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Filtre başlığını lacivert yapar.
+  font-size: 17px; // Filtre başlığının yazı boyutunu belirler.
+  font-weight: 700; // Filtre başlığını kalın yapar.
+}
+
+.filter-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık renkte gösterir.
+  font-size: 12px; // Açıklama yazı boyutunu belirler.
+}
+
+.filter-content {
+  padding: 18px 20px; // Select alanının kart kenarlarına yapışmasını engeller.
+}
+
+.form-field {
+  display: flex; // Label ve select alanını flex yapısına geçirir.
+  flex-direction: column; // Labelı select alanının üstünde gösterir.
+  gap: 7px; // Label ile select arasında boşluk bırakır.
+}
+
+.form-field label {
+  color: #334155; // Label yazısını koyu gri-lacivert yapar.
+  font-size: 12px; // Label yazı boyutunu belirler.
+  font-weight: 700; // Labelı kalın yapar.
+}
+
+.form-field select {
+  width: 100%; // Select alanının tam genişlik kullanmasını sağlar.
+  height: 40px; // Select alanının yüksekliğini belirler.
+  padding: 0 12px; // Yazının kenarlara yapışmasını engeller.
+  background-color: #ffffff; // Select arka planını beyaz yapar.
+  color: #334155; // Select yazı rengini belirler.
+  border: 1px solid #cbd5e1; // Select alanına ince border ekler.
+  border-radius: 5px; // Select köşelerini hafif yuvarlatır.
+  outline: none; // Tarayıcının varsayılan focus çizgisini kaldırır.
+  font-size: 13px; // Select içerisindeki yazı boyutunu belirler.
+}
+
+.form-field select:focus {
+  border-color: #003267; // Select seçildiğinde border rengini lacivert yapar.
+}
+
+
+/* ==================================================
+   MESAJLAR
+   ================================================== */
+
+.page-message,
+.empty-card {
+  margin-bottom: 24px; // Mesaj kutuları ile sonraki içerik arasında boşluk bırakır.
+  padding: 17px; // Mesaj kutularının içerisine boşluk verir.
+  background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
+  color: #64748b; // Mesaj yazısını gri-lacivert yapar.
+  border: 1px solid #dbe3ec; // Mesaj kutularının etrafına ince border ekler.
+  border-radius: 8px; // Mesaj kutularının köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+.error-message {
+  background-color: #fef2f2; // Hata mesajına açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border-color: #fecaca; // Hata kutusunun borderını açık kırmızı yapar.
+}
+
+.success-message {
+  background-color: #ecfdf3; // Başarı mesajına açık yeşil arka plan verir.
+  color: #166534; // Başarı yazısını koyu yeşil yapar.
+  border-color: #bbf7d0; // Başarı kutusuna yeşil border ekler.
+}
+
+
+/* ==================================================
+   KAYIT LİSTESİ
+   ================================================== */
+
+.registrations-section {
+  width: 100%; // Kayıt listesi bölümünün bütün genişliği kullanmasını sağlar.
+}
+
+.section-header {
+  margin-bottom: 15px; // Liste başlığı ile tablo arasında boşluk bırakır.
+}
+
+.section-header h2 {
+  margin: 0 0 5px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Liste başlığını CampusBody laciverti yapar.
+  font-size: 20px; // Liste başlığı boyutunu belirler.
+  font-weight: 700; // Liste başlığını kalın yapar.
+}
+
+.section-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Toplam kayıt bilgisini açık renkte gösterir.
+  font-size: 13px; // Açıklama yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   TABLO
+   ================================================== */
+
+.table-card {
+  width: 100%; // Tablo kartının tam genişlik kullanmasını sağlar.
+  background-color: #ffffff; // Tablo kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Tablo kartına ince border ekler.
+  border-radius: 8px; // Tablo kartının köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.table-wrapper {
+  width: 100%; // Tablo kapsayıcısının tam genişlik kullanmasını sağlar.
+  overflow-x: auto; // Küçük ekranlarda tabloyu yatay kaydırılabilir yapar.
+}
+
+.registrations-table {
+  width: 100%; // Tabloyu kapsayıcısının tamamına yayar.
+  min-width: 900px; // Çok fazla kolon olduğunda tablonun aşırı sıkışmasını engeller.
+  border-collapse: collapse; // Hücre çizgilerinin birleşmesini sağlar.
+}
+
+.registrations-table thead {
+  background-color: #f8fafc; // Tablo başlık bölümünü açık gri yapar.
+}
+
+.registrations-table th {
+  padding: 14px 15px; // Tablo başlık hücrelerinin içerisine boşluk verir.
+  color: #475569; // Başlık yazılarının rengini belirler.
+  border-bottom: 1px solid #dbe3ec; // Başlık satırının altına ince çizgi ekler.
+  text-align: left; // Başlıkları sola hizalar.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 700; // Başlık yazılarını kalın yapar.
+  white-space: nowrap; // Başlıkların alt satıra geçmesini engeller.
+}
+
+.registrations-table td {
+  padding: 15px; // Tablo hücrelerinin içerisine boşluk verir.
+  color: #475569; // Normal tablo yazılarının rengini belirler.
+  border-bottom: 1px solid #edf1f5; // Satırlar arasına ince çizgi ekler.
+  font-size: 12px; // Tablo yazı boyutunu belirler.
+  vertical-align: middle; // Hücre içeriğini dikey olarak ortalar.
+}
+
+.registrations-table tbody tr:last-child td {
+  border-bottom: none; // Son satırın altındaki gereksiz çizgiyi kaldırır.
+}
+
+.registrations-table tbody tr:hover {
+  background-color: #fafbfd; // Mouse satırın üzerine geldiğinde arka plan rengini direkt değiştirir.
+}
+
+.student-name {
+  color: #1e293b !important; // Öğrenci adını koyu renkte gösterir.
+  font-weight: 700; // Öğrenci adını kalın yapar.
+}
+
+.event-title {
+  color: #003267 !important; // Etkinlik başlığını CampusBody laciverti yapar.
+  font-weight: 700; // Etkinlik başlığını kalın gösterir.
+}
+
+
+/* ==================================================
+   DURUM ETİKETLERİ
+   ================================================== */
+
+.status-badge {
+  display: inline-block; // Durum etiketinin sadece içeriği kadar geniş olmasını sağlar.
+  padding: 5px 9px; // Etiketin içerisine boşluk verir.
+  border-radius: 4px; // Etiket köşelerini hafif yuvarlatır.
+  font-size: 11px; // Etiket yazı boyutunu belirler.
+  font-weight: 700; // Etiket yazısını kalın yapar.
+  white-space: nowrap; // Durum yazısının alt satıra geçmesini engeller.
+}
+
+.status-pending {
+  background-color: #fff3e6; // Bekleyen kayıtların arka planını açık turuncu yapar.
+  color: #d9680d; // Bekleyen yazısını turuncu yapar.
+}
+
+.status-approved {
+  background-color: #ecfdf3; // Onaylanan kayıtların arka planını açık yeşil yapar.
+  color: #15803d; // Onaylandı yazısını yeşil yapar.
+}
+
+.status-rejected {
+  background-color: #fef2f2; // Reddedilen kayıtların arka planını açık kırmızı yapar.
+  color: #b91c1c; // Reddedildi yazısını kırmızı yapar.
+}
+
+.status-default {
+  background-color: #f1f5f9; // Bilinmeyen durumların arka planını açık gri yapar.
+  color: #64748b; // Bilinmeyen durum yazısını gri yapar.
+}
+
+
+/* ==================================================
+   İŞLEM BUTONLARI
+   ================================================== */
+
+.table-actions {
+  display: flex; // Onayla ve Reddet butonlarını yan yana dizer.
+  align-items: center; // Butonları dikey olarak ortalar.
+  gap: 7px; // Butonlar arasında boşluk bırakır.
+  white-space: nowrap; // Butonların alt satıra geçmesini engeller.
+}
+
+.approve-button,
+.reject-button {
+  min-height: 32px; // İşlem butonlarının minimum yüksekliğini belirler.
+  padding: 0 12px; // Butonların sağında ve solunda boşluk bırakır.
+  border-radius: 4px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 11px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.approve-button {
+  background-color: #003267; // Onayla butonunu CampusBody laciverti yapar.
+  color: #ffffff; // Onayla butonu yazısını beyaz yapar.
+  border: 1px solid #003267; // Buton borderını lacivert yapar.
+}
+
+.approve-button:hover:not(:disabled) {
+  background-color: #00234b; // Mouse üzerine geldiğinde Onayla butonunu koyulaştırır.
+}
+
+.reject-button {
+  background-color: #ffffff; // Reddet butonunun arka planını beyaz yapar.
+  color: #b91c1c; // Reddet yazısını kırmızı yapar.
+  border: 1px solid #ef4444; // Reddet butonuna kırmızı border ekler.
+}
+
+.reject-button:hover:not(:disabled) {
+  background-color: #fef2f2; // Mouse üzerine geldiğinde açık kırmızı arka plan gösterir.
+}
+
+.approve-button:disabled,
+.reject-button:disabled {
+  opacity: 0.6; // Herhangi bir işlem devam ederken butonları soluk gösterir.
+  cursor: not-allowed; // Butonların geçici olarak kullanılamadığını gösterir.
+}
+
+.completed-text {
+  color: #94a3b8; // Tamamlanmış kayıtlardaki işlem yazısını geri planda gösterir.
+  font-size: 11px; // Yazı boyutunu küçük tutar.
+  font-weight: 600; // Yazıyı hafif kalın gösterir.
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
+  .page-header {
+    align-items: flex-start; // Başlık ve butonu sola hizalar.
+    flex-direction: column; // Başlık ile yenile butonunu alt alta dizer.
+  }
+
+  .page-header h1 {
+    font-size: 25px; // Mobilde ana başlığı biraz küçültür.
+  }
+
+  .refresh-button {
+    width: 100%; // Mobilde yenile butonunu tam genişlik yapar.
+  }
+
+  .filter-card {
+    max-width: none; // Mobilde filtre kartının kullanılabilir alanın tamamını kaplamasını sağlar.
+  }
+}

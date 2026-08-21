@@ -1,91 +1,75 @@
+<!-- Kayıt sayfasının tamamını kapsar -->
 <main class="auth-page">
+  <!-- Kayıt formunun bulunduğu beyaz kart -->
   <section class="auth-card">
-    <a class="brand" routerLink="/">KampüsEtkinlik</a> <!-- ana sayfaya yönlendirir -->
+    <!-- CampusBody logosunu gösterir -->
+    <div class="brand">
+      <img src="/LOGO.png" alt="CampusBody"> <!-- Login sayfasında çalışan aynı logo dosyasını kullanır. -->
+    </div>
 
+    <!-- Sayfanın başlık alanı -->
     <header class="auth-header">
-      <span class="eyebrow">Kampüse katıl</span>
-      <h1>Yeni hesap oluştur</h1>
-      <p>Etkinliklere kayıt ol, başvurularını ve katılım geçmişini kolayca takip et.</p>
+      <h1>Yeni Hesap Oluştur</h1> <!-- Kayıt ekranının ana başlığıdır. -->
+      <p>Kampüs etkinliklerine katılmak için hesabınızı oluşturun.</p> <!-- Kullanıcıya kısa açıklama gösterir. -->
     </header>
 
-    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate> <!-- kayıt formunu form değişkenine bağlar ve gönderildiğinde submit metodunu çalıştırır -->
+    <!-- Reactive Form yapısını TypeScript tarafındaki form değişkenine bağlar -->
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <!-- Ad Soyad alanı -->
       <div class="form-field">
         <label for="fullName">Ad Soyad</label>
-        <input
-          id="fullName"
-          type="text"
-          formControlName="fullName"
-          placeholder="Kullanıcı adı"
-          autocomplete="name"
-        />
-
+        <input id="fullName" type="text" formControlName="fullName" placeholder="Adınız ve soyadınız" autocomplete="name">
         @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
-          <small class="field-error">Ad soyad alanı zorunludur.</small> <!-- ad soyad alanı hatalıysa validation mesajını gösterir -->
+          <small class="field-error">Ad soyad alanı zorunludur ve en fazla 150 karakter olabilir.</small>
         }
       </div>
 
+      <!-- Bölüm alanı -->
       <div class="form-field">
         <label for="department">Bölüm</label>
-        <input
-          id="department"
-          type="text"
-          formControlName="department"
-          placeholder="Bölümünüz"
-        />
-
+        <input id="department" type="text" formControlName="department" placeholder="Örn: Bilgisayar Mühendisliği" autocomplete="organization-title">
         @if (form.controls.department.touched && form.controls.department.invalid) {
-          <small class="field-error">Bölüm en fazla 150 karakter olabilir.</small> <!-- bölüm alanı 150 karakteri geçerse validation mesajını gösterir -->
+          <small class="field-error">Bölüm en fazla 150 karakter olabilir.</small>
         }
       </div>
 
+      <!-- E-posta alanı -->
       <div class="form-field">
         <label for="email">E-posta</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="E posta adresiniz"
-          autocomplete="email"
-        />
-
+        <input id="email" type="email" formControlName="email" placeholder="E-posta adresiniz" autocomplete="email">
         @if (form.controls.email.touched && form.controls.email.invalid) {
-          <small class="field-error">Geçerli bir e-posta adresi gir.</small> <!-- email alanı hatalıysa validation mesajını gösterir -->
+          <small class="field-error">Geçerli bir e-posta adresi girin.</small>
         }
       </div>
 
+      <!-- Şifre alanı -->
       <div class="form-field">
         <label for="password">Şifre</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Parola"
-          autocomplete="new-password"
-        />
-
+        <input id="password" type="password" formControlName="password" placeholder="En az 8 karakter" autocomplete="new-password">
         @if (form.controls.password.touched && form.controls.password.invalid) {
-          <small class="field-error">Şifre en az 8 karakter olmalıdır.</small> <!-- şifre alanı hatalıysa validation mesajını gösterir -->
+          <small class="field-error">Şifre en az 8 karakter olmalıdır.</small>
         }
       </div>
 
+      <!-- Backend hata mesajını gösterir -->
       @if (errorMessage()) {
-        <div class="alert alert-error" role="alert">
-          {{ errorMessage() }}
-        </div> <!-- kayıt işleminde hata oluşursa hata mesajını gösterir -->
+        <div class="alert-error" role="alert">{{ errorMessage() }}</div>
       }
 
-      <button class="primary-button" type="submit" [disabled]="loading()"> <!-- kayıt işlemi devam ederken butona tekrar basılmasını engeller -->
+      <!-- Kayıt işlemini başlatır -->
+      <button class="primary-button" type="submit" [disabled]="loading()">
         @if (loading()) {
-          Hesap oluşturuluyor...
+          Hesap Oluşturuluyor...
         } @else {
           Kayıt Ol
         }
       </button>
     </form>
 
+    <!-- Hesabı olan kullanıcıyı Login sayfasına gönderir -->
     <p class="auth-footer">
-      Zaten hesabın var mı?
-      <a routerLink="/login">Giriş yap</a> <!-- login sayfasına yönlendirir -->
+      Zaten hesabınız var mı?
+      <a routerLink="/login">Giriş Yap</a>
     </p>
   </section>
 </main>

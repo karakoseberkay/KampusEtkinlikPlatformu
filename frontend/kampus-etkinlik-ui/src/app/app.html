@@ -1,48 +1,48 @@
-<h1>Kampüs Etkinlik Platformu</h1>
+<!-- Uygulamanın bütün sayfalarında görünen üst navbar alanıdır -->
+<header class="topbar">
+  <!-- CampusBody logosudur ve tıklandığında ana sayfaya yönlendirir -->
+  <a class="topbar__brand" routerLink="/home" aria-label="CampusBody ana sayfa">
+    <img class="topbar__logo" src="/LOGO.png" alt="CampusBody"> <!-- Public klasöründeki CampusBody logosunu gösterir. -->
+  </a>
 
-<nav>
-  <a routerLink="/popular-events">Popüler Etkinlikler</a> <!-- popüler etkinlikler sayfasına yönlendirir -->
+  <!-- Uygulamanın ana navigasyon linklerini içerir -->
+  <nav class="topbar__nav" aria-label="Ana menü">
+    <!-- Popüler Etkinlikler giriş yapılmadan da görüntülenebilir -->
+    <a routerLink="/popular-events" routerLinkActive="active">Popüler Etkinlikler</a>
 
-  @if (auth.isAuthenticated()) { <!-- kullanıcı giriş yaptıysa gösterilecek menüler -->
-    |
-    <a routerLink="/home">Ana Sayfa</a>
-    |
-    <a routerLink="/clubs">Kulüpler</a>
-    |
-    <a routerLink="/events">Etkinlikler</a>
+    <!-- Aşağıdaki linkler sadece giriş yapmış kullanıcılar tarafından görülür -->
+    @if (auth.isAuthenticated()) {
+      <a routerLink="/home" routerLinkActive="active">Ana Sayfa</a> <!-- Ana Sayfa ekranına gider. -->
+      <a routerLink="/clubs" routerLinkActive="active">Kulüpler</a> <!-- Kulüpler ekranına gider. -->
+      <a routerLink="/events" routerLinkActive="active">Etkinlikler</a> <!-- Etkinlikler ekranına gider. -->
 
-    @if (auth.hasRole('Student')) { <!-- Student rolündeki kullanıcıya özel menü -->
-      |
-      <a routerLink="/my-registrations">Kayıtlarım</a>
+      <!-- Sadece Student rolündeki kullanıcıya Kayıtlarım sayfasını gösterir -->
+      @if (auth.hasRole('Student')) {
+        <a routerLink="/my-registrations" routerLinkActive="active">Kayıtlarım</a>
+      }
+
+      <!-- Sadece özel yönetici hesabına Kullanıcı Yönetimi linkini gösterir -->
+      @if (auth.hasRole('ClubManager') && auth.currentUser()?.email === 'manager@kampus.com') {
+        <a routerLink="/user-management" routerLinkActive="active">Kullanıcı Yönetimi</a>
+      }
     }
+  </nav>
 
-    @if (auth.hasRole('ClubManager')) { <!-- ClubManager rolündeki kullanıcıya özel menüler -->
-      |
-      <a routerLink="/club-manage">Kulüp Oluştur</a>
-      |
-      <a routerLink="/event-manage">Etkinlik Oluştur</a>
+  <!-- Navbarın sağ tarafındaki kullanıcı ve giriş işlemlerini içerir -->
+  <div class="topbar__actions">
+    <!-- Kullanıcı giriş yaptıysa adını ve çıkış butonunu gösterir -->
+    @if (auth.isAuthenticated()) {
+      <span class="user-chip">{{ auth.currentUser()?.fullName }}</span> <!-- Giriş yapan kullanıcının adını gösterir. -->
+      <button class="logout-button" type="button" (click)="auth.logout()">Çıkış Yap</button> <!-- AuthService üzerinden kullanıcı oturumunu kapatır. -->
+    } @else {
+      <!-- Kullanıcı giriş yapmadıysa Giriş Yap ve Kayıt Ol butonlarını gösterir -->
+      <a class="login-button" routerLink="/login">Giriş Yap</a>
+      <a class="register-button" routerLink="/register">Kayıt Ol</a>
     }
+  </div>
+</header>
 
-    @if (
-      auth.hasRole('ClubManager') &&
-      auth.currentUser()?.email === 'manager@kampus.com'
-    ) { <!-- sadece admin hesabına kullanıcı yönetimini gösterir -->
-      |
-      <a routerLink="/user-management">Kullanıcı Yönetimi</a>
-    }
-
-    |
-    <span>{{ auth.currentUser()?.fullName }}</span> <!-- giriş yapan kullanıcının adını gösterir -->
-    |
-    <button type="button" (click)="auth.logout()">Çıkış Yap</button> <!-- kullanıcı oturumunu kapatır -->
-  } @else { <!-- kullanıcı giriş yapmadıysa gösterilecek menüler -->
-    |
-    <a routerLink="/login">Giriş Yap</a>
-    |
-    <a routerLink="/register">Kayıt Ol</a>
-  }
-</nav>
-
-<hr>
-
-<router-outlet /> <!-- aktif routeun componentini burada gösterir -->
+<!-- Router tarafından açılan bütün sayfalar bu alanın içerisinde gösterilir -->
+<main class="page-container">
+  <router-outlet />
+</main>

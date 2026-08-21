@@ -1,241 +1,324 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { AuthService } from '../../core/services/auth.service';
-import { UserService } from '../../core/services/user.service';
-import { UserResponse } from '../../core/models/api.models';
-import { getApiErrorMessage } from '../../core/utils/api-error';
+import { Component, computed, inject, OnInit, signal } from '@angular/core'; // Component, computed, servis enjeksiyonu, OnInit ve signal yapılarını kullanmak için gerekli Angular araçlarını içe aktarır.
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
+import { AuthService } from '../../core/services/auth.service'; // Giriş yapan kullanıcının bilgilerine erişmek için kullanılır.
+import { UserService } from '../../core/services/user.service'; // Kullanıcı listesini almak ve kullanıcı rolünü değiştirmek için kullanılır.
+import { UserResponse } from '../../core/models/api.models'; // Backendden gelen kullanıcı nesnesinin TypeScript tipidir.
+import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
 
-@Component({
-  selector: 'app-user-management',
-  standalone: true,
+@Component({ // Bu classın Angular componenti olduğunu belirtir.
+  selector: 'app-user-management', // Componentin selector adını belirler.
+  standalone: true, // Componentin herhangi bir NgModule olmadan bağımsız çalışmasını sağlar.
   template: `
-    <h1>Kullanıcı Yönetimi</h1>
+    <!-- Kullanıcı Yönetimi sayfasının tamamını kapsar -->
+    <section class="user-management-page">
 
-    <div>
-      <label for="search">İsim Ara</label>
-      <input
-        id="search"
-        type="text"
-        placeholder="Kullanıcı adı..."
-        [value]="searchText()"
-        (input)="searchText.set($any($event.target).value)"
-      >
-    </div>
+      <!-- Sayfanın üst başlık alanıdır -->
+      <div class="page-header">
+        <div>
+          <h1>Kullanıcı Yönetimi</h1> <!-- Sayfanın ana başlığını gösterir. -->
+          <p>Kullanıcıları görüntüleyebilir, filtreleyebilir ve rollerini yönetebilirsiniz.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
+        </div>
 
-    <div>
-      <label for="department">Bölüm</label>
-      <select
-        id="department"
-        [value]="selectedDepartment()"
-        (change)="selectedDepartment.set($any($event.target).value)"
-      >
-        <option value="">Tüm Bölümler</option>
+        <!-- Kullanıcı listesini backendden tekrar çekmek için kullanılır -->
+        <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadUsers()">
+          {{ loading() ? 'Yükleniyor...' : 'Kullanıcıları Yenile' }}
+        </button>
+      </div>
 
-        @for (department of departments(); track department) {
-          <option [value]="department">{{ department }}</option>
-        }
-      </select>
-    </div>
+      <!-- Kullanıcı arama ve bölüm filtresini kapsar -->
+      <section class="filter-card">
+        <div class="filter-header">
+          <h2>Arama ve Filtreleme</h2> <!-- Filtre bölümünün başlığını gösterir. -->
+          <p>Kullanıcıları isim veya bölümlerine göre filtreleyebilirsiniz.</p> <!-- Filtre bölümünün ne işe yaradığını açıklar. -->
+        </div>
 
-    <button type="button" (click)="clearFilters()">Filtreleri Temizle</button>
-    <button type="button" (click)="loadUsers()">Yenile</button>
+        <!-- Filtre alanlarını içerir -->
+        <div class="filter-content">
 
-    @if (loading()) {
-      <p>Yükleniyor...</p>
-    }
+          <!-- Kullanıcı adına göre arama alanıdır -->
+          <div class="form-field">
+            <label for="search">İsim Ara</label> <!-- Arama inputunun açıklamasıdır. -->
+            <input
+              id="search"
+              type="text"
+              placeholder="Kullanıcı adı..."
+              [value]="searchText()"
+              (input)="searchText.set($any($event.target).value)"
+            >
+          </div>
 
-    @if (errorMessage()) {
-      <p>{{ errorMessage() }}</p>
-    }
+          <!-- Kullanıcıları bölüme göre filtrelemek için kullanılır -->
+          <div class="form-field">
+            <label for="department">Bölüm</label> <!-- Bölüm select alanının açıklamasıdır. -->
+            <select
+              id="department"
+              [value]="selectedDepartment()"
+              (change)="selectedDepartment.set($any($event.target).value)"
+            >
+              <option value="">Tüm Bölümler</option> <!-- Herhangi bir bölüm filtresi uygulanmamasını sağlar. -->
 
-    @if (successMessage()) {
-      <p>{{ successMessage() }}</p>
-    }
+              <!-- Kullanıcılardan oluşturulan benzersiz bölüm listesini select içine ekler -->
+              @for (department of departments(); track department) {
+                <option [value]="department">{{ department }}</option>
+              }
+            </select>
+          </div>
 
-    @if (!loading() && users().length === 0 && !errorMessage()) {
-      <p>Kullanıcı bulunamadı.</p>
-    }
+          <!-- Filtreleri temizleme butonunu içerir -->
+          <div class="filter-actions">
+            <button class="clear-button" type="button" (click)="clearFilters()">
+              Filtreleri Temizle
+            </button>
+          </div>
 
-    @if (!loading() && users().length > 0 && filteredUsers().length === 0) {
-      <p>Arama kriterlerine uygun kullanıcı bulunamadı.</p>
-    }
+        </div>
+      </section>
 
-    @if (filteredUsers().length > 0) {
-      <p>Gösterilen kullanıcı sayısı: {{ filteredUsers().length }}</p>
+      <!-- Backend isteği devam ederken ve kullanıcı listesi henüz boşsa gösterilir -->
+      @if (loading() && users().length === 0) {
+        <div class="page-message">
+          Kullanıcılar yükleniyor...
+        </div>
+      }
 
-      <table>
-        <thead>
-          <tr>
-            <th>Ad Soyad</th>
-            <th>E-posta</th>
-            <th>Bölüm</th>
-            <th>Rol</th>
-            <th>İşlem</th>
-          </tr>
-        </thead>
+      <!-- Backend isteğinde hata oluşursa gösterilir -->
+      @if (errorMessage()) {
+        <div class="page-message error-message">
+          {{ errorMessage() }}
+        </div>
+      }
 
-        <tbody>
-          @for (user of filteredUsers(); track user.id) { <!-- filtreye uygun kullanıcıları tabloya basar -->
-            <tr>
-              <td>{{ user.fullName }}</td>
-              <td>{{ user.email }}</td>
+      <!-- Rol değiştirme işlemi başarılı olduğunda gösterilir -->
+      @if (successMessage()) {
+        <div class="page-message success-message">
+          {{ successMessage() }}
+        </div>
+      }
 
-              <td>
-                @if (user.email.toLowerCase() === 'manager@kampus.com') {
-                  Yönetim
-                } @else {
-                  {{ user.department }}
-                }
-              </td>
+      <!-- Backendden hiç kullanıcı gelmediyse gösterilir -->
+      @if (!loading() && users().length === 0 && !errorMessage()) {
+        <div class="empty-card">
+          Kullanıcı bulunamadı.
+        </div>
+      }
 
-              <td>
-                @if (user.email.toLowerCase() === 'manager@kampus.com') {
-                  Admin
-                } @else {
-                  {{ user.roles.join(', ') }}
-                }
-              </td>
+      <!-- Kullanıcılar var ancak seçilen filtreye uygun kullanıcı yoksa gösterilir -->
+      @if (!loading() && users().length > 0 && filteredUsers().length === 0) {
+        <div class="empty-card">
+          Arama kriterlerine uygun kullanıcı bulunamadı.
+        </div>
+      }
 
-              <td>
-                @if (auth.currentUser()?.userId === user.id) {
-                  Kendi hesabınız
-                } @else {
-                  @if (user.roles.includes('ClubManager')) {
-                    <button
-                      type="button"
-                      [disabled]="processingUserId() !== null"
-                      (click)="changeRole(user, 'Student')"
-                    >
-                      Student Yap
-                    </button>
-                  } @else {
-                    <button
-                      type="button"
-                      [disabled]="processingUserId() !== null"
-                      (click)="changeRole(user, 'ClubManager')"
-                    >
-                      ClubManager Yap
-                    </button>
+      <!-- Filtre sonucunda gösterilecek en az bir kullanıcı varsa tabloyu gösterir -->
+      @if (filteredUsers().length > 0) {
+        <section class="users-section">
+
+          <!-- Kullanıcı listesinin üst bilgisidir -->
+          <div class="section-header">
+            <h2>Kullanıcı Listesi</h2> <!-- Liste bölümünün başlığını gösterir. -->
+            <p>Toplam {{ filteredUsers().length }} kullanıcı görüntüleniyor.</p> <!-- Filtre sonucunda ekranda bulunan kullanıcı sayısını gösterir. -->
+          </div>
+
+          <!-- Kullanıcı tablosunu kart içerisinde tutar -->
+          <div class="table-card">
+            <!-- Küçük ekranlarda tablonun yatay kaydırılabilmesini sağlar -->
+            <div class="table-wrapper">
+
+              <!-- Kullanıcıların gösterildiği tablo -->
+              <table class="users-table">
+
+                <!-- Tablo kolon başlıkları -->
+                <thead>
+                  <tr>
+                    <th>Ad Soyad</th> <!-- Kullanıcının ad ve soyadını gösterir. -->
+                    <th>E-posta</th> <!-- Kullanıcının e-posta adresini gösterir. -->
+                    <th>Bölüm</th> <!-- Kullanıcının bölümünü gösterir. -->
+                    <th>Rol</th> <!-- Kullanıcının sistemdeki rolünü gösterir. -->
+                    <th>İşlem</th> <!-- Kullanıcının rolünü değiştirme işlemini içerir. -->
+                  </tr>
+                </thead>
+
+                <!-- Filtrelenmiş kullanıcı listesini tabloya basar -->
+                <tbody>
+                  @for (user of filteredUsers(); track user.id) {
+                    <tr>
+
+                      <!-- Kullanıcının adını ve soyadını gösterir -->
+                      <td class="user-name">
+                        {{ user.fullName }}
+                      </td>
+
+                      <!-- Kullanıcının e-posta adresini gösterir -->
+                      <td>
+                        {{ user.email }}
+                      </td>
+
+                      <!-- Admin hesabında normal bölüm yerine Yönetim yazar -->
+                      <td>
+                        @if (user.email.toLowerCase() === 'manager@kampus.com') {
+                          <span class="department-admin">Yönetim</span>
+                        } @else {
+                          {{ user.department || '-' }}
+                        }
+                      </td>
+
+                      <!-- Kullanıcının rolünü Türkçe ve renkli etiket şeklinde gösterir -->
+                      <td>
+                        @if (user.email.toLowerCase() === 'manager@kampus.com') {
+                          <span class="role-badge role-admin">Admin</span>
+                        } @else if (user.roles.includes('ClubManager')) {
+                          <span class="role-badge role-manager">Kulüp Yöneticisi</span>
+                        } @else {
+                          <span class="role-badge role-student">Öğrenci</span>
+                        }
+                      </td>
+
+                      <!-- Kullanıcı üzerinde yapılabilecek işlemleri gösterir -->
+                      <td>
+
+                        <!-- Giriş yapan admin kendi hesabının rolünü değiştiremez -->
+                        @if (auth.currentUser()?.userId === user.id) {
+                          <span class="own-account">Kendi hesabınız</span>
+                        } @else {
+
+                          <!-- Kullanıcı ClubManager ise Student rolüne düşürme butonu gösterilir -->
+                          @if (user.roles.includes('ClubManager')) {
+                            <button
+                              class="role-button student-button"
+                              type="button"
+                              [disabled]="processingUserId() !== null"
+                              (click)="changeRole(user, 'Student')"
+                            >
+                              {{ processingUserId() === user.id ? 'İşleniyor...' : 'Öğrenci Yap' }}
+                            </button>
+                          } @else {
+
+                            <!-- Kullanıcı Student ise ClubManager rolüne yükseltme butonu gösterilir -->
+                            <button
+                              class="role-button manager-button"
+                              type="button"
+                              [disabled]="processingUserId() !== null"
+                              (click)="changeRole(user, 'ClubManager')"
+                            >
+                              {{ processingUserId() === user.id ? 'İşleniyor...' : 'Kulüp Yöneticisi Yap' }}
+                            </button>
+                          }
+
+                        }
+
+                      </td>
+
+                    </tr>
                   }
-                }
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
-  `
+                </tbody>
+
+              </table>
+            </div>
+          </div>
+
+        </section>
+      }
+
+    </section>
+  `,
+  styleUrl: './user-management.scss' // Bu componentin tasarımını user-management.scss dosyasından almasını sağlar.
 })
-export class UserManagement implements OnInit {
-  readonly auth = inject(AuthService); // giriş yapan kullanıcı bilgilerine erişmemizi sağlar
-  private readonly userService = inject(UserService); // kullanıcı servisindeki metodlara erişmemizi sağlar
+export class UserManagement implements OnInit { // Kullanıcı Yönetimi sayfasının TypeScript classıdır ve OnInit yaşam döngüsünü kullanır.
+  readonly auth = inject(AuthService); // Giriş yapan kullanıcının bilgilerine erişmek için AuthService'i enjekte eder.
+  private readonly userService = inject(UserService); // Kullanıcı işlemlerini gerçekleştirmek için UserService'i enjekte eder.
 
-  readonly users = signal<UserResponse[]>([]); // backendden gelen kullanıcıları tutar
-  readonly searchText = signal(''); // isim aramasında kullanılan metni tutar
-  readonly selectedDepartment = signal(''); // seçilen bölüm filtresini tutar
-  readonly loading = signal(false); // kullanıcılar yüklenirken işlemin devam edip etmediğini tutar
-  readonly processingUserId = signal<string | null>(null); // rolü değiştirilen kullanıcının idsini tutar
-  readonly errorMessage = signal(''); // kullanıcıya gösterilecek hata mesajını tutar
-  readonly successMessage = signal(''); // kullanıcıya gösterilecek başarılı işlem mesajını tutar
+  readonly users = signal<UserResponse[]>([]); // Backendden gelen bütün kullanıcıları tutar.
+  readonly searchText = signal(''); // İsim arama alanına yazılan metni tutar.
+  readonly selectedDepartment = signal(''); // Seçilen bölüm filtresini tutar.
+  readonly loading = signal(false); // Kullanıcılar yüklenirken işlemin devam edip etmediğini tutar.
+  readonly processingUserId = signal<string | null>(null); // Rolü değiştirilen kullanıcının ID değerini tutar.
+  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
+  readonly successMessage = signal(''); // Kullanıcıya gösterilecek başarılı işlem mesajını tutar.
 
-  readonly departments = computed(() => { // kullanıcıların mevcut bölümlerinden filtre seçeneklerini oluşturur
-    const departments = this.users()
-      .map(user => user.department)
-      .filter(
-        (department): department is string =>
-          !!department && department.trim().length > 0
-      );
+  readonly departments = computed(() => { // Backendden gelen kullanıcılara göre bölüm filtre seçeneklerini otomatik oluşturur.
+    const departments = this.users() // Kullanıcı listesini alır.
+      .map(user => user.department) // Her kullanıcının sadece bölüm bilgisini alır.
+      .filter((department): department is string => !!department && department.trim().length > 0); // Boş veya null bölüm bilgilerini listeden çıkarır.
 
-    return [...new Set(departments)]
-      .sort((a, b) => a.localeCompare(b, 'tr')); // aynı bölümleri tekilleştirip alfabetik sıralar
+    return [...new Set(departments)] // Aynı bölümün birden fazla kez görünmesini engelleyerek benzersiz bir liste oluşturur.
+      .sort((a, b) => a.localeCompare(b, 'tr')); // Bölümleri Türkçe alfabetik sıraya göre sıralar.
   });
 
-  readonly filteredUsers = computed(() => { // isim ve bölüm filtresine göre gösterilecek kullanıcıları hesaplar
-    const search = this.searchText()
-      .trim()
-      .toLocaleLowerCase('tr-TR');
+  readonly filteredUsers = computed(() => { // İsim ve bölüm filtresine göre ekranda gösterilecek kullanıcıları hesaplar.
+    const search = this.searchText().trim().toLocaleLowerCase('tr-TR'); // Arama metnindeki boşlukları temizler ve büyük-küçük harf farkını kaldırır.
+    const department = this.selectedDepartment(); // Kullanıcının seçtiği bölüm filtresini alır.
 
-    const department = this.selectedDepartment();
-
-    return this.users().filter(user => {
-      const matchesName =
-        !search ||
-        user.fullName.toLocaleLowerCase('tr-TR').includes(search);
-
-      const matchesDepartment =
-        !department ||
-        user.department === department;
-
-      return matchesName && matchesDepartment;
+    return this.users().filter(user => { // Bütün kullanıcıları filtre koşullarına göre tek tek kontrol eder.
+      const matchesName = !search || user.fullName.toLocaleLowerCase('tr-TR').includes(search); // Arama boşsa herkesi kabul eder, doluysa adı aranan metni içeriyor mu kontrol eder.
+      const matchesDepartment = !department || user.department === department; // Bölüm seçilmediyse herkesi kabul eder, seçildiyse kullanıcının bölümüyle karşılaştırır.
+      return matchesName && matchesDepartment; // Kullanıcının gösterilmesi için hem isim hem bölüm koşulunun sağlanmasını ister.
     });
   });
 
-  ngOnInit(): void { // sayfa açıldığında kullanıcıları getirir
-    this.loadUsers();
+
+  ngOnInit(): void { // Sayfa ilk açıldığında otomatik olarak çalışır.
+    this.loadUsers(); // Backendden bütün kullanıcıları getirir.
   }
 
-  clearFilters(): void { // isim ve bölüm filtrelerini temizler
-    this.searchText.set('');
-    this.selectedDepartment.set('');
+
+  clearFilters(): void { // Kullanıcının seçtiği isim ve bölüm filtrelerini temizler.
+    this.searchText.set(''); // İsim arama kutusunu temizler.
+    this.selectedDepartment.set(''); // Bölüm seçimini Tüm Bölümler durumuna getirir.
   }
 
-  loadUsers(): void { // tüm kullanıcıları backendden getirir
-    this.loading.set(true);
-    this.errorMessage.set('');
-    this.successMessage.set('');
 
-    this.userService.getAll().subscribe({
-      next: users => {
-        this.users.set(users);
-        this.loading.set(false);
+  loadUsers(): void { // Backendden bütün kullanıcıları getiren metottur.
+    this.loading.set(true); // Backend isteğinin başladığını belirtir.
+    this.errorMessage.set(''); // Önceki hata mesajını temizler.
+    this.successMessage.set(''); // Önceki başarı mesajını temizler.
+
+    this.userService.getAll().subscribe({ // UserService içindeki getAll metoduyla backendden kullanıcı listesini ister.
+      next: users => { // Backend isteği başarılı olduğunda çalışır.
+        this.users.set(users); // Backendden gelen kullanıcıları users signalına aktarır.
+        this.loading.set(false); // Yükleme işleminin tamamlandığını belirtir.
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kullanıcılar alınamadı.')
+          getApiErrorMessage(error, 'Kullanıcılar alınamadı.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
         );
-        this.loading.set(false);
+        this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
       }
     });
   }
 
-  changeRole(user: UserResponse, role: 'Student' | 'ClubManager'): void { // seçilen kullanıcının rolünü değiştirir
-    if (this.processingUserId() !== null) {
-      return;
+
+  changeRole(user: UserResponse, role: 'Student' | 'ClubManager'): void { // Seçilen kullanıcının rolünü Student veya ClubManager olarak değiştirir.
+    if (this.processingUserId() !== null) { // Başka bir kullanıcı üzerinde rol değiştirme işlemi devam ediyorsa kontrol içerisine girer.
+      return; // Aynı anda ikinci bir rol değiştirme isteği gönderilmesini engeller.
     }
 
-    const approved = window.confirm(
-      `${user.fullName} kullanıcısının rolü ${role} olarak değiştirilsin mi?`
-    ); // rol değiştirmeden önce adminden onay alır
+    const roleName = role === 'Student' ? 'Öğrenci' : 'Kulüp Yöneticisi'; // Backenddeki İngilizce rol değerini kullanıcıya gösterilecek Türkçe metne dönüştürür.
+    const approved = window.confirm(`${user.fullName} kullanıcısının rolü ${roleName} olarak değiştirilsin mi?`); // Rol değiştirilmeden önce adminden onay ister.
 
-    if (!approved) {
-      return;
+    if (!approved) { // Admin onay penceresinde vazgeçerse kontrol içerisine girer.
+      return; // Rol değiştirme işlemini iptal eder.
     }
 
-    this.processingUserId.set(user.id);
-    this.errorMessage.set('');
-    this.successMessage.set('');
+    this.processingUserId.set(user.id); // İşlem yapılan kullanıcının IDsini kaydederek diğer butonları geçici olarak devre dışı bırakır.
+    this.errorMessage.set(''); // Önceki hata mesajını temizler.
+    this.successMessage.set(''); // Önceki başarı mesajını temizler.
 
-    this.userService.updateRole(user.id, { role }).subscribe({
-      next: updatedUser => {
-        this.users.update(users =>
-          users.map(currentUser =>
-            currentUser.id === updatedUser.id
-              ? updatedUser
-              : currentUser
+    this.userService.updateRole(user.id, { role }).subscribe({ // Kullanıcının IDsi ve yeni rolünü backend'e gönderir.
+      next: updatedUser => { // Rol değiştirme işlemi başarılı olduğunda çalışır.
+        this.users.update(users => // Kullanıcı listesinin güncel halini oluşturur.
+          users.map(currentUser => // Listedeki bütün kullanıcıları tek tek dolaşır.
+            currentUser.id === updatedUser.id ? updatedUser : currentUser // Rolü değişen kullanıcıyı backendden dönen güncel kullanıcıyla değiştirir.
           )
-        ); // rolü değişen kullanıcıyı listedeki güncel haliyle değiştirir
-
-        this.successMessage.set(
-          `${updatedUser.fullName} kullanıcısının rolü ${role} olarak değiştirildi.`
         );
 
-        this.processingUserId.set(null);
+        this.successMessage.set(`${updatedUser.fullName} kullanıcısının rolü ${roleName} olarak değiştirildi.`); // Kullanıcıya başarılı işlem mesajı gösterir.
+        this.processingUserId.set(null); // Rol değiştirme işleminin bittiğini belirterek butonları tekrar kullanılabilir yapar.
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse) => { // Backend rol değiştirme isteği hata verdiğinde çalışır.
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kullanıcı rolü değiştirilemedi.')
+          getApiErrorMessage(error, 'Kullanıcı rolü değiştirilemedi.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
         );
-        this.processingUserId.set(null);
+        this.processingUserId.set(null); // Hata sonrasında butonların tekrar kullanılabilmesini sağlar.
       }
     });
   }

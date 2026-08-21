@@ -1,0 +1,184 @@
+/* Kayıt sayfasının genel alanıdır. */
+.auth-page {
+  width: 100%; // Sayfanın kullanılabilir genişliğin tamamını kullanmasını sağlar.
+  min-height: calc(100vh - 180px); // Kartın ekran içerisinde ortalanabilmesi için yükseklik verir.
+  display: flex; // Kartı ortalamak için flex kullanır.
+  align-items: center; // Kartı dikey ortalar.
+  justify-content: center; // Kartı yatay ortalar.
+  padding: 30px 0; // Üst ve altta boşluk bırakır.
+}
+
+/* Kayıt formunun bulunduğu karttır. */
+.auth-card {
+  width: 100%; // Kartın kullanılabilir genişliği kullanmasını sağlar.
+  max-width: 480px; // Kartın fazla genişlemesini engeller.
+  padding: 32px; // Kart içerisindeki boşluğu belirler.
+  background-color: #ffffff; // Kartın arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın çevresine ince çizgi ekler.
+  border-radius: 8px; // Kart köşelerini hafif yuvarlatır.
+}
+
+/* CampusBody logosunun bulunduğu alandır. */
+.brand {
+  width: 220px; // Logo için ayrılan genişliği belirler.
+  height: 120px; // Logo için ayrılan yüksekliği belirler.
+  display: flex; // Logoyu ortalamak için flex kullanır.
+  align-items: center; // Logoyu dikey ortalar.
+  justify-content: center; // Logoyu yatay ortalar.
+  margin: 0 auto 24px; // Logoyu ortalar ve altına boşluk bırakır.
+  overflow: hidden; // Büyüyen logonun gereksiz taşan bölümlerini gizler.
+}
+
+.brand img {
+  display: block; // Görselin altında oluşan gereksiz boşluğu kaldırır.
+  width: 280px; // Logo dosyasının görüntü genişliğini artırır.
+  height: 130px; // Logo için yeterli yükseklik verir.
+  object-fit: contain; // Logonun oranını bozmadan gösterir.
+  transform: scale(1.7); // PNG dosyasındaki boşluk nedeniyle gerçek logoyu büyütür.
+}
+
+/* Başlık alanıdır. */
+.auth-header {
+  margin-bottom: 26px; // Başlık ile form arasına boşluk bırakır.
+  text-align: center; // Başlıkları ortalar.
+}
+
+.auth-header h1 {
+  margin: 0 0 8px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // CampusBody lacivertini kullanır.
+  font-size: 25px; // Başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.auth-header p {
+  margin: 0; // Varsayılan paragraf boşluğunu kaldırır.
+  color: #64748b; // Açıklama rengini belirler.
+  font-size: 13px; // Açıklama boyutunu belirler.
+  line-height: 1.5; // Satır yüksekliğini ayarlar.
+}
+
+/* Form alanlarını düzenler. */
+.auth-form {
+  display: flex; // Formu flex yapısına geçirir.
+  flex-direction: column; // Alanları alt alta dizer.
+  gap: 17px; // Alanlar arasında boşluk bırakır.
+}
+
+.form-field {
+  display: flex; // Form alanını flex yapısına geçirir.
+  flex-direction: column; // Label ve inputu alt alta dizer.
+  gap: 7px; // Label ile input arasına boşluk bırakır.
+}
+
+.form-field label {
+  color: #334155; // Label rengini belirler.
+  font-size: 12px; // Label boyutunu belirler.
+  font-weight: 700; // Labelı kalın yapar.
+}
+
+.form-field input {
+  width: 100%; // Inputu tam genişlik yapar.
+  height: 42px; // Input yüksekliğini belirler.
+  padding: 0 12px; // Input içine yatay boşluk verir.
+  background-color: #ffffff; // Input arka planını beyaz yapar.
+  color: #334155; // Yazı rengini belirler.
+  border: 1px solid #cbd5e1; // Input borderını belirler.
+  border-radius: 5px; // Input köşelerini hafif yuvarlatır.
+  outline: none; // Varsayılan focus çizgisini kaldırır.
+  font-size: 13px; // Input yazı boyutunu belirler.
+}
+
+.form-field input::placeholder {
+  color: #94a3b8; // Placeholder rengini belirler.
+}
+
+.form-field input:focus {
+  border-color: #003267; // Input seçildiğinde borderı lacivert yapar.
+}
+
+.field-error {
+  color: #b91c1c; // Validation mesajını kırmızı yapar.
+  font-size: 11px; // Hata mesajı boyutunu belirler.
+}
+
+/* Backend hata mesajıdır. */
+.alert-error {
+  padding: 12px 14px; // Hata kutusunun iç boşluğunu belirler.
+  background-color: #fef2f2; // Açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border: 1px solid #fecaca; // Açık kırmızı border ekler.
+  border-radius: 5px; // Köşeleri hafif yuvarlatır.
+  font-size: 12px; // Yazı boyutunu belirler.
+}
+
+/* Kayıt Ol butonudur. */
+.primary-button {
+  width: 100%; // Butonu tam genişlik yapar.
+  min-height: 42px; // Buton yüksekliğini belirler.
+  padding: 0 18px; // Buton içine yatay boşluk verir.
+  background-color: #f68929; // CampusBody turuncusunu kullanır.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: 1px solid #f68929; // Borderı turuncu yapar.
+  border-radius: 5px; // Köşeleri hafif yuvarlatır.
+  font-size: 13px; // Yazı boyutunu belirler.
+  font-weight: 700; // Yazıyı kalın yapar.
+  cursor: pointer; // Mouse üzerinde el işareti gösterir.
+}
+
+.primary-button:hover:not(:disabled) {
+  background-color: #df7115; // Hover durumunda turuncuyu koyulaştırır.
+  border-color: #df7115; // Border rengini de koyulaştırır.
+}
+
+.primary-button:disabled {
+  opacity: 0.6; // İşlem devam ederken butonu soluk gösterir.
+  cursor: not-allowed; // Butonun kullanılamadığını gösterir.
+}
+
+/* Login sayfasına yönlendiren alt alandır. */
+.auth-footer {
+  margin: 24px 0 0; // Form ile footer arasına boşluk bırakır.
+  padding-top: 20px; // Üst çizgi ile yazı arasına boşluk bırakır.
+  color: #64748b; // Normal metin rengini belirler.
+  border-top: 1px solid #e7edf3; // Form ile footer arasına çizgi ekler.
+  text-align: center; // Yazıyı ortalar.
+  font-size: 12px; // Yazı boyutunu belirler.
+}
+
+.auth-footer a {
+  color: #f68929; // Giriş Yap bağlantısını turuncu yapar.
+  font-weight: 700; // Linki kalın yapar.
+  text-decoration: none; // Alt çizgiyi kaldırır.
+}
+
+.auth-footer a:hover {
+  color: #df7115; // Hover durumunda turuncuyu koyulaştırır.
+  text-decoration: underline; // Hover durumunda alt çizgi gösterir.
+}
+
+/* Mobil ekran düzenidir. */
+@media (max-width: 550px) {
+  .auth-page {
+    min-height: auto; // Mobilde zorunlu minimum yüksekliği kaldırır.
+    padding: 15px 0; // Mobilde boşlukları azaltır.
+  }
+
+  .auth-card {
+    padding: 24px 20px; // Mobilde kart iç boşluğunu azaltır.
+  }
+
+  .brand {
+    width: 190px; // Mobilde logo alanını küçültür.
+    height: 90px; // Mobilde logo alanının yüksekliğini küçültür.
+  }
+
+  .brand img {
+    width: 250px; // Mobilde logoyu biraz küçültür.
+    height: 115px; // Mobilde logo yüksekliğini azaltır.
+    transform: scale(1.6); // PNG içerisindeki boşluğu telafi eder.
+  }
+
+  .auth-header h1 {
+    font-size: 22px; // Mobilde ana başlığı küçültür.
+  }
+}

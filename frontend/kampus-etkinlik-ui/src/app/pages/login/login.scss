@@ -1,0 +1,221 @@
+/* ==================================================
+   LOGIN SAYFASI
+   ================================================== */
+
+.auth-page {
+  width: 100%; // Login sayfasının kullanılabilir genişliğin tamamını kullanmasını sağlar.
+  min-height: calc(100vh - 180px); // Login kartının ekranın büyük bölümünde dikey ortalanabilmesi için minimum yükseklik verir.
+  display: flex; // Login kartını kolayca ortalayabilmek için flex yapısını kullanır.
+  align-items: center; // Login kartını dikey olarak ortalar.
+  justify-content: center; // Login kartını yatay olarak ortalar.
+  padding: 30px 0; // Küçük ekranlarda kartın üst ve alt kenara yapışmasını engeller.
+}
+
+
+/* ==================================================
+   LOGIN KARTI
+   ================================================== */
+
+.auth-card {
+  width: 100%; // Kartın kullanılabilir genişliği kullanmasını sağlar.
+  max-width: 430px; // Kartın masaüstünde gereğinden fazla genişlemesini engeller.
+  padding: 32px; // Kart içerisindeki içeriklerin kenarlara yapışmasını engeller.
+  background-color: #ffffff; // Kartın arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına ince gri border ekler.
+  border-radius: 8px; // Kart köşelerini hafif yuvarlatır.
+}
+
+
+/* ==================================================
+   CAMPUSBODY LOGOSU
+   ================================================== */
+
+.brand {
+  width: 220px; // Logo için ayrılan alanın genişliğini belirler.
+  height: 120px; // Logo için ayrılan alanın yüksekliğini belirler.
+  display: flex; // Logoyu ortalamak için flex yapısını kullanır.
+  align-items: center; // Logoyu dikey olarak ortalar.
+  justify-content: center; // Logoyu yatay olarak ortalar.
+  margin: 0 auto 30px; // Logo alanını ortalar ve altına boşluk bırakır.
+  overflow: hidden; // Büyütülen logonun logo alanının dışına taşan kısımlarını gizler.
+}
+
+.brand img {
+  display: block; // Görselin altında oluşabilecek gereksiz inline boşluğunu kaldırır.
+  width: 280px; // PNG dosyasını daha büyük gösterir.
+  height: 120px; // Görsel için daha büyük bir yükseklik belirler.
+  object-fit: contain; // Logonun en-boy oranının bozulmasını engeller.
+  transform: scale(1.7); // PNG dosyasının içindeki boşluk nedeniyle asıl logoyu büyütür.
+}
+
+
+/* ==================================================
+   BAŞLIK
+   ================================================== */
+
+.auth-header {
+  margin-bottom: 26px; // Başlık alanı ile form arasında boşluk bırakır.
+  text-align: center; // Başlık ve açıklama yazısını ortalar.
+}
+
+.auth-header h1 {
+  margin: 0 0 8px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Ana başlığı CampusBody laciverti yapar.
+  font-size: 25px; // Login başlığının yazı boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.auth-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 13px; // Açıklama yazı boyutunu belirler.
+  line-height: 1.5; // Açıklamanın daha rahat okunmasını sağlar.
+}
+
+
+/* ==================================================
+   LOGIN FORMU
+   ================================================== */
+
+.auth-form {
+  display: flex; // Form alanlarını flex yapısında düzenler.
+  flex-direction: column; // Form alanlarını alt alta dizer.
+  gap: 18px; // Form alanları arasında boşluk bırakır.
+}
+
+.form-field {
+  display: flex; // Label, input ve hata mesajını flex yapısında düzenler.
+  flex-direction: column; // Label, input ve hata mesajını alt alta dizer.
+  gap: 7px; // Form alanındaki elemanlar arasında boşluk bırakır.
+}
+
+.form-field label {
+  color: #334155; // Form labelını koyu gri-lacivert yapar.
+  font-size: 12px; // Label yazı boyutunu belirler.
+  font-weight: 700; // Labelı kalın yapar.
+}
+
+.form-field input {
+  width: 100%; // Inputun kart içerisinde tam genişlik kullanmasını sağlar.
+  height: 42px; // Input yüksekliğini belirler.
+  padding: 0 12px; // Input içindeki yazının kenarlara yapışmasını engeller.
+  background-color: #ffffff; // Input arka planını beyaz yapar.
+  color: #334155; // Kullanıcının yazdığı metnin rengini belirler.
+  border: 1px solid #cbd5e1; // Inputun etrafına ince gri border ekler.
+  border-radius: 5px; // Input köşelerini hafif yuvarlatır.
+  outline: none; // Tarayıcının varsayılan focus çizgisini kaldırır.
+  font-size: 13px; // Input içerisindeki yazı boyutunu belirler.
+}
+
+.form-field input::placeholder {
+  color: #94a3b8; // Placeholder metnini açık gri yapar.
+}
+
+.form-field input:focus {
+  border-color: #003267; // Kullanıcı inputa tıkladığında border rengini CampusBody laciverti yapar.
+}
+
+.field-error {
+  color: #b91c1c; // Validation hata mesajını kırmızı yapar.
+  font-size: 11px; // Validation mesajının yazı boyutunu belirler.
+  line-height: 1.4; // Hata mesajının daha rahat okunmasını sağlar.
+}
+
+
+/* ==================================================
+   BACKEND HATA MESAJI
+   ================================================== */
+
+.alert-error {
+  padding: 12px 14px; // Hata mesajının kutu kenarlarına yapışmasını engeller.
+  background-color: #fef2f2; // Hata kutusuna açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border: 1px solid #fecaca; // Hata kutusuna açık kırmızı border ekler.
+  border-radius: 5px; // Hata kutusunun köşelerini hafif yuvarlatır.
+  font-size: 12px; // Hata mesajı yazı boyutunu belirler.
+  line-height: 1.5; // Uzun hata mesajlarının daha rahat okunmasını sağlar.
+}
+
+
+/* ==================================================
+   GİRİŞ YAP BUTONU
+   ================================================== */
+
+.primary-button {
+  width: 100%; // Giriş Yap butonunu formun tam genişliği yapar.
+  min-height: 42px; // Butonun minimum yüksekliğini belirler.
+  padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #f68929; // Buton arka planını CampusBody turuncusu yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: 1px solid #f68929; // Buton borderını turuncu yapar.
+  border-radius: 5px; // Butonun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.primary-button:hover:not(:disabled) {
+  background-color: #df7115; // Mouse üzerine geldiğinde butonu daha koyu turuncu yapar.
+  border-color: #df7115; // Hover sırasında border rengini de koyu turuncu yapar.
+}
+
+.primary-button:disabled {
+  opacity: 0.6; // Login işlemi sırasında butonu soluk gösterir.
+  cursor: not-allowed; // Kullanıcıya butonun geçici olarak kullanılamadığını gösterir.
+}
+
+
+/* ==================================================
+   KAYIT OL LİNKİ
+   ================================================== */
+
+.auth-footer {
+  margin: 24px 0 0; // Form ile footer arasında boşluk bırakır.
+  padding-top: 20px; // Üst çizgi ile yazı arasında boşluk bırakır.
+  color: #64748b; // Normal footer yazısını gri-lacivert yapar.
+  border-top: 1px solid #e7edf3; // Form ile kayıt bağlantısını görsel olarak ayırır.
+  text-align: center; // Footer içeriğini yatay ortalar.
+  font-size: 12px; // Footer yazı boyutunu belirler.
+}
+
+.auth-footer a {
+  color: #f68929; // Kayıt Ol bağlantısını CampusBody turuncusu yapar.
+  font-weight: 700; // Kayıt Ol yazısını kalın yapar.
+  text-decoration: none; // Linkin varsayılan alt çizgisini kaldırır.
+}
+
+.auth-footer a:hover {
+  color: #df7115; // Mouse üzerine geldiğinde bağlantıyı koyu turuncu yapar.
+  text-decoration: underline; // Kullanıcının bunun link olduğunu daha rahat anlamasını sağlar.
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 550px) { // Telefon boyutundaki ekranlarda çalışır.
+  .auth-page {
+    min-height: auto; // Mobilde gereksiz dikey ortalama yüksekliğini kaldırır.
+    padding: 15px 0; // Mobilde üst ve alt boşluğu azaltır.
+  }
+
+  .auth-card {
+    padding: 24px 20px; // Mobilde kartın iç boşluğunu azaltır.
+  }
+
+  .brand {
+    width: 190px; // Mobilde logo alanını biraz küçültür.
+    height: 90px; // Mobilde logo alanının yüksekliğini biraz azaltır.
+  }
+
+  .brand img {
+    width: 250px; // Mobilde logo görselini masaüstüne göre biraz küçültür.
+    height: 115px; // Mobilde logo yüksekliğini azaltır.
+    transform: scale(1.6); // Mobilde logonun yine belirgin görünmesini sağlar.
+  }
+
+  .auth-header h1 {
+    font-size: 22px; // Mobilde login başlığını biraz küçültür.
+  }
+}

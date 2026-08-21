@@ -1,63 +1,79 @@
+<!-- Login sayfasının tamamını kapsayan ana alandır -->
 <main class="auth-page">
+  <!-- Giriş formunu içerisinde tutan beyaz karttır -->
   <section class="auth-card">
-    <a class="brand" routerLink="/">KampüsEtkinlik</a> <!-- ana sayfaya yönlendirir -->
+    <!-- CampusBody logosuna tıklandığında ana route'a gider -->
+    <a class="brand" routerLink="/">
+      <img src="/LOGO.png" alt="CampusBody">
+    </a>
 
+    <!-- Login kartının başlık bölümüdür -->
     <header class="auth-header">
-      <span class="eyebrow">Tekrar hoş geldin</span>
-      <h1>Hesabına giriş yap</h1>
-      <p>Kulüpleri ve kampüs etkinliklerini tek merkezden takip et.</p>
+      <h1>Hesabınıza Giriş Yapın</h1> <!-- Login sayfasının ana başlığını gösterir. -->
+      <p>Kulüpleri ve kampüs etkinliklerini tek merkezden takip edin.</p> <!-- Kullanıcıya kısa açıklama gösterir. -->
     </header>
 
-    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate> <!-- login formunu form değişkenine bağlar ve gönderildiğinde submit metodunu çalıştırır -->
+    <!-- Login formunu TypeScript tarafındaki form değişkenine bağlar ve gönderildiğinde submit metodunu çalıştırır -->
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <!-- E-posta form alanıdır -->
       <div class="form-field">
-        <label for="email">E-posta</label>
+        <label for="email">E-posta</label> <!-- Input alanının e-posta için olduğunu belirtir. -->
         <input
           id="email"
           type="email"
           formControlName="email"
-          placeholder="E posta adresiniz"
+          placeholder="E-posta adresiniz"
           autocomplete="email"
-        />
+        > <!-- Kullanıcının girdiği e-postayı formdaki email alanına bağlar. -->
 
+        <!-- E-posta alanına dokunulduysa ve validation hatası varsa gösterilir -->
         @if (form.controls.email.touched && form.controls.email.invalid) {
-          <small class="field-error">Geçerli bir e-posta adresi gir.</small> <!-- email alanı hatalıysa validation mesajını gösterir -->
+          <small class="field-error">
+            Geçerli bir e-posta adresi girin.
+          </small>
         }
       </div>
 
+      <!-- Şifre form alanıdır -->
       <div class="form-field">
-        <label for="password">Şifre</label>
+        <label for="password">Şifre</label> <!-- Input alanının şifre için olduğunu belirtir. -->
         <input
           id="password"
           type="password"
           formControlName="password"
-          placeholder="Parola"
+          placeholder="Şifreniz"
           autocomplete="current-password"
-        />
+        > <!-- Kullanıcının girdiği şifreyi formdaki password alanına bağlar. -->
 
+        <!-- Şifre alanına dokunulduysa ve validation hatası varsa gösterilir -->
         @if (form.controls.password.touched && form.controls.password.invalid) {
-          <small class="field-error">Şifre en az 8 karakter olmalıdır.</small> <!-- şifre alanı hatalıysa validation mesajını gösterir -->
+          <small class="field-error">
+            Şifre en az 8 karakter olmalıdır.
+          </small>
         }
       </div>
 
+      <!-- Backend login işleminde hata oluşursa kullanıcıya gösterilir -->
       @if (errorMessage()) {
-        <div class="alert alert-error" role="alert">
+        <div class="alert-error" role="alert">
           {{ errorMessage() }}
-        </div> <!-- login işleminde hata oluşursa hata mesajını gösterir -->
+        </div>
       }
 
-      <button class="primary-button" type="submit" [disabled]="loading()"> <!-- login işlemi devam ederken butona tekrar basılmasını engeller -->
+      <!-- Login formunu gönderir, işlem devam ederken tekrar tıklanamaz -->
+      <button class="primary-button" type="submit" [disabled]="loading()">
         @if (loading()) {
-          Giriş yapılıyor...
+          Giriş Yapılıyor...
         } @else {
           Giriş Yap
         }
       </button>
     </form>
 
+    <!-- Hesabı olmayan kullanıcıyı kayıt sayfasına yönlendirir -->
     <p class="auth-footer">
-      Henüz hesabın yok mu?
-      <a routerLink="/register">Kayıt ol</a> <!-- kayıt sayfasına yönlendirir -->
+      Henüz hesabınız yok mu?
+      <a routerLink="/register">Kayıt Ol</a>
     </p>
   </section>
-  
 </main>

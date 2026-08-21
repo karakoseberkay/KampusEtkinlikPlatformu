@@ -1,0 +1,280 @@
+/* ==================================================
+   KULÜPLER SAYFASI
+   ================================================== */
+
+.clubs-page {
+  width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
+}
+
+
+/* ==================================================
+   SAYFA BAŞLIĞI
+   ================================================== */
+
+.page-header {
+  display: flex; // Başlık ile oluştur butonunu yan yana dizer.
+  align-items: center; // Başlık ve butonu dikey olarak ortalar.
+  justify-content: space-between; // Başlığı sola, butonu sağa yerleştirir.
+  gap: 20px; // Başlık ile buton arasında boşluk bırakır.
+  margin-bottom: 28px; // Başlık ile sonraki bölüm arasında boşluk bırakır.
+}
+
+.page-header h1 {
+  margin: 0 0 6px; // Başlığın varsayılan marginini düzenler.
+  color: #003267; // Başlığı CampusBody lacivert rengine boyar.
+  font-size: 30px; // Ana başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.page-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 14px; // Açıklama yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   YENİ KULÜP BUTONU
+   ================================================== */
+
+.create-button {
+  min-height: 40px; // Butonun minimum yüksekliğini belirler.
+  display: inline-flex; // Linki buton görünümünde kullanmamızı sağlar.
+  align-items: center; // Buton yazısını dikey ortalar.
+  justify-content: center; // Buton yazısını yatay ortalar.
+  padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #f68929; // Butonu CampusBody turuncusu yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border-radius: 6px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  text-decoration: none; // Linkin varsayılan alt çizgisini kaldırır.
+  white-space: nowrap; // Buton yazısının iki satıra geçmesini engeller.
+}
+
+.create-button:hover {
+  background-color: #df7115; // Mouse üzerine geldiğinde butonu koyu turuncu yapar.
+}
+
+
+/* ==================================================
+   BİLGİ VE HATA MESAJLARI
+   ================================================== */
+
+.page-message {
+  margin-bottom: 24px; // Mesaj ile sonraki bölüm arasında boşluk bırakır.
+  padding: 17px; // Mesaj kutusunun içine boşluk verir.
+  background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
+  color: #64748b; // Mesaj yazısını gri-lacivert yapar.
+  border: 1px solid #dbe3ec; // Mesaj kutusuna ince border ekler.
+  border-radius: 8px; // Mesaj kutusunun köşelerini yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+.error-message {
+  background-color: #fef2f2; // Hata mesajına açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border-color: #fecaca; // Hata kutusunun borderını açık kırmızı yapar.
+}
+
+
+/* ==================================================
+   KULÜP LİSTESİ
+   ================================================== */
+
+.clubs-section {
+  width: 100%; // Kulüp listesi bölümünün bütün genişliği kullanmasını sağlar.
+}
+
+.list-header {
+  margin-bottom: 15px; // Liste başlığı ile tablo arasında boşluk bırakır.
+}
+
+.list-header h2 {
+  margin: 0 0 5px; // Başlığın dış boşluğunu düzenler.
+  color: #003267; // Liste başlığını lacivert yapar.
+  font-size: 20px; // Liste başlık boyutunu belirler.
+  font-weight: 700; // Liste başlığını kalın yapar.
+}
+
+.list-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Toplam kulüp bilgisini açık renkte gösterir.
+  font-size: 13px; // Toplam kulüp bilgisinin yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   TABLO
+   ================================================== */
+
+.table-card {
+  width: 100%; // Tablo kartının bütün genişliği kullanmasını sağlar.
+  background-color: #ffffff; // Tablo kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Tablo kartının etrafına ince border ekler.
+  border-radius: 8px; // Kartın köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.table-wrapper {
+  width: 100%; // Tablo kapsayıcısının kullanılabilir alanın tamamını kullanmasını sağlar.
+  overflow-x: auto; // Küçük ekranlarda tabloyu yatay kaydırılabilir yapar.
+}
+
+.clubs-table {
+  width: 100%; // Tabloyu kapsayıcısının tamamına yayar.
+  min-width: 1000px; // Çok fazla kolon olduğunda tablonun aşırı sıkışmasını engeller.
+  border-collapse: collapse; // Hücre borderlarının birleşmesini sağlar.
+}
+
+.clubs-table thead {
+  background-color: #f8fafc; // Tablo başlık alanını açık gri yapar.
+}
+
+.clubs-table th {
+  padding: 14px 15px; // Tablo başlık hücrelerinin içine boşluk verir.
+  color: #475569; // Başlık yazılarının rengini belirler.
+  border-bottom: 1px solid #dbe3ec; // Başlık satırının altına çizgi ekler.
+  text-align: left; // Başlık yazılarını sola hizalar.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 700; // Başlık yazılarını kalın yapar.
+  white-space: nowrap; // Başlıkların iki satıra geçmesini engeller.
+}
+
+.clubs-table td {
+  padding: 15px; // Tablo hücrelerinin içerisine boşluk verir.
+  color: #475569; // Normal tablo yazılarının rengini belirler.
+  border-bottom: 1px solid #edf1f5; // Satırlar arasına ince çizgi ekler.
+  font-size: 12px; // Tablo yazı boyutunu belirler.
+  vertical-align: middle; // Hücre içeriğini dikey ortalar.
+}
+
+.clubs-table tbody tr:last-child td {
+  border-bottom: none; // Son satırın altındaki gereksiz çizgiyi kaldırır.
+}
+
+.clubs-table tbody tr:hover {
+  background-color: #fafbfd; // Mouse satırın üzerine geldiğinde arka plan rengini direkt değiştirir.
+}
+
+
+/* ==================================================
+   KULÜP ADI
+   ================================================== */
+
+.club-name {
+  color: #003267 !important; // Kulüp adını CampusBody lacivertiyle gösterir.
+  font-weight: 700; // Kulüp adını kalın gösterir.
+  white-space: nowrap; // Kulüp adının gereksiz yere alt satıra geçmesini engeller.
+}
+
+
+/* ==================================================
+   AÇIKLAMA VE LOGO URL
+   ================================================== */
+
+.description-cell {
+  max-width: 320px; // Çok uzun kulüp açıklamalarının tabloyu aşırı genişletmesini engeller.
+  line-height: 1.5; // Açıklamaların daha rahat okunmasını sağlar.
+}
+
+.logo-url {
+  max-width: 230px; // Uzun URLlerin tabloyu aşırı genişletmesini engeller.
+  overflow: hidden; // Hücre genişliğini aşan kısmı gizler.
+  text-overflow: ellipsis; // Gizlenen URL kısmının yerine üç nokta gösterir.
+  white-space: nowrap; // URLnin alt satıra geçmesini engeller.
+  color: #64748b !important; // URL bilgisini daha geri planda gri olarak gösterir.
+}
+
+
+/* ==================================================
+   ETKİNLİK SAYISI
+   ================================================== */
+
+.event-count {
+  display: inline-flex; // Sayıyı küçük bir etiket içerisinde göstermemizi sağlar.
+  align-items: center; // Sayıyı dikey ortalar.
+  justify-content: center; // Sayıyı yatay ortalar.
+  min-width: 32px; // Etiketin minimum genişliğini belirler.
+  height: 28px; // Etiket yüksekliğini belirler.
+  padding: 0 8px; // Sayının sağında ve solunda boşluk bırakır.
+  background-color: #fff3e6; // Etiket arka planını açık turuncu yapar.
+  color: #d9680d; // Sayıyı turuncu yapar.
+  border-radius: 4px; // Etiket köşelerini hafif yuvarlatır.
+  font-size: 11px; // Sayının yazı boyutunu belirler.
+  font-weight: 700; // Sayıyı kalın yapar.
+}
+
+
+/* ==================================================
+   İŞLEM BUTONLARI
+   ================================================== */
+
+.table-actions {
+  display: flex; // İşlem butonlarını yan yana dizer.
+  align-items: center; // Butonları dikey ortalar.
+  gap: 7px; // Butonlar arasında boşluk bırakır.
+  white-space: nowrap; // Butonların alt satıra geçmesini engeller.
+}
+
+.detail-link,
+.edit-link,
+.stats-link {
+  display: inline-flex; // Linkleri buton görünümünde kullanmamızı sağlar.
+  align-items: center; // Buton yazısını dikey ortalar.
+  justify-content: center; // Buton yazısını yatay ortalar.
+  min-height: 30px; // Butonların minimum yüksekliğini belirler.
+  padding: 0 10px; // Butonların sağında ve solunda boşluk bırakır.
+  border-radius: 4px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 11px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  text-decoration: none; // Linklerin varsayılan alt çizgisini kaldırır.
+}
+
+.detail-link {
+  background-color: #003267; // Detay butonunu lacivert yapar.
+  color: #ffffff; // Detay yazısını beyaz yapar.
+}
+
+.detail-link:hover {
+  background-color: #00234b; // Mouse üzerine geldiğinde detay butonunu koyulaştırır.
+}
+
+.edit-link {
+  background-color: #f68929; // Güncelle butonunu turuncu yapar.
+  color: #ffffff; // Güncelle yazısını beyaz yapar.
+}
+
+.edit-link:hover {
+  background-color: #df7115; // Mouse üzerine geldiğinde güncelle butonunu koyulaştırır.
+}
+
+.stats-link {
+  background-color: #ffffff; // İstatistik butonunun arka planını beyaz yapar.
+  color: #003267; // İstatistik yazısını lacivert yapar.
+  border: 1px solid #003267; // Butona lacivert border ekler.
+}
+
+.stats-link:hover {
+  background-color: #f8fafc; // Mouse üzerine geldiğinde açık gri arka plan gösterir.
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
+  .page-header {
+    align-items: flex-start; // Başlık ve butonu sola hizalar.
+    flex-direction: column; // Başlık ile oluştur butonunu alt alta dizer.
+  }
+
+  .page-header h1 {
+    font-size: 25px; // Mobilde sayfa başlığını küçültür.
+  }
+
+  .create-button {
+    width: 100%; // Mobilde yeni kulüp butonunu tam genişlik yapar.
+  }
+}

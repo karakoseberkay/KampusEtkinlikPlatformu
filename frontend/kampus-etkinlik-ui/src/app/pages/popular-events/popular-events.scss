@@ -1,0 +1,219 @@
+/* Popüler Etkinlikler sayfasının genel alanıdır. */
+.popular-events-page {
+  width: 100%; // Sayfanın kullanılabilir genişliğin tamamını kullanmasını sağlar.
+}
+
+/* Sayfanın üst başlık alanıdır. */
+.page-header {
+  display: flex; // Başlık ile Yenile butonunu yan yana dizer.
+  align-items: center; // Başlık ve butonu dikey olarak ortalar.
+  justify-content: space-between; // Başlığı sola, butonu sağa yerleştirir.
+  gap: 20px; // Başlık ile buton arasında boşluk bırakır.
+  margin-bottom: 28px; // Başlık alanı ile sonraki içerik arasında boşluk bırakır.
+}
+
+.page-header h1 {
+  margin: 0 0 6px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Başlığı CampusBody laciverti yapar.
+  font-size: 30px; // Ana başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.page-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 14px; // Açıklama yazı boyutunu belirler.
+}
+
+/* Etkinlik listesini tekrar yükleyen butondur. */
+.refresh-button {
+  min-height: 40px; // Butonun minimum yüksekliğini belirler.
+  padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #003267; // Buton arka planını CampusBody laciverti yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: 1px solid #003267; // Buton borderını lacivert yapar.
+  border-radius: 6px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.refresh-button:hover:not(:disabled) {
+  background-color: #00234b; // Mouse üzerine geldiğinde butonu koyu lacivert yapar.
+  border-color: #00234b; // Hover sırasında border rengini de koyulaştırır.
+}
+
+.refresh-button:disabled {
+  opacity: 0.6; // Yükleme devam ederken butonu soluk gösterir.
+  cursor: not-allowed; // Butonun geçici olarak kullanılamadığını gösterir.
+}
+
+/* Yükleme, hata ve boş liste mesajlarında kullanılır. */
+.page-message {
+  margin-bottom: 24px; // Mesaj ile sonraki içerik arasında boşluk bırakır.
+  padding: 17px; // Mesaj kutusunun içerisine boşluk verir.
+  background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
+  color: #64748b; // Normal mesaj yazısını gri-lacivert yapar.
+  border: 1px solid #dbe3ec; // Mesaj kutusuna ince border ekler.
+  border-radius: 8px; // Mesaj kutusunun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+/* Backend hata mesajının tasarımıdır. */
+.error-message {
+  background-color: #fef2f2; // Hata mesajına açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border-color: #fecaca; // Hata mesajının borderını açık kırmızı yapar.
+}
+
+/* Etkinlik listesinin tamamını kapsar. */
+.events-section {
+  width: 100%; // Etkinlik listesi bölümünün bütün genişliği kullanmasını sağlar.
+}
+
+/* Tablo bölümünün başlık alanıdır. */
+.section-header {
+  margin-bottom: 15px; // Bölüm başlığı ile tablo arasında boşluk bırakır.
+}
+
+.section-header h2 {
+  margin: 0 0 5px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Bölüm başlığını CampusBody laciverti yapar.
+  font-size: 20px; // Bölüm başlığının yazı boyutunu belirler.
+  font-weight: 700; // Bölüm başlığını kalın yapar.
+}
+
+.section-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık renkte gösterir.
+  font-size: 13px; // Açıklama yazı boyutunu belirler.
+}
+
+/* Tabloyu beyaz kart görünümünde tutar. */
+.table-card {
+  width: 100%; // Kartın kullanılabilir genişliğin tamamını kullanmasını sağlar.
+  background-color: #ffffff; // Tablo kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına ince gri border ekler.
+  border-radius: 8px; // Kartın köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+/* Küçük ekranlarda tablonun yatay kaydırılmasını sağlar. */
+.table-wrapper {
+  width: 100%; // Tablo kapsayıcısının tam genişlik kullanmasını sağlar.
+  overflow-x: auto; // Tablo ekrana sığmazsa yatay scrollbar oluşturur.
+}
+
+/* Popüler etkinliklerin gösterildiği tablodur. */
+.events-table {
+  width: 100%; // Tabloyu kapsayıcısının tamamına yayar.
+  min-width: 1100px; // Çok sayıdaki kolonun birbirine fazla yaklaşmasını engeller.
+  border-collapse: collapse; // Hücrelerin borderlarının birleşmesini sağlar.
+}
+
+/* Tablo başlık alanının arka planını belirler. */
+.events-table thead {
+  background-color: #f8fafc; // Tablo başlığını çok açık gri yapar.
+}
+
+/* Tablo kolon başlıklarını düzenler. */
+.events-table th {
+  padding: 14px 15px; // Başlık hücrelerinin içine boşluk verir.
+  color: #475569; // Başlık yazılarının rengini belirler.
+  border-bottom: 1px solid #dbe3ec; // Başlık satırının altına çizgi ekler.
+  text-align: left; // Başlık yazılarını sola hizalar.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 700; // Başlıkları kalın yapar.
+  white-space: nowrap; // Başlıkların gereksiz şekilde alt satıra geçmesini engeller.
+}
+
+/* Tablo içerisindeki normal veri hücrelerini düzenler. */
+.events-table td {
+  padding: 15px; // Tablo hücrelerinin içerisine boşluk verir.
+  color: #475569; // Normal tablo yazılarının rengini belirler.
+  border-bottom: 1px solid #edf1f5; // Etkinlik satırlarının arasına ince çizgi ekler.
+  font-size: 12px; // Tablo yazı boyutunu belirler.
+  vertical-align: middle; // Hücre içeriğini dikey olarak ortalar.
+}
+
+/* Son etkinlik satırının altındaki gereksiz çizgiyi kaldırır. */
+.events-table tbody tr:last-child td {
+  border-bottom: none; // Son satırın alt borderını kaldırır.
+}
+
+/* Mouse etkinlik satırının üzerine geldiğinde çalışır. */
+.events-table tbody tr:hover {
+  background-color: #fafbfd; // Satırın arka planını hafif gri yapar.
+}
+
+/* Etkinliğin popülerlik sırasını gösteren hücredir. */
+.ranking-cell {
+  color: #64748b !important; // Sıra numarasını daha geri planda gösterir.
+  font-weight: 700; // Sıra numarasını belirgin yapar.
+}
+
+/* Etkinlik başlığının tasarımıdır. */
+.event-title {
+  color: #003267 !important; // Etkinlik adını CampusBody laciverti yapar.
+  font-weight: 700; // Etkinlik adını kalın gösterir.
+}
+
+/* Etkinlik kategorisini gösteren etikettir. */
+.category-badge {
+  display: inline-block; // Etiketin sadece içeriği kadar geniş olmasını sağlar.
+  padding: 5px 9px; // Etiketin içine boşluk verir.
+  background-color: #fff3e6; // Kategori etiketinin arka planını açık turuncu yapar.
+  color: #d9680d; // Kategori yazısını turuncu yapar.
+  border-radius: 4px; // Etiket köşelerini hafif yuvarlatır.
+  font-size: 11px; // Etiket yazı boyutunu belirler.
+  font-weight: 700; // Kategori yazısını kalın yapar.
+  white-space: nowrap; // Kategori yazısının iki satıra geçmesini engeller.
+}
+
+/* Etkinliğin kayıt oranını gösteren etikettir. */
+.rate-badge {
+  display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
+  padding: 5px 9px; // Etiketin içine boşluk verir.
+  background-color: #f1f5f9; // Kayıt oranı etiketine açık gri arka plan verir.
+  color: #003267; // Kayıt oranını lacivert yapar.
+  border-radius: 4px; // Etiketin köşelerini hafif yuvarlatır.
+  font-size: 11px; // Kayıt oranı yazı boyutunu belirler.
+  font-weight: 700; // Kayıt oranını kalın gösterir.
+}
+
+/* Etkinlik detayına yönlendiren bağlantıdır. */
+.detail-link {
+  min-height: 30px; // Detay butonunun minimum yüksekliğini belirler.
+  display: inline-flex; // Linki buton görünümünde kullanmamızı sağlar.
+  align-items: center; // Detay yazısını dikey ortalar.
+  justify-content: center; // Detay yazısını yatay ortalar.
+  padding: 0 11px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #f68929; // Detay butonunu CampusBody turuncusu yapar.
+  color: #ffffff; // Detay yazısını beyaz yapar.
+  border-radius: 4px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 11px; // Detay yazı boyutunu belirler.
+  font-weight: 700; // Detay yazısını kalın yapar.
+  text-decoration: none; // Linkin varsayılan alt çizgisini kaldırır.
+  white-space: nowrap; // Detay yazısının iki satıra geçmesini engeller.
+}
+
+/* Detay bağlantısının hover durumudur. */
+.detail-link:hover {
+  background-color: #df7115; // Mouse üzerine geldiğinde butonu koyu turuncu yapar.
+}
+
+/* Telefon boyutundaki ekranlarda sayfa başlığını ve butonu düzenler. */
+@media (max-width: 650px) {
+  .page-header {
+    align-items: flex-start; // Başlık ve butonu sola hizalar.
+    flex-direction: column; // Başlık ile Yenile butonunu alt alta dizer.
+  }
+
+  .page-header h1 {
+    font-size: 25px; // Mobilde ana başlığı biraz küçültür.
+  }
+
+  .refresh-button {
+    width: 100%; // Mobilde Yenile butonunu tam genişlik yapar.
+  }
+}

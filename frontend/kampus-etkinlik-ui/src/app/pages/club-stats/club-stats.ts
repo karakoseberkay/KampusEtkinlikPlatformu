@@ -1,171 +1,327 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { ClubService } from '../../core/services/club.service';
-import { ClubStatsResponse } from '../../core/models/api.models';
-import { getApiErrorMessage } from '../../core/utils/api-error';
+import { Component, inject, OnInit, signal } from '@angular/core'; // Angular componenti, servis enjeksiyonu, OnInit ve signal yapısını kullanmak için gerekli araçları içe aktarır.
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
+import { ActivatedRoute } from '@angular/router'; // URL içindeki kulüp ID değerine erişmek için kullanılır.
+import { ClubService } from '../../core/services/club.service'; // Kulüp istatistiklerini backendden almak için kullanılır.
+import { ClubStatsResponse } from '../../core/models/api.models'; // Backendden gelen kulüp istatistiklerinin TypeScript tipidir.
+import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
 
-@Component({
-  selector: 'app-club-stats',
-  standalone: true,
+@Component({ // Bu classın Angular componenti olduğunu belirtir.
+  selector: 'app-club-stats', // Componentin selector adını belirler.
+  standalone: true, // Componentin herhangi bir NgModule olmadan bağımsız çalışmasını sağlar.
   template: `
-    <h1>Kulüp İstatistikleri</h1>
+    <!-- Kulüp istatistikleri sayfasının tamamını kapsar -->
+    <section class="club-stats-page">
 
-    <button type="button" (click)="loadStats()">Yenile</button>
+      <!-- Sayfanın üst başlık alanıdır -->
+      <div class="page-header">
+        <div>
+          <h1>Kulüp İstatistikleri</h1> <!-- Sayfanın ana başlığını gösterir. -->
+          <p>Kulübün etkinlik ve katılım istatistiklerini görüntüleyebilirsiniz.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
+        </div>
 
-    @if (loading()) {
-      <p>Yükleniyor...</p>
-    }
+        <!-- İstatistikleri backendden tekrar çekmek için kullanılır -->
+        <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadStats()">
+          {{ loading() ? 'Yükleniyor...' : 'Verileri Yenile' }}
+        </button>
+      </div>
 
-    @if (errorMessage()) {
-      <p>{{ errorMessage() }}</p>
-    }
+      <!-- Backend isteği devam ederken gösterilir -->
+      @if (loading() && !stats()) {
+        <div class="page-message">
+          Kulüp istatistikleri yükleniyor...
+        </div>
+      }
 
-    @if (stats(); as statsItem) { <!-- backendden gelen kulüp istatistiklerini gösterir -->
-      <h2>Genel Bilgiler</h2>
+      <!-- Backend isteğinde hata oluşursa gösterilir -->
+      @if (errorMessage()) {
+        <div class="page-message error-message">
+          {{ errorMessage() }}
+        </div>
+      }
 
-      <p><strong>Kulüp ID:</strong> {{ statsItem.clubId }}</p>
-      <p><strong>Kulüp Adı:</strong> {{ statsItem.clubName }}</p>
-      <p><strong>Toplam Etkinlik:</strong> {{ statsItem.totalEventCount }}</p>
-      <p><strong>Aktif Etkinlik:</strong> {{ statsItem.activeEventCount }}</p>
-      <p><strong>İptal Edilmiş Etkinlik:</strong> {{ statsItem.cancelledEventCount }}</p>
-      <p><strong>Toplam Onaylı Kayıt:</strong> {{ statsItem.totalApprovedRegistrationCount }}</p>
-      <p><strong>Toplam Bekleyen Kayıt:</strong> {{ statsItem.totalPendingRegistrationCount }}</p>
-      <p><strong>Toplam Reddedilen Kayıt:</strong> {{ statsItem.totalRejectedRegistrationCount }}</p>
-      <p><strong>Genel Kayıt Oranı:</strong> {{ statsItem.overallRegistrationRate }}%</p>
+      <!-- Backendden istatistik bilgileri başarıyla geldiyse içerikleri gösterir -->
+      @if (stats(); as statsItem) {
 
-      <h2>Etkinlik Kayıt Oranı Grafiği</h2>
+        <!-- Kulübün adını gösteren üst bilgi kartıdır -->
+        <section class="club-summary">
+          <span class="summary-label">Kulüp</span> <!-- Bilginin kulüp adı olduğunu belirtir. -->
+          <h2>{{ statsItem.clubName }}</h2> <!-- İstatistikleri görüntülenen kulübün adını gösterir. -->
+          <p>Kulübün genel etkinlik ve kayıt durumuna ait özet bilgiler.</p> <!-- Bölümün açıklamasını gösterir. -->
+        </section>
 
-      @if (statsItem.events.length === 0) {
-        <p>Grafik için etkinlik bulunmuyor.</p>
-      } @else {
-        <svg width="750" [attr.height]="getChartHeight(statsItem.events.length)"> <!-- etkinlik kayıt oranlarını svg grafik olarak gösterir -->
-          @for (event of statsItem.events; track event.eventId; let index = $index) {
-           <text x="0" [attr.y]="getTextY(index)">
-               {{ event.title }}
-           </text>
+        <!-- Genel istatistik kartlarının bulunduğu bölüm -->
+        <section class="stats-section">
+          <div class="section-header">
+            <h2>Genel Bilgiler</h2> <!-- Genel istatistik bölümünün başlığını gösterir. -->
+            <p>Kulübün toplam etkinlik ve kayıt sayılarını gösterir.</p> <!-- Bölümün kısa açıklamasını gösterir. -->
+          </div>
 
-            <rect
-              x="350"
-              [attr.y]="getBarY(index)"
-              [attr.width]="getBarWidth(event.registrationRate)"
-              height="20"
-            ></rect>
+          <!-- İstatistik kartlarını grid şeklinde düzenler -->
+          <div class="stats-grid">
 
-            <text
-            
-              [attr.x]="getBarTextX(event.registrationRate)"
-              [attr.y]="getTextY(index)"
-            >
-            
-              {{event.registrationRate }}%
-            </text>
+            <!-- Toplam etkinlik sayısını gösterir -->
+            <div class="stat-card">
+              <span class="stat-label">Toplam Etkinlik</span>
+              <strong class="stat-value">{{ statsItem.totalEventCount }}</strong>
+            </div>
+
+            <!-- Aktif etkinlik sayısını gösterir -->
+            <div class="stat-card">
+              <span class="stat-label">Aktif Etkinlik</span>
+              <strong class="stat-value status-green">{{ statsItem.activeEventCount }}</strong>
+            </div>
+
+            <!-- İptal edilmiş etkinlik sayısını gösterir -->
+            <div class="stat-card">
+              <span class="stat-label">İptal Edilen</span>
+              <strong class="stat-value status-red">{{ statsItem.cancelledEventCount }}</strong>
+            </div>
+
+            <!-- Toplam onaylı kayıt sayısını gösterir -->
+            <div class="stat-card">
+              <span class="stat-label">Onaylı Kayıt</span>
+              <strong class="stat-value">{{ statsItem.totalApprovedRegistrationCount }}</strong>
+            </div>
+
+            <!-- Toplam bekleyen kayıt sayısını gösterir -->
+            <div class="stat-card">
+              <span class="stat-label">Bekleyen Kayıt</span>
+              <strong class="stat-value status-orange">{{ statsItem.totalPendingRegistrationCount }}</strong>
+            </div>
+
+            <!-- Toplam reddedilen kayıt sayısını gösterir -->
+            <div class="stat-card">
+              <span class="stat-label">Reddedilen Kayıt</span>
+              <strong class="stat-value status-red">{{ statsItem.totalRejectedRegistrationCount }}</strong>
+            </div>
+
+            <!-- Kulübün genel kayıt oranını yüzde olarak gösterir -->
+            <div class="stat-card rate-card">
+              <span class="stat-label">Genel Kayıt Oranı</span>
+              <strong class="stat-value status-orange">%{{ statsItem.overallRegistrationRate }}</strong>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Etkinliklerin kayıt oranlarını grafik şeklinde gösteren bölüm -->
+        <section class="chart-section">
+          <div class="section-header">
+            <h2>Etkinlik Kayıt Oranları</h2> <!-- Grafik bölümünün başlığını gösterir. -->
+            <p>Her etkinliğin kapasitesine göre kayıt oranını gösterir.</p> <!-- Grafiğin neyi gösterdiğini açıklar. -->
+          </div>
+
+          <!-- Kulübün hiç etkinliği yoksa grafik yerine mesaj gösterilir -->
+          @if (statsItem.events.length === 0) {
+            <div class="empty-card">
+              Grafik için etkinlik bulunmuyor.
+            </div>
+          } @else {
+            <!-- SVG grafiğinin taşmasını engelleyen kapsayıcıdır -->
+            <div class="chart-card">
+              <div class="chart-wrapper">
+
+                <!-- Etkinlik sayısına göre yüksekliği otomatik hesaplanan SVG grafiğidir -->
+                <svg class="registration-chart" width="750" [attr.height]="getChartHeight(statsItem.events.length)">
+
+                  <!-- Kulübün bütün etkinliklerini tek tek grafiğe çizer -->
+                  @for (event of statsItem.events; track event.eventId; let index = $index) {
+
+                    <!-- Etkinlik başlığını grafiğin sol tarafında gösterir -->
+                    <text class="chart-title" x="0" [attr.y]="getTextY(index)">
+                      {{ event.title }}
+                    </text>
+
+                    <!-- Kayıt oranının arka planını oluşturan sabit çubuktur -->
+                    <rect class="chart-background" x="350" [attr.y]="getBarY(index)" width="300" height="20" rx="3"></rect>
+
+                    <!-- Etkinliğin kayıt oranına göre genişliği değişen turuncu çubuktur -->
+                    <rect class="chart-bar" x="350" [attr.y]="getBarY(index)" [attr.width]="getBarWidth(event.registrationRate)" height="20" rx="3"></rect>
+
+                    <!-- Kayıt oranını çubuğun sağ tarafında yüzde olarak gösterir -->
+                    <text class="chart-rate" [attr.x]="getBarTextX(event.registrationRate)" [attr.y]="getTextY(index)">
+                      %{{ event.registrationRate }}
+                    </text>
+
+                  }
+
+                </svg>
+              </div>
+            </div>
           }
-        </svg>
+        </section>
+
+        <!-- Etkinlik bazlı detaylı istatistiklerin bulunduğu bölüm -->
+        <section class="events-section">
+          <div class="section-header">
+            <h2>Etkinlik İstatistikleri</h2> <!-- Tablo bölümünün başlığını gösterir. -->
+            <p>Her etkinliğin kapasite ve kayıt durumlarını ayrı ayrı gösterir.</p> <!-- Tablo hakkında kısa açıklama verir. -->
+          </div>
+
+          <!-- Kulübün etkinliği yoksa tablo yerine mesaj gösterilir -->
+          @if (statsItem.events.length === 0) {
+            <div class="empty-card">
+              Bu kulübe ait etkinlik bulunmuyor.
+            </div>
+          } @else {
+
+            <!-- Tabloyu kart görünümünde tutar -->
+            <div class="table-card">
+              <!-- Küçük ekranlarda tablonun yatay kaydırılmasını sağlar -->
+              <div class="table-wrapper">
+
+                <!-- Etkinlik istatistiklerinin gösterildiği tablo -->
+                <table class="stats-table">
+
+                  <!-- Tablo kolon başlıklarını gösterir -->
+                  <thead>
+                    <tr>
+                      <th>Etkinlik</th> <!-- Etkinlik başlığının bulunduğu kolondur. -->
+                      <th>Tarih</th> <!-- Etkinlik tarihinin bulunduğu kolondur. -->
+                      <th>Durum</th> <!-- Etkinliğin aktif veya iptal durumunu gösterir. -->
+                      <th>Kapasite</th> <!-- Etkinliğin toplam kapasitesini gösterir. -->
+                      <th>Onaylı</th> <!-- Onaylanan kayıt sayısını gösterir. -->
+                      <th>Bekleyen</th> <!-- Onay bekleyen kayıt sayısını gösterir. -->
+                      <th>Reddedilen</th> <!-- Reddedilen kayıt sayısını gösterir. -->
+                      <th>Kayıt Oranı</th> <!-- Etkinliğin kayıt oranını yüzde olarak gösterir. -->
+                    </tr>
+                  </thead>
+
+                  <!-- Backendden gelen etkinlik istatistiklerini tabloya basar -->
+                  <tbody>
+                    @for (event of statsItem.events; track event.eventId) {
+                      <tr>
+
+                        <!-- Etkinlik başlığını gösterir -->
+                        <td class="event-title">
+                          {{ event.title }}
+                        </td>
+
+                        <!-- Etkinliğin başlangıç tarihini gösterir -->
+                        <td>
+                          {{ event.startDate }}
+                        </td>
+
+                        <!-- Etkinliğin durumunu kullanıcıya daha anlaşılır şekilde gösterir -->
+                        <td>
+                          @if (event.status === 'Active') {
+                            <span class="status-badge status-active">Aktif</span>
+                          } @else if (event.status === 'Cancelled') {
+                            <span class="status-badge status-cancelled">İptal Edildi</span>
+                          } @else {
+                            <span class="status-badge status-default">{{ event.status }}</span>
+                          }
+                        </td>
+
+                        <!-- Etkinlik kapasitesini gösterir -->
+                        <td>
+                          {{ event.capacity }}
+                        </td>
+
+                        <!-- Onaylanan kayıt sayısını gösterir -->
+                        <td>
+                          <span class="count-approved">{{ event.approvedRegistrationCount }}</span>
+                        </td>
+
+                        <!-- Bekleyen kayıt sayısını gösterir -->
+                        <td>
+                          <span class="count-pending">{{ event.pendingRegistrationCount }}</span>
+                        </td>
+
+                        <!-- Reddedilen kayıt sayısını gösterir -->
+                        <td>
+                          <span class="count-rejected">{{ event.rejectedRegistrationCount }}</span>
+                        </td>
+
+                        <!-- Etkinliğin kayıt oranını turuncu etiket içerisinde gösterir -->
+                        <td>
+                          <span class="rate-badge">%{{ event.registrationRate }}</span>
+                        </td>
+
+                      </tr>
+                    }
+                  </tbody>
+
+                </table>
+              </div>
+            </div>
+          }
+        </section>
+
       }
 
-      <h2>Etkinlik İstatistikleri</h2>
-
-      @if (statsItem.events.length === 0) {
-        <p>Bu kulübe ait etkinlik bulunmuyor.</p>
-      } @else {
-        <table>
-          <thead>
-            <tr>
-              <th>Event ID</th>
-              <th>Başlık</th>
-              <th>Tarih</th>
-              <th>Durum</th>
-              <th>Kapasite</th>
-              <th>Onaylı</th>
-              <th>Bekleyen</th>
-              <th>Reddedilen</th>
-              <th>Kayıt Oranı</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            @for (event of statsItem.events; track event.eventId) { <!-- etkinlik bazlı istatistikleri tabloya basar -->
-              <tr>
-                <td>{{ event.eventId }}</td>
-                <td>{{ event.title }}</td>
-                <td>{{ event.startDate }}</td>
-                <td>{{ event.status }}</td>
-                <td>{{ event.capacity }}</td>
-                <td>{{ event.approvedRegistrationCount }}</td>
-                <td>{{ event.pendingRegistrationCount }}</td>
-                <td>{{ event.rejectedRegistrationCount }}</td>
-                <td>{{ event.registrationRate }}%</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      }
-    }
-  `
+    </section>
+  `,
+  styleUrl: './club-stats.scss' // Bu componentin tasarımını club-stats.scss dosyasından almasını sağlar.
 })
-export class ClubStats implements OnInit {
-  private readonly route = inject(ActivatedRoute); // urldeki kulüp id bilgisine erişmemizi sağlar
-  private readonly clubService = inject(ClubService); // kulüp servisindeki metodlara erişmemizi sağlar
+export class ClubStats implements OnInit { // Kulüp istatistikleri sayfasının TypeScript classıdır ve OnInit yaşam döngüsünü kullanır.
+  private readonly route = inject(ActivatedRoute); // URL içindeki kulüp ID bilgisine erişmek için ActivatedRoute'u enjekte eder.
+  private readonly clubService = inject(ClubService); // Kulüp istatistiklerini backendden almak için ClubService'i enjekte eder.
 
-  private clubId: number | null = null; // istatistikleri gösterilecek kulübün idsini tutar
+  private clubId: number | null = null; // İstatistikleri gösterilecek kulübün ID değerini class içerisinde saklar.
+  readonly stats = signal<ClubStatsResponse | null>(null); // Backendden gelen kulüp istatistiklerini tutar.
+  readonly loading = signal(false); // İstatistikler yüklenirken işlemin devam edip etmediğini tutar.
+  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
 
-  readonly stats = signal<ClubStatsResponse | null>(null); // backendden gelen kulüp istatistiklerini tutar
-  readonly loading = signal(false); // istatistikler yüklenirken işlemin devam edip etmediğini tutar
-  readonly errorMessage = signal(''); // kullanıcıya gösterilecek hata mesajını tutar
 
-  ngOnInit(): void { // sayfa açıldığında urldeki idye göre kulüp istatistiklerini getirir
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+  ngOnInit(): void { // Sayfa ilk açıldığında otomatik olarak çalışır.
+    const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki kulüp ID değerini alır ve number tipine dönüştürür.
 
-    if (!Number.isInteger(id) || id <= 0) {
-      this.errorMessage.set('Geçersiz kulüp ID.');
-      return;
+    if (!Number.isInteger(id) || id <= 0) { // ID geçerli bir pozitif tam sayı değilse kontrol içerisine girer.
+      this.errorMessage.set('Geçersiz kulüp ID.'); // Kullanıcıya geçersiz kulüp ID mesajı gösterir.
+      return; // Backend isteğinin yapılmasını engeller.
     }
 
-    this.clubId = id;
-    this.loadStats();
+    this.clubId = id; // URLden alınan geçerli kulüp IDsini class değişkenine kaydeder.
+    this.loadStats(); // Kulübün istatistiklerini backendden getirir.
   }
 
-  loadStats(): void { // kulübün istatistiklerini backendden getirir
-    if (!this.clubId) {
-      return;
+
+  loadStats(): void { // Kulübün güncel istatistiklerini backendden getiren metottur.
+    if (!this.clubId) { // Geçerli bir kulüp IDsi bulunmuyorsa kontrol içerisine girer.
+      return; // Backend isteğinin gönderilmesini engeller.
     }
 
-    this.loading.set(true);
-    this.errorMessage.set('');
+    this.loading.set(true); // Backend isteğinin başladığını belirtir.
+    this.errorMessage.set(''); // Daha önce oluşmuş hata mesajını temizler.
 
-    this.clubService.getStats(this.clubId).subscribe({
-      next: stats => {
-        this.stats.set(stats);
-        this.loading.set(false);
+    this.clubService.getStats(this.clubId).subscribe({ // ClubService içindeki getStats metoduyla backend isteği gönderir.
+      next: stats => { // Backend isteği başarılı olduğunda çalışır.
+        this.stats.set(stats); // Backendden gelen istatistikleri stats signalına aktarır.
+        this.loading.set(false); // Yükleme işleminin tamamlandığını belirtir.
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüp istatistikleri alınamadı.')
+          getApiErrorMessage(error, 'Kulüp istatistikleri alınamadı.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
         );
-        this.loading.set(false);
+        this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
       }
     });
   }
 
-  getChartHeight(eventCount: number): number { // etkinlik sayısına göre grafiğin yüksekliğini hesaplar
-    return Math.max(80, eventCount * 50);
+
+  getChartHeight(eventCount: number): number { // Etkinlik sayısına göre SVG grafiğinin toplam yüksekliğini hesaplar.
+    return Math.max(80, eventCount * 50); // Grafik yüksekliğini minimum 80px yapar ve her etkinlik için 50px alan bırakır.
   }
 
-  getBarY(index: number): number { // grafikte çubuğun dikey konumunu hesaplar
-    return index * 50 + 10;
+
+  getBarY(index: number): number { // Grafikteki her turuncu çubuğun dikey konumunu hesaplar.
+    return index * 50 + 10; // Etkinlik sırasına göre her çubuğu bir öncekinin 50px altına yerleştirir.
   }
 
-  getTextY(index: number): number { // grafikte yazının dikey konumunu hesaplar
-    return index * 50 + 26;
+
+  getTextY(index: number): number { // Grafik üzerindeki etkinlik adı ve yüzde yazısının dikey konumunu hesaplar.
+    return index * 50 + 26; // Yazıyı ilgili çubuğun dikey ortasına yakın konumlandırır.
   }
 
-  getBarWidth(registrationRate: number): number { // kayıt oranına göre çubuğun genişliğini hesaplar
-    const rate = Math.max(1, Math.min(registrationRate, 100));
-    return rate * 4;
+
+  getBarWidth(registrationRate: number): number { // Kayıt oranına göre turuncu grafik çubuğunun genişliğini hesaplar.
+    const rate = Math.max(0, Math.min(registrationRate, 100)); // Kayıt oranının 0 ile 100 arasında kalmasını sağlar.
+    return rate * 3; // Yüzde 100 değerini maksimum 300px genişliğe dönüştürür.
   }
 
-  getBarTextX(registrationRate: number): number { // yüzde yazısının çubuğun sonunda görünmesini sağlar
-    return 360 + this.getBarWidth(registrationRate);
+
+  getBarTextX(registrationRate: number): number { // Yüzde yazısının grafikte nerede başlayacağını hesaplar.
+    return 360 + this.getBarWidth(registrationRate); // Yüzde yazısını turuncu çubuğun hemen sağ tarafına yerleştirir.
   }
 }

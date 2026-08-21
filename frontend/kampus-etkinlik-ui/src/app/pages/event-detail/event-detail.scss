@@ -1,0 +1,259 @@
+/* ==================================================
+   ETKİNLİK DETAY SAYFASI
+   ================================================== */
+
+.event-detail-page {
+  width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
+}
+
+
+/* ==================================================
+   SAYFA BAŞLIĞI
+   ================================================== */
+
+.page-header {
+  margin-bottom: 28px; // Sayfa başlığı ile detay kartı arasında boşluk bırakır.
+}
+
+.page-header h1 {
+  margin: 0 0 6px; // Başlığın varsayılan dış boşluğunu düzenler.
+  color: #003267; // Başlığı CampusBody lacivert rengine boyar.
+  font-size: 30px; // Ana başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.page-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 14px; // Açıklama yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   BİLGİ VE HATA MESAJLARI
+   ================================================== */
+
+.page-message {
+  padding: 18px; // Mesaj kutusunun içine boşluk verir.
+  background-color: #ffffff; // Mesaj kutusunun arka planını beyaz yapar.
+  color: #64748b; // Normal mesajın yazı rengini belirler.
+  border: 1px solid #dbe3ec; // Mesaj kutusunun etrafına ince border ekler.
+  border-radius: 8px; // Mesaj kutusunun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+.error-message {
+  background-color: #fef2f2; // Hata mesajına açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border-color: #fecaca; // Hata kutusunun border rengini açık kırmızı yapar.
+}
+
+
+/* ==================================================
+   DETAY KARTI
+   ================================================== */
+
+.detail-card {
+  background-color: #ffffff; // Detay kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına ince gri border ekler.
+  border-radius: 8px; // Kart köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.detail-card-header {
+  display: flex; // Başlık bilgisi ile durum etiketini yan yana dizer.
+  align-items: flex-start; // İçerikleri kartın üst kısmına hizalar.
+  justify-content: space-between; // Başlığı sola, durum etiketini sağa yerleştirir.
+  gap: 20px; // İki bölüm arasında boşluk bırakır.
+  padding: 24px; // Başlık bölümünün içine boşluk verir.
+  border-bottom: 1px solid #e7edf3; // Başlık ile detay bilgileri arasına çizgi ekler.
+}
+
+.detail-card-header h2 {
+  margin: 10px 0 8px; // Kategori ile başlık ve açıklama arasında boşluk bırakır.
+  color: #003267; // Etkinlik başlığını lacivert yapar.
+  font-size: 24px; // Etkinlik başlığının boyutunu belirler.
+  font-weight: 700; // Etkinlik başlığını kalın yapar.
+}
+
+.detail-card-header p {
+  max-width: 850px; // Çok uzun açıklamaların aşırı geniş görünmesini engeller.
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama metnini açık renkte gösterir.
+  font-size: 13px; // Açıklama yazı boyutunu belirler.
+  line-height: 1.7; // Uzun açıklamaların daha rahat okunmasını sağlar.
+}
+
+
+/* ==================================================
+   KATEGORİ ETİKETİ
+   ================================================== */
+
+.category-badge {
+  display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
+  padding: 5px 9px; // Etiketin içerisine boşluk verir.
+  background-color: #fff3e6; // Etiket arka planını açık turuncu yapar.
+  color: #d9680d; // Etiket yazısını turuncu yapar.
+  border-radius: 4px; // Etiket köşelerini hafif yuvarlatır.
+  font-size: 11px; // Etiket yazı boyutunu belirler.
+  font-weight: 700; // Etiket yazısını kalın yapar.
+}
+
+
+/* ==================================================
+   DURUM ETİKETLERİ
+   ================================================== */
+
+.status-badge {
+  display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
+  padding: 6px 10px; // Durum etiketinin içine boşluk verir.
+  border-radius: 4px; // Etiket köşelerini yuvarlatır.
+  font-size: 11px; // Durum yazısının boyutunu belirler.
+  font-weight: 700; // Durum yazısını kalın yapar.
+  white-space: nowrap; // Durum yazısının alt satıra geçmesini engeller.
+}
+
+.status-active {
+  background-color: #ecfdf3; // Aktif durumun arka planını açık yeşil yapar.
+  color: #15803d; // Aktif yazısını yeşil yapar.
+}
+
+.status-passive {
+  background-color: #f1f5f9; // Aktif olmayan durumların arka planını gri yapar.
+  color: #64748b; // Aktif olmayan durum yazısını gri yapar.
+}
+
+
+/* ==================================================
+   ETKİNLİK BİLGİLERİ
+   ================================================== */
+
+.detail-grid {
+  display: grid; // Bilgileri grid yapısıyla düzenler.
+  grid-template-columns: repeat(3, 1fr); // Büyük ekranda üç eşit kolon oluşturur.
+  gap: 0; // Grid elemanları arasında ekstra boşluk bırakmaz.
+  padding: 8px 24px; // Detay alanının sağ ve solunda boşluk bırakır.
+}
+
+.detail-item {
+  display: flex; // Label ve değeri flex yapısına geçirir.
+  flex-direction: column; // Label üstte, değer altta görünür.
+  gap: 7px; // Label ile değer arasında boşluk bırakır.
+  padding: 20px 0; // Her bilgi alanına üstten ve alttan boşluk verir.
+  border-bottom: 1px solid #edf1f5; // Bilgiler arasına ince çizgi ekler.
+}
+
+.detail-item:nth-last-child(-n + 3) {
+  border-bottom: none; // Son satırdaki üç elemanın alt çizgisini kaldırır.
+}
+
+.detail-label {
+  color: #64748b; // Bilgi başlığını açık renkte gösterir.
+  font-size: 12px; // Label yazı boyutunu belirler.
+  font-weight: 600; // Labelı orta kalınlıkta gösterir.
+}
+
+.detail-value {
+  color: #1e293b; // Asıl bilgi değerini koyu renkte gösterir.
+  font-size: 14px; // Bilgi değerinin yazı boyutunu belirler.
+  font-weight: 600; // Bilgi değerini belirgin hale getirir.
+}
+
+
+/* ==================================================
+   KAYIT BUTONU
+   ================================================== */
+
+.detail-actions {
+  display: flex; // İşlem butonlarını flex yapısında tutar.
+  justify-content: flex-end; // Kayıt ol butonunu sağ tarafa hizalar.
+  padding: 20px 24px; // Buton alanının içine boşluk verir.
+  border-top: 1px solid #e7edf3; // Buton alanını detay bilgilerinden ayırır.
+}
+
+.register-button {
+  min-height: 40px; // Butonun minimum yüksekliğini belirler.
+  padding: 0 20px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #f68929; // Butonun arka planını CampusBody turuncusu yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: none; // Tarayıcının varsayılan buton borderını kaldırır.
+  border-radius: 6px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.register-button:hover:not(:disabled) {
+  background-color: #df7115; // Mouse üzerine geldiğinde butonu daha koyu turuncu yapar.
+}
+
+.register-button:disabled {
+  opacity: 0.6; // Kayıt işlemi sürerken butonu soluk gösterir.
+  cursor: not-allowed; // Butonun geçici olarak kullanılamadığını belirtir.
+}
+
+
+/* ==================================================
+   BAŞARILI KAYIT MESAJI
+   ================================================== */
+
+.success-message {
+  margin: 0 24px 24px; // Mesajın kart kenarlarıyla ve alt bölümle boşluğunu ayarlar.
+  padding: 12px 14px; // Mesaj kutusunun içine boşluk verir.
+  background-color: #ecfdf3; // Başarılı işlem mesajına açık yeşil arka plan verir.
+  color: #166534; // Başarı mesajını koyu yeşil yapar.
+  border: 1px solid #bbf7d0; // Mesaj kutusuna yeşil border ekler.
+  border-radius: 5px; // Mesaj kutusunun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 900px) { // Ekran genişliği 900px veya altına düştüğünde çalışır.
+  .detail-grid {
+    grid-template-columns: repeat(2, 1fr); // Detay bilgilerini üç kolondan iki kolona düşürür.
+  }
+
+  .detail-item:nth-last-child(-n + 3) {
+    border-bottom: 1px solid #edf1f5; // Üç kolon için kaldırılan borderları tekrar açar.
+  }
+
+  .detail-item:nth-last-child(-n + 2) {
+    border-bottom: none; // İki kolonlu yapıda yalnızca son iki alanın borderını kaldırır.
+  }
+}
+
+@media (max-width: 600px) { // Telefon boyutundaki ekranlarda çalışır.
+  .page-header h1 {
+    font-size: 25px; // Mobilde sayfa başlığını biraz küçültür.
+  }
+
+  .detail-card-header {
+    flex-direction: column; // Etkinlik başlığı ile durum etiketini alt alta dizer.
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr; // Detay bilgilerini tek kolon halinde gösterir.
+  }
+
+  .detail-item,
+  .detail-item:nth-last-child(-n + 2),
+  .detail-item:nth-last-child(-n + 3) {
+    border-bottom: 1px solid #edf1f5; // Mobilde bilgi alanlarının arasındaki çizgileri gösterir.
+  }
+
+  .detail-item:last-child {
+    border-bottom: none; // Son bilgi alanının altındaki gereksiz çizgiyi kaldırır.
+  }
+
+  .detail-actions {
+    justify-content: stretch; // Mobilde buton alanının kullanılabilir genişliğini kullanmasını sağlar.
+  }
+
+  .register-button {
+    width: 100%; // Mobilde kayıt butonunu tam genişlik yapar.
+  }
+}

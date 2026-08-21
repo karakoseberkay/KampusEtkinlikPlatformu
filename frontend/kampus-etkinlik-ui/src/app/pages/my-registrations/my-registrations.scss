@@ -1,0 +1,286 @@
+/* ==================================================
+   KAYITLARIM SAYFASI
+   ================================================== */
+
+.registrations-page {
+  width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
+}
+
+
+/* ==================================================
+   SAYFA BAŞLIĞI
+   ================================================== */
+
+.page-header {
+  display: flex; // Başlık ile yenile butonunu yan yana dizer.
+  align-items: center; // Başlık ve butonu dikey olarak ortalar.
+  justify-content: space-between; // Başlığı sola, butonu sağa yerleştirir.
+  gap: 20px; // Başlık ile buton arasında boşluk bırakır.
+  margin-bottom: 28px; // Başlık ile sonraki içerik arasında boşluk bırakır.
+}
+
+.page-header h1 {
+  margin: 0 0 6px; // Başlığın varsayılan marginini düzenler.
+  color: #003267; // Başlığı CampusBody lacivert rengine boyar.
+  font-size: 30px; // Ana başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.page-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 14px; // Açıklama yazı boyutunu belirler.
+}
+
+.refresh-button {
+  min-height: 40px; // Yenile butonunun minimum yüksekliğini belirler.
+  padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #003267; // Buton arka planını CampusBody laciverti yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: none; // Tarayıcının varsayılan borderını kaldırır.
+  border-radius: 6px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.refresh-button:hover:not(:disabled) {
+  background-color: #00234b; // Mouse üzerine geldiğinde butonu daha koyu lacivert yapar.
+}
+
+.refresh-button:disabled {
+  opacity: 0.6; // Yükleme sırasında butonu soluk gösterir.
+  cursor: not-allowed; // Butonun kullanılamadığını gösterir.
+}
+
+
+/* ==================================================
+   MESAJLAR
+   ================================================== */
+
+.page-message {
+  margin-bottom: 24px; // Mesaj ile sonraki içerik arasında boşluk bırakır.
+  padding: 17px; // Mesaj kutusunun içine boşluk verir.
+  background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
+  color: #64748b; // Normal mesaj yazısını gri-lacivert yapar.
+  border: 1px solid #dbe3ec; // Mesaj kutusuna ince border ekler.
+  border-radius: 8px; // Mesaj kutusunun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+.error-message {
+  background-color: #fef2f2; // Hata mesajına açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border-color: #fecaca; // Hata kutusunun borderını açık kırmızı yapar.
+}
+
+
+/* ==================================================
+   BÖLÜM BAŞLIKLARI
+   ================================================== */
+
+.summary-section,
+.history-section {
+  margin-bottom: 34px; // Ana bölümler arasında boşluk bırakır.
+}
+
+.section-header {
+  margin-bottom: 15px; // Bölüm başlığı ile içeriği arasında boşluk bırakır.
+}
+
+.section-header h2 {
+  margin: 0 0 5px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Bölüm başlığını CampusBody laciverti yapar.
+  font-size: 20px; // Bölüm başlığı boyutunu belirler.
+  font-weight: 700; // Bölüm başlığını kalın yapar.
+}
+
+.section-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Bölüm açıklamasını açık renkte gösterir.
+  font-size: 13px; // Açıklama yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   ÖZET KARTLARI
+   ================================================== */
+
+.summary-grid {
+  display: grid; // Özet kartlarını grid yapısıyla düzenler.
+  grid-template-columns: repeat(4, 1fr); // Büyük ekranda dört eşit kolon oluşturur.
+  gap: 14px; // Kartlar arasında boşluk bırakır.
+}
+
+.summary-card {
+  min-height: 105px; // Kartların minimum yüksekliğini belirler.
+  display: flex; // Kart içeriğini flex yapısına geçirir.
+  flex-direction: column; // Başlık ve sayıyı alt alta dizer.
+  justify-content: center; // Kart içeriğini dikey olarak ortalar.
+  gap: 8px; // Başlık ile sayı arasında boşluk bırakır.
+  padding: 18px; // Kartın içerisine boşluk verir.
+  background-color: #ffffff; // Kartın arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına ince border ekler.
+  border-radius: 8px; // Kartın köşelerini hafif yuvarlatır.
+}
+
+.summary-label {
+  color: #64748b; // İstatistik başlığını açık renkte gösterir.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 600; // Başlığı orta kalınlıkta gösterir.
+}
+
+.summary-value {
+  color: #003267; // Normal istatistik değerini lacivert gösterir.
+  font-size: 28px; // İstatistik sayısını büyük gösterir.
+  font-weight: 700; // İstatistik sayısını kalın yapar.
+}
+
+.approved-value {
+  color: #15803d; // Onaylanan kayıt sayısını yeşil gösterir.
+}
+
+.pending-value {
+  color: #d9680d; // Bekleyen kayıt sayısını turuncu gösterir.
+}
+
+.rejected-value {
+  color: #b91c1c; // Reddedilen kayıt sayısını kırmızı gösterir.
+}
+
+
+/* ==================================================
+   KAYIT BULUNAMADI
+   ================================================== */
+
+.empty-card {
+  padding: 18px; // Mesaj kutusunun içerisine boşluk verir.
+  background-color: #ffffff; // Kutunun arka planını beyaz yapar.
+  color: #64748b; // Mesaj yazısını açık renkte gösterir.
+  border: 1px solid #dbe3ec; // Kutunun etrafına ince border ekler.
+  border-radius: 8px; // Kutunun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   KAYIT GEÇMİŞİ TABLOSU
+   ================================================== */
+
+.table-card {
+  width: 100%; // Tablo kartının bütün genişliği kullanmasını sağlar.
+  background-color: #ffffff; // Tablo kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Tablo kartına ince border ekler.
+  border-radius: 8px; // Tablo kartının köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.table-wrapper {
+  width: 100%; // Tablo kapsayıcısının bütün genişliği kullanmasını sağlar.
+  overflow-x: auto; // Küçük ekranlarda tabloyu yatay kaydırılabilir yapar.
+}
+
+.registrations-table {
+  width: 100%; // Tabloyu kapsayıcısının tamamına yayar.
+  min-width: 700px; // Kolonların gereğinden fazla sıkışmasını engeller.
+  border-collapse: collapse; // Hücre çizgilerinin birleşmesini sağlar.
+}
+
+.registrations-table thead {
+  background-color: #f8fafc; // Tablo başlık bölümünü açık gri yapar.
+}
+
+.registrations-table th {
+  padding: 14px 15px; // Tablo başlık hücrelerinin içine boşluk verir.
+  color: #475569; // Başlık yazılarının rengini belirler.
+  border-bottom: 1px solid #dbe3ec; // Başlık satırının altına çizgi ekler.
+  text-align: left; // Başlık yazılarını sola hizalar.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 700; // Başlık yazılarını kalın yapar.
+  white-space: nowrap; // Başlıkların alt satıra geçmesini engeller.
+}
+
+.registrations-table td {
+  padding: 15px; // Tablo hücrelerinin içine boşluk verir.
+  color: #475569; // Normal tablo yazılarının rengini belirler.
+  border-bottom: 1px solid #edf1f5; // Satırlar arasına ince çizgi ekler.
+  font-size: 12px; // Tablo yazı boyutunu belirler.
+  vertical-align: middle; // Hücre içeriğini dikey ortalar.
+}
+
+.registrations-table tbody tr:last-child td {
+  border-bottom: none; // Son satırın altındaki gereksiz çizgiyi kaldırır.
+}
+
+.registrations-table tbody tr:hover {
+  background-color: #fafbfd; // Mouse satırın üzerine geldiğinde arka plan rengini direkt değiştirir.
+}
+
+.event-title {
+  color: #003267 !important; // Etkinlik başlığını CampusBody lacivertiyle gösterir.
+  font-weight: 700; // Etkinlik başlığını kalın yapar.
+}
+
+
+/* ==================================================
+   KAYIT DURUM ETİKETLERİ
+   ================================================== */
+
+.status-badge {
+  display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
+  padding: 5px 9px; // Etiketin içine boşluk verir.
+  border-radius: 4px; // Etiket köşelerini hafif yuvarlatır.
+  font-size: 11px; // Etiket yazı boyutunu belirler.
+  font-weight: 700; // Etiket yazısını kalın yapar.
+  white-space: nowrap; // Durum yazısının iki satıra geçmesini engeller.
+}
+
+.status-approved {
+  background-color: #ecfdf3; // Onaylandı durumuna açık yeşil arka plan verir.
+  color: #15803d; // Onaylandı yazısını yeşil yapar.
+}
+
+.status-pending {
+  background-color: #fff3e6; // Bekliyor durumuna açık turuncu arka plan verir.
+  color: #d9680d; // Bekliyor yazısını turuncu yapar.
+}
+
+.status-rejected {
+  background-color: #fef2f2; // Reddedildi durumuna açık kırmızı arka plan verir.
+  color: #b91c1c; // Reddedildi yazısını kırmızı yapar.
+}
+
+.status-default {
+  background-color: #f1f5f9; // Bilinmeyen durumların arka planını açık gri yapar.
+  color: #64748b; // Bilinmeyen durum yazısını gri yapar.
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 900px) { // Tablet boyutundaki ekranlarda çalışır.
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr); // Özet kartlarını dört kolondan iki kolona düşürür.
+  }
+}
+
+@media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
+  .page-header {
+    align-items: flex-start; // Başlık ve butonu sola hizalar.
+    flex-direction: column; // Başlık ile yenile butonunu alt alta dizer.
+  }
+
+  .page-header h1 {
+    font-size: 25px; // Mobilde ana başlığı biraz küçültür.
+  }
+
+  .refresh-button {
+    width: 100%; // Mobilde yenile butonunu tam genişlik yapar.
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr; // Mobilde özet kartlarını tek kolon halinde gösterir.
+  }
+}

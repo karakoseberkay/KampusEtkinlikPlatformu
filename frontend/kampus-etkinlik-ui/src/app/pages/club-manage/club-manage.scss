@@ -1,0 +1,217 @@
+/* ==================================================
+   KULÜP OLUŞTUR / GÜNCELLE SAYFASI
+   ================================================== */
+
+.club-manage-page {
+  width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
+}
+
+
+/* ==================================================
+   SAYFA BAŞLIĞI
+   ================================================== */
+
+.page-header {
+  margin-bottom: 28px; // Başlık ile form arasında boşluk bırakır.
+}
+
+.page-header h1 {
+  margin: 0 0 6px; // Başlığın varsayılan marginini düzenler.
+  color: #003267; // Başlığı CampusBody lacivert rengine boyar.
+  font-size: 30px; // Ana başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.page-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 14px; // Açıklama yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   MESAJLAR
+   ================================================== */
+
+.page-message {
+  max-width: 800px; // Mesaj kutusunun formdan daha geniş görünmesini engeller.
+  margin-bottom: 20px; // Mesaj ile form arasında boşluk bırakır.
+  padding: 14px 16px; // Mesaj kutusunun içine boşluk verir.
+  background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
+  color: #64748b; // Normal mesaj yazısını gri-lacivert yapar.
+  border: 1px solid #dbe3ec; // Mesaj kutusunun etrafına ince border ekler.
+  border-radius: 6px; // Mesaj kutusunun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+.error-message {
+  background-color: #fef2f2; // Hata mesajına açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata yazısını kırmızı yapar.
+  border-color: #fecaca; // Hata kutusunun borderını açık kırmızı yapar.
+}
+
+.success-message {
+  background-color: #ecfdf3; // Başarı mesajına açık yeşil arka plan verir.
+  color: #166534; // Başarı mesajını koyu yeşil yapar.
+  border-color: #bbf7d0; // Başarı mesajı kutusuna yeşil border ekler.
+}
+
+
+/* ==================================================
+   FORM KARTI
+   ================================================== */
+
+.club-form {
+  max-width: 800px; // Formun çok geniş görünmesini engeller.
+  background-color: #ffffff; // Form kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Form kartının etrafına ince gri border ekler.
+  border-radius: 8px; // Kart köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.form-header {
+  padding: 20px 22px; // Form başlığının içine boşluk verir.
+  border-bottom: 1px solid #e7edf3; // Form başlığı ile inputlar arasına çizgi ekler.
+}
+
+.form-header h2 {
+  margin: 0 0 5px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Form başlığını lacivert yapar.
+  font-size: 18px; // Form başlık boyutunu belirler.
+  font-weight: 700; // Form başlığını kalın yapar.
+}
+
+.form-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklamayı açık gri-lacivert yapar.
+  font-size: 13px; // Açıklama yazı boyutunu belirler.
+}
+
+.form-content {
+  display: flex; // Form alanlarının düzenini flex yapısına geçirir.
+  flex-direction: column; // Form alanlarını alt alta dizer.
+  gap: 18px; // Form alanları arasında boşluk bırakır.
+  padding: 22px; // Form alanlarının kart kenarlarına yapışmasını engeller.
+}
+
+
+/* ==================================================
+   FORM ALANLARI
+   ================================================== */
+
+.form-field {
+  display: flex; // Label ve inputu flex yapısına geçirir.
+  flex-direction: column; // Labelın inputun üstünde görünmesini sağlar.
+  gap: 7px; // Label ile form elemanı arasında boşluk bırakır.
+}
+
+.form-field label {
+  color: #334155; // Label rengini koyu gri-lacivert yapar.
+  font-size: 12px; // Label yazı boyutunu belirler.
+  font-weight: 700; // Labelı kalın yapar.
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%; // Input ve textarea alanlarının tam genişlik kullanmasını sağlar.
+  padding: 0 12px; // Yazının alan kenarlarına yapışmasını engeller.
+  background-color: #ffffff; // Form alanlarının arka planını beyaz yapar.
+  color: #334155; // Form içindeki yazı rengini belirler.
+  border: 1px solid #cbd5e1; // Inputların etrafına ince border ekler.
+  border-radius: 5px; // Form alanlarının köşelerini hafif yuvarlatır.
+  outline: none; // Tarayıcının varsayılan focus çizgisini kaldırır.
+  font-size: 13px; // Form yazı boyutunu belirler.
+}
+
+.form-field input {
+  height: 40px; // Input alanlarının yüksekliğini belirler.
+}
+
+.form-field textarea {
+  min-height: 140px; // Açıklama alanının minimum yüksekliğini belirler.
+  padding-top: 10px; // Textarea yazısının üst kenara yapışmasını engeller.
+  padding-bottom: 10px; // Textarea yazısının alt kenara yapışmasını engeller.
+  resize: vertical; // Kullanıcının textarea yüksekliğini yalnızca dikey olarak değiştirmesini sağlar.
+  line-height: 1.5; // Uzun açıklamaların daha rahat okunmasını sağlar.
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: #94a3b8; // Placeholder metinlerini açık gri yapar.
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: #003267; // Kullanıcı form alanına tıkladığında borderı lacivert yapar.
+}
+
+
+/* ==================================================
+   FORM BUTONLARI
+   ================================================== */
+
+.form-actions {
+  display: flex; // Form butonlarını yan yana dizer.
+  justify-content: flex-end; // Butonları formun sağ tarafına hizalar.
+  gap: 10px; // Butonlar arasında boşluk bırakır.
+  padding: 18px 22px; // Buton alanının içine boşluk verir.
+  background-color: #f8fafc; // Buton bölümünü çok açık gri yapar.
+  border-top: 1px solid #e7edf3; // Buton bölümünü form alanlarından ayırır.
+}
+
+.save-button,
+.delete-button {
+  min-height: 40px; // Butonların minimum yüksekliğini belirler.
+  padding: 0 18px; // Butonların sağında ve solunda boşluk bırakır.
+  border-radius: 5px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.save-button {
+  background-color: #f68929; // Kaydetme butonunu CampusBody turuncusu yapar.
+  color: #ffffff; // Kaydetme butonunun yazısını beyaz yapar.
+  border: 1px solid #f68929; // Buton borderını turuncu yapar.
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: #df7115; // Mouse üzerine geldiğinde turuncuyu koyulaştırır.
+  border-color: #df7115; // Hover durumunda border rengini de koyulaştırır.
+}
+
+.delete-button {
+  background-color: #ffffff; // Silme butonunun arka planını beyaz yapar.
+  color: #b91c1c; // Silme butonunun yazısını kırmızı yapar.
+  border: 1px solid #ef4444; // Silme butonunun etrafına kırmızı border ekler.
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #fef2f2; // Mouse üzerine geldiğinde silme butonuna açık kırmızı arka plan verir.
+}
+
+.save-button:disabled,
+.delete-button:disabled {
+  opacity: 0.6; // Disabled durumdaki butonları soluk gösterir.
+  cursor: not-allowed; // Butonların kullanılamadığını gösteren cursor kullanır.
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
+  .page-header h1 {
+    font-size: 25px; // Mobilde ana başlığı biraz küçültür.
+  }
+
+  .form-actions {
+    flex-direction: column; // Form butonlarını mobilde alt alta dizer.
+  }
+
+  .save-button,
+  .delete-button {
+    width: 100%; // Mobilde butonların tam genişlik kullanmasını sağlar.
+  }
+}

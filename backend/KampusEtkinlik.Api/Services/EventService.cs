@@ -440,8 +440,7 @@ public sealed class EventService(
     CancellationToken cancellationToken = default
 )
 {
-    var safePage =
-        Math.Max(page, 1);
+    var safePage = Math.Max(page, 1);
 
 
     var safePageSize =
@@ -466,34 +465,24 @@ public sealed class EventService(
         );
 
 
-    var totalPages =
-        result.TotalCount == 0
-            ? 0
-            : (int)Math.Ceiling(
-                result.TotalCount
-                /
-                (double)safePageSize
-            );
+    var totalPages = result.TotalCount == 0 ? 0 : (int)Math.Ceiling(result.TotalCount / (double)safePageSize);
+                
+               
+               
+            
 
 
     return new PagedResponse<EventResponse>
     {
-        Items =
-            result.Items
-                .Select(MapToResponse)
-                .ToList(),
+        Items = result.Items.Select(MapToResponse).ToList(),
 
-        Page =
-            safePage,
+        Page = safePage,
 
-        PageSize =
-            safePageSize,
+        PageSize = safePageSize,
 
-        TotalCount =
-            result.TotalCount,
+        TotalCount = result.TotalCount,
 
-        TotalPages =
-            totalPages
+        TotalPages = totalPages
     };
 }
 }

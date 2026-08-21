@@ -1,1 +1,205 @@
- 
+/* Uygulamanın üst navbar alanıdır. */
+.topbar {
+  min-height: 78px; // Navbarın minimum yüksekliğini belirler.
+  display: flex; // Logo, menü ve kullanıcı alanını yan yana dizer.
+  align-items: center; // Navbar elemanlarını dikey olarak ortalar.
+  justify-content: space-between; // Logo, menü ve sağ tarafı navbar boyunca dağıtır.
+  gap: 25px; // Ana navbar bölümleri arasında boşluk bırakır.
+  padding: 0 40px; // Navbarın sağ ve sol kenarlarında boşluk bırakır.
+  background-color: #ffffff; // Navbar arka planını beyaz yapar.
+  border-bottom: 1px solid #dbe3ec; // Navbarın altına ince çizgi ekler.
+}
+
+/* CampusBody logosunun bulunduğu link alanıdır. */
+.topbar__brand {
+  display: flex; // Logoyu düzgün hizalamak için flex kullanır.
+  align-items: center; // Logoyu dikey ortalar.
+  flex-shrink: 0; // Menü büyüdüğünde logonun küçülmesini engeller.
+  text-decoration: none; // Linkin varsayılan alt çizgisini kaldırır.
+}
+
+/* Navbar içerisindeki CampusBody logosudur. */
+.topbar__logo {
+  display: block; // Görsel altında oluşabilecek gereksiz boşluğu kaldırır.
+  width: 155px; // Logo alanının genişliğini belirler.
+  height: 90px; // Logo alanının yüksekliğini belirler.
+  object-fit: contain; // Logonun oranını bozmadan alana sığdırır.
+}
+
+/* Navbarın ortasındaki menü alanıdır. */
+.topbar__nav {
+  display: flex; // Menü linklerini yan yana dizer.
+  align-items: center; // Menü linklerini dikey ortalar.
+  justify-content: center; // Menü linklerini orta alanda toplar.
+  gap: 24px; // Menü linkleri arasında boşluk bırakır.
+  flex: 1; // Menü alanının kalan genişliği kullanmasını sağlar.
+}
+
+/* Navbar içindeki bütün menü linkleridir. */
+.topbar__nav a {
+  position: relative; // Alt çizginin linke göre konumlanmasını sağlar.
+  display: flex; // Link içeriğini düzgün hizalar.
+  align-items: center; // Link yazısını dikey ortalar.
+  min-height: 78px; // Link alanını navbar yüksekliğine yaklaştırır.
+  color: #334155; // Menü yazı rengini koyu gri-lacivert yapar.
+  font-size: 13px; // Menü yazı boyutunu belirler.
+  font-weight: 600; // Menü yazısını belirgin hale getirir.
+  text-decoration: none; // Linklerin varsayılan alt çizgisini kaldırır.
+  white-space: nowrap; // Menü yazılarının iki satıra geçmesini engeller.
+}
+
+/* Hover ve aktif durumda kullanılacak turuncu alt çizgiyi hazırlar. */
+.topbar__nav a::after {
+  content: ""; // Pseudo elementin oluşturulmasını sağlar.
+  position: absolute; // Çizgiyi linkin altına bağımsız yerleştirir.
+  left: 0; // Çizgiyi linkin solundan başlatır.
+  bottom: 17px; // Çizgiyi linkin alt kısmına yerleştirir.
+  width: 100%; // Çizgiyi link yazısının genişliği kadar yapar.
+  height: 2px; // Turuncu çizginin kalınlığını belirler.
+  background-color: #f68929; // Çizgiyi CampusBody turuncusu yapar.
+  display: none; // Normal durumda çizgiyi gizler.
+}
+
+/* Mouse linkin üzerine geldiğinde turuncu çizgiyi direkt gösterir. */
+.topbar__nav a:hover::after {
+  display: block; // Hover sırasında alt çizgiyi gösterir.
+}
+
+/* Kullanıcının bulunduğu sayfanın linkinde turuncu çizgiyi gösterir. */
+.topbar__nav a.active::after {
+  display: block; // Aktif route linkinin alt çizgisini gösterir.
+}
+
+/* Navbarın sağ tarafındaki kullanıcı ve butonları kapsar. */
+.topbar__actions {
+  display: flex; // Kullanıcı adı ve butonları yan yana dizer.
+  align-items: center; // Elemanları dikey ortalar.
+  justify-content: flex-end; // Elemanları sağ tarafa hizalar.
+  gap: 9px; // Sağ taraftaki elemanlar arasında boşluk bırakır.
+  flex-shrink: 0; // Alanın küçülüp butonların sıkışmasını engeller.
+}
+
+/* Giriş yapan kullanıcının adını gösteren kutudur. */
+.user-chip {
+  display: inline-flex; // Kullanıcı adını kutu içerisinde hizalar.
+  align-items: center; // Yazıyı dikey ortalar.
+  min-height: 36px; // Kutunun minimum yüksekliğini belirler.
+  padding: 0 12px; // Kullanıcı adının sağında ve solunda boşluk bırakır.
+  background-color: #ffffff; // Kutunun arka planını beyaz yapar.
+  color: #475569; // Kullanıcı adı rengini belirler.
+  border: 1px solid #dbe3ec; // Kutunun çevresine ince border ekler.
+  border-radius: 5px; // Köşeleri hafif yuvarlatır.
+  font-size: 12px; // Kullanıcı adı yazı boyutunu belirler.
+  font-weight: 600; // Kullanıcı adını belirgin gösterir.
+  white-space: nowrap; // Kullanıcı adının iki satıra geçmesini engeller.
+}
+
+/* Navbar butonlarının ortak özellikleridir. */
+.logout-button,
+.login-button,
+.register-button {
+  min-height: 36px; // Butonların minimum yüksekliğini belirler.
+  display: inline-flex; // Linkleri de buton gibi hizalar.
+  align-items: center; // Buton yazısını dikey ortalar.
+  justify-content: center; // Buton yazısını yatay ortalar.
+  padding: 0 14px; // Butonların sağında ve solunda boşluk bırakır.
+  border-radius: 5px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 12px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  text-decoration: none; // Link butonlarındaki varsayılan alt çizgiyi kaldırır.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+  white-space: nowrap; // Buton yazısının iki satıra geçmesini engeller.
+}
+
+/* Çıkış Yap butonunun tasarımıdır. */
+.logout-button {
+  background-color: #003267; // Buton arka planını CampusBody laciverti yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: 1px solid #003267; // Buton borderını lacivert yapar.
+}
+
+/* Çıkış Yap butonunun hover durumudur. */
+.logout-button:hover {
+  background-color: #00234b; // Mouse üzerine geldiğinde laciverti koyulaştırır.
+  border-color: #00234b; // Border rengini de koyulaştırır.
+}
+
+/* Giriş Yap butonunun tasarımıdır. */
+.login-button {
+  background-color: #ffffff; // Buton arka planını beyaz yapar.
+  color: #003267; // Buton yazısını lacivert yapar.
+  border: 1px solid #003267; // Butona lacivert border ekler.
+}
+
+/* Giriş Yap butonunun hover durumudur. */
+.login-button:hover {
+  background-color: #f8fafc; // Mouse üzerine geldiğinde hafif gri arka plan verir.
+}
+
+/* Kayıt Ol butonunun tasarımıdır. */
+.register-button {
+  background-color: #f68929; // Buton arka planını CampusBody turuncusu yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: 1px solid #f68929; // Buton borderını turuncu yapar.
+}
+
+/* Kayıt Ol butonunun hover durumudur. */
+.register-button:hover {
+  background-color: #df7115; // Mouse üzerine geldiğinde turuncuyu koyulaştırır.
+  border-color: #df7115; // Border rengini de koyulaştırır.
+}
+
+/* Router tarafından açılan bütün sayfaların bulunduğu ana içerik alanıdır. */
+.page-container {
+  width: min(1320px, calc(100% - 48px)); // Sayfayı maksimum 1320px yapar ve küçük ekranlarda kenarlarda boşluk bırakır.
+  margin: 0 auto; // Ana içerik alanını yatay olarak ortalar.
+  padding: 34px 0 60px; // Sayfanın üstünde ve altında boşluk bırakır.
+}
+
+/* Orta boy ekranlarda navbar düzenini sıkıştırır. */
+@media (max-width: 1100px) {
+  .topbar {
+    padding: 0 24px; // Navbarın yatay boşluğunu azaltır.
+    gap: 18px; // Ana navbar alanları arasındaki boşluğu azaltır.
+  }
+
+  .topbar__nav {
+    gap: 15px; // Menü linklerinin arasındaki boşluğu azaltır.
+  }
+
+  .topbar__nav a {
+    font-size: 12px; // Menü yazılarını biraz küçültür.
+  }
+
+  .topbar__logo {
+    width: 135px; // Logoyu orta ekranlarda biraz küçültür.
+  }
+}
+
+/* Küçük ekranlarda navbarı alt alta düzenler. */
+@media (max-width: 850px) {
+  .topbar {
+    flex-wrap: wrap; // Navbar bölümlerinin gerektiğinde alt satıra geçmesini sağlar.
+    padding: 10px 20px; // Küçük ekranlarda navbar boşluklarını düzenler.
+  }
+
+  .topbar__nav {
+    order: 3; // Menü alanını logo ve butonların altına taşır.
+    width: 100%; // Menü alanının tam genişlik kullanmasını sağlar.
+    justify-content: flex-start; // Menü linklerini sola hizalar.
+    overflow-x: auto; // Menü sığmazsa yatay kaydırılabilmesini sağlar.
+  }
+
+  .topbar__nav a {
+    min-height: 45px; // Küçük ekranda link yüksekliğini azaltır.
+  }
+
+  .topbar__nav a::after {
+    bottom: 4px; // Turuncu çizgiyi yeni link yüksekliğine göre konumlandırır.
+  }
+
+  .page-container {
+    width: min(100% - 30px, 1320px); // Mobilde sayfanın sağ ve solunda 15px boşluk bırakır.
+    padding-top: 24px; // İçeriğin üst boşluğunu azaltır.
+  }
+}

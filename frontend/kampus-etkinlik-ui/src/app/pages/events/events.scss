@@ -1,0 +1,572 @@
+/* ==================================================
+   ETKİNLİKLER SAYFASI
+   ================================================== */
+
+.events-page {
+  width: 100%; /* Etkinlikler sayfasının kullanılabilir alanın tamamını kaplamasını sağlar. */
+}
+
+
+/* ==================================================
+   SAYFA BAŞLIĞI
+   ================================================== */
+
+.page-header {
+  display: flex; /* İçindeki elemanları yan yana dizer. */
+  align-items: center; /* Elemanları dikey olarak ortalar. */
+  justify-content: space-between; /* Başlığı sola, oluştur butonunu sağa yerleştirir. */
+  gap: 20px; /* Elemanların arasında 20px boşluk bırakır. */
+  margin-bottom: 28px; /* Başlık ile filtre kartı arasında boşluk bırakır. */
+}
+
+
+.page-header h1 {
+  margin: 0 0 6px; /* Başlığın varsayılan marginini kaldırır ve altına 6px boşluk verir. */
+  color: #003267; /* Başlığı CampusBody lacivert rengine boyar. */
+  font-size: 30px; /* Başlık yazı boyutunu 30px yapar. */
+  font-weight: 700; /* Başlığı kalın yapar. */
+}
+
+
+.page-header p {
+  margin: 0; /* Paragrafın varsayılan dış boşluğunu kaldırır. */
+  color: #64748b; /* Açıklama metnini açık gri-lacivert renge boyar. */
+  font-size: 14px; /* Açıklama yazısının boyutunu belirler. */
+}
+
+
+/* ==================================================
+   YENİ ETKİNLİK BUTONU
+   ================================================== */
+
+.create-button {
+  min-height: 40px; /* Butonun minimum yüksekliğini belirler. */
+  display: inline-flex; /* İçeriği flex yaparken butonun kendi genişliğinin içeriğe göre kalmasını sağlar. */
+  align-items: center; /* Buton yazısını dikey ortalar. */
+  justify-content: center; /* Buton yazısını yatay ortalar. */
+  padding: 0 18px; /* Butonun sağında ve solunda boşluk bırakır. */
+  background-color: #f68929; /* Butonun arka planını CampusBody turuncusu yapar. */
+  color: #ffffff; /* Buton yazısını beyaz yapar. */
+  border-radius: 6px; /* Buton köşelerini hafif yuvarlatır. */
+  font-size: 13px; /* Buton yazısının boyutunu belirler. */
+  font-weight: 700; /* Buton yazısını kalın yapar. */
+  text-decoration: none; /* Link olduğu için oluşan alt çizgiyi kaldırır. */
+  white-space: nowrap; /* Buton yazısının iki satıra bölünmesini engeller. */
+}
+
+
+.create-button:hover {
+  background-color: #df7115; /* Mouse butonun üzerine geldiğinde daha koyu turuncu gösterir. */
+}
+
+
+/* ==================================================
+   FİLTRE KARTI
+   ================================================== */
+
+.filter-card {
+  margin-bottom: 30px; /* Filtre kartı ile etkinlik listesi arasında boşluk bırakır. */
+  background-color: #ffffff; /* Filtre kartının arka planını beyaz yapar. */
+  border: 1px solid #dbe3ec; /* Kartın etrafına ince gri border ekler. */
+  border-radius: 8px; /* Kartın köşelerini hafif yuvarlatır. */
+  overflow: hidden; /* Kart dışına taşan içeriği gizler. */
+}
+
+
+.filter-card-header {
+  padding: 20px 22px; /* Başlık alanının içerisine boşluk verir. */
+  border-bottom: 1px solid #e7edf3; /* Başlık ile filtreler arasına ince çizgi çizer. */
+}
+
+
+.filter-card-header h2 {
+  margin: 0 0 5px; /* Başlığın varsayılan marginini kaldırır ve altına boşluk verir. */
+  color: #003267; /* Başlığı CampusBody laciverti yapar. */
+  font-size: 18px; /* Başlık boyutunu belirler. */
+  font-weight: 700; /* Başlığı kalın yapar. */
+}
+
+
+.filter-card-header p {
+  margin: 0; /* Paragrafın varsayılan marginini kaldırır. */
+  color: #64748b; /* Açıklamayı daha açık renkte gösterir. */
+  font-size: 13px; /* Açıklama yazısının boyutunu belirler. */
+}
+
+
+.filter-content {
+  padding: 22px; /* Inputların kart kenarlarına yapışmasını engeller. */
+}
+
+
+/* ==================================================
+   FİLTRE ALANLARI
+   ================================================== */
+
+.filter-grid {
+  display: grid; /* Filtreleri grid sistemiyle dizer. */
+  grid-template-columns: repeat(3, 1fr); /* Büyük ekranda üç eşit kolon oluşturur. */
+  gap: 18px; /* Filtre kutuları arasında boşluk bırakır. */
+}
+
+
+.form-field {
+  display: flex; /* Label ve input alanını flex yapar. */
+  flex-direction: column; /* Labelın inputun üstünde bulunmasını sağlar. */
+  gap: 7px; /* Label ile input arasında boşluk bırakır. */
+}
+
+
+.form-field label {
+  color: #334155; /* Label rengini koyu gri-lacivert yapar. */
+  font-size: 12px; /* Label yazı boyutunu belirler. */
+  font-weight: 700; /* Labelı kalın yapar. */
+}
+
+
+.form-field input,
+.form-field select {
+  width: 100%; /* Input ve selectin bulunduğu alanın tamamını kaplamasını sağlar. */
+  height: 40px; /* Input yüksekliğini belirler. */
+  padding: 0 12px; /* Yazının input kenarına yapışmasını engeller. */
+  background-color: #ffffff; /* Input arka planını beyaz yapar. */
+  color: #334155; /* Input içindeki yazının rengini belirler. */
+  border: 1px solid #cbd5e1; /* Input etrafına ince border ekler. */
+  border-radius: 5px; /* Input köşelerini hafif yuvarlatır. */
+  outline: none; /* Tarayıcının varsayılan focus çizgisini kaldırır. */
+  font-size: 13px; /* Input içindeki yazı boyutunu belirler. */
+}
+
+
+.form-field input::placeholder {
+  color: #94a3b8; /* Input placeholder yazısını açık gri yapar. */
+}
+
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #003267; /* Input seçildiğinde border rengini lacivert yapar. */
+}
+
+
+/* ==================================================
+   CHECKBOX
+   ================================================== */
+
+.checkbox-area {
+  display: flex; /* Checkbox alanını flex yapar. */
+  align-items: flex-end; /* Checkboxı diğer inputların alt hizasına getirir. */
+  min-height: 64px; /* Alanın diğer filtre alanlarıyla benzer yükseklikte olmasını sağlar. */
+}
+
+
+.checkbox-field {
+  display: flex; /* Checkbox ve yazıyı yan yana dizer. */
+  align-items: center; /* Checkbox ve yazıyı dikey olarak ortalar. */
+  gap: 9px; /* Checkbox ile yazı arasında boşluk bırakır. */
+  min-height: 40px; /* Checkbox alanının minimum yüksekliğini belirler. */
+  color: #475569; /* Checkbox açıklama yazısının rengini belirler. */
+  font-size: 13px; /* Açıklama yazısının boyutunu belirler. */
+  cursor: pointer; /* Mouse üzerine geldiğinde el işareti gösterir. */
+}
+
+
+.checkbox-field input {
+  width: 16px; /* Checkbox genişliğini belirler. */
+  height: 16px; /* Checkbox yüksekliğini belirler. */
+  accent-color: #f68929; /* Checkbox seçildiğinde CampusBody turuncusu kullanır. */
+  cursor: pointer; /* Checkbox üzerine geldiğinde el işareti gösterir. */
+}
+
+
+/* ==================================================
+   FİLTRE BUTONLARI
+   ================================================== */
+
+.filter-actions {
+  display: flex; /* Filtre butonlarını yan yana dizer. */
+  align-items: center; /* Butonları dikey ortalar. */
+  gap: 10px; /* Butonlar arasında boşluk bırakır. */
+  margin-top: 22px; /* Filtre alanları ile butonlar arasında boşluk bırakır. */
+}
+
+
+.filter-button,
+.clear-button {
+  min-height: 38px; /* Butonların minimum yüksekliğini belirler. */
+  padding: 0 18px; /* Butonlara sağdan ve soldan iç boşluk verir. */
+  border-radius: 5px; /* Buton köşelerini yuvarlatır. */
+  font-size: 13px; /* Buton yazı boyutunu belirler. */
+  font-weight: 700; /* Buton yazısını kalın yapar. */
+  cursor: pointer; /* Mouse üzerine geldiğinde el işareti gösterir. */
+}
+
+
+.filter-button {
+  background-color: #003267; /* Filtrele butonunu lacivert yapar. */
+  color: #ffffff; /* Filtrele yazısını beyaz yapar. */
+  border: 1px solid #003267; /* Buton borderını lacivert yapar. */
+}
+
+
+.filter-button:hover:not(:disabled) {
+  background-color: #00234b; /* Aktif butonun üzerine gelindiğinde rengini koyulaştırır. */
+}
+
+
+.clear-button {
+  background-color: #ffffff; /* Temizle butonunun arka planını beyaz yapar. */
+  color: #003267; /* Temizle butonunun yazısını lacivert yapar. */
+  border: 1px solid #003267; /* Butonun etrafına lacivert border ekler. */
+}
+
+
+.clear-button:hover:not(:disabled) {
+  background-color: #f8fafc; /* Mouse üzerine geldiğinde hafif gri arka plan verir. */
+}
+
+
+.filter-button:disabled,
+.clear-button:disabled {
+  opacity: 0.6; /* Buton disabled olduğunda soluk görünmesini sağlar. */
+  cursor: not-allowed; /* Kullanıcıya butonun kullanılamadığını gösterir. */
+}
+
+
+/* ==================================================
+   BİLGİ VE HATA MESAJLARI
+   ================================================== */
+
+.page-message {
+  margin-bottom: 24px; /* Mesaj ile sonraki içerik arasında boşluk bırakır. */
+  padding: 17px; /* Mesaj kutusunun içerisine boşluk verir. */
+  background-color: #ffffff; /* Mesaj kutusunun arka planını beyaz yapar. */
+  color: #64748b; /* Normal mesaj yazısını gri renkte gösterir. */
+  border: 1px solid #dbe3ec; /* Mesaj kutusunun etrafına border ekler. */
+  border-radius: 8px; /* Mesaj kutusunun köşelerini yuvarlatır. */
+  font-size: 13px; /* Mesaj yazısının boyutunu belirler. */
+}
+
+
+.error-message {
+  background-color: #fef2f2; /* Hata mesajına açık kırmızı arka plan verir. */
+  color: #b91c1c; /* Hata yazısını kırmızı yapar. */
+  border-color: #fecaca; /* Hata kutusunun borderını açık kırmızı yapar. */
+}
+
+
+/* ==================================================
+   ETKİNLİK LİSTESİ BAŞLIĞI
+   ================================================== */
+
+.events-section {
+  width: 100%; /* Etkinlik listesi bölümünün tüm genişliği kaplamasını sağlar. */
+}
+
+
+.list-header {
+  margin-bottom: 15px; /* Liste başlığı ile tablo arasında boşluk bırakır. */
+}
+
+
+.list-header h2 {
+  margin: 0 0 5px; /* Başlığın dış boşluğunu düzenler. */
+  color: #003267; /* Liste başlığını lacivert yapar. */
+  font-size: 20px; /* Liste başlığının boyutunu belirler. */
+  font-weight: 700; /* Liste başlığını kalın yapar. */
+}
+
+
+.list-header p {
+  margin: 0; /* Paragrafın varsayılan marginini kaldırır. */
+  color: #64748b; /* Toplam etkinlik bilgisini açık renkte gösterir. */
+  font-size: 13px; /* Toplam etkinlik bilgisinin yazı boyutunu belirler. */
+}
+
+
+/* ==================================================
+   TABLO
+   ================================================== */
+
+.table-card {
+  width: 100%; /* Tablo kartının tüm genişliği kaplamasını sağlar. */
+  background-color: #ffffff; /* Tablo arka planını beyaz yapar. */
+  border: 1px solid #dbe3ec; /* Tablo kartına ince border ekler. */
+  border-radius: 8px; /* Tablo kartının köşelerini yuvarlatır. */
+  overflow: hidden; /* Kart dışına taşan içeriği gizler. */
+}
+
+
+.table-wrapper {
+  width: 100%; /* Tablo kapsayıcısının bütün genişliği kullanmasını sağlar. */
+  overflow-x: auto; /* Küçük ekranlarda tabloyu yatay kaydırılabilir yapar. */
+}
+
+
+.events-table {
+  width: 100%; /* Tabloyu kapsayıcısının tamamına yayar. */
+  min-width: 1100px; /* Çok fazla kolon olduğu için tablonun aşırı sıkışmasını engeller. */
+  border-collapse: collapse; /* Hücre borderlarının birleşmesini sağlar. */
+}
+
+
+.events-table thead {
+  background-color: #f8fafc; /* Tablo başlık bölümünü açık gri yapar. */
+}
+
+
+.events-table th {
+  padding: 14px 15px; /* Tablo başlık hücrelerinin içerisine boşluk verir. */
+  color: #475569; /* Tablo başlık yazılarının rengini belirler. */
+  border-bottom: 1px solid #dbe3ec; /* Başlık satırının altına çizgi ekler. */
+  text-align: left; /* Başlık yazılarını sola hizalar. */
+  font-size: 11px; /* Başlık yazılarının boyutunu belirler. */
+  font-weight: 700; /* Başlık yazılarını kalın yapar. */
+  white-space: nowrap; /* Kolon başlıklarının iki satıra geçmesini engeller. */
+}
+
+
+.events-table td {
+  padding: 15px; /* Tablo hücrelerinin içerisine boşluk verir. */
+  color: #475569; /* Normal tablo yazılarının rengini belirler. */
+  border-bottom: 1px solid #edf1f5; /* Satırlar arasına ince çizgi ekler. */
+  font-size: 12px; /* Tablo içerisindeki yazı boyutunu belirler. */
+  vertical-align: middle; /* Hücre içerisindeki içeriği dikey ortalar. */
+}
+
+
+.events-table tbody tr:last-child td {
+  border-bottom: none; /* Son satırın altında gereksiz çizgi oluşmasını engeller. */
+}
+
+
+.events-table tbody tr:hover {
+  background-color: #fafbfd; /* Mouse satırın üzerine geldiğinde arka planı direkt değiştirir. */
+}
+
+
+/* ==================================================
+   ETKİNLİK BAŞLIĞI
+   ================================================== */
+
+.event-title {
+  color: #003267 !important; /* Etkinlik başlığını diğer hücrelerden farklı olarak lacivert yapar. */
+  font-weight: 700; /* Etkinlik başlığını kalın gösterir. */
+}
+
+
+/* ==================================================
+   KATEGORİ
+   ================================================== */
+
+.category-badge {
+  display: inline-block; /* Etiketin yalnızca içeriği kadar geniş olmasını sağlar. */
+  padding: 5px 9px; /* Etiketin içerisine boşluk verir. */
+  background-color: #fff3e6; /* Etiketin arka planını açık turuncu yapar. */
+  color: #d9680d; /* Etiket yazısını koyu turuncu yapar. */
+  border-radius: 4px; /* Etiket köşelerini hafif yuvarlatır. */
+  font-size: 11px; /* Etiket yazısının boyutunu belirler. */
+  font-weight: 700; /* Etiket yazısını kalın yapar. */
+  white-space: nowrap; /* Kategori adının iki satıra geçmesini engeller. */
+}
+
+
+/* ==================================================
+   DURUM ETİKETLERİ
+   ================================================== */
+
+.status-badge {
+  display: inline-block; /* Durum etiketinin içerik kadar geniş olmasını sağlar. */
+  padding: 5px 9px; /* Etiket içine boşluk verir. */
+  border-radius: 4px; /* Etiket köşelerini yuvarlatır. */
+  font-size: 11px; /* Durum yazı boyutunu belirler. */
+  font-weight: 700; /* Durum yazısını kalın yapar. */
+  white-space: nowrap; /* Durum yazısının satır atlamasını engeller. */
+}
+
+
+.status-active {
+  background-color: #ecfdf3; /* Aktif durumun arka planını açık yeşil yapar. */
+  color: #15803d; /* Aktif yazısını yeşil yapar. */
+}
+
+
+.status-passive {
+  background-color: #f1f5f9; /* Pasif durumun arka planını açık gri yapar. */
+  color: #64748b; /* Pasif durum yazısını gri yapar. */
+}
+
+
+/* ==================================================
+   İŞLEM BUTONLARI
+   ================================================== */
+
+.table-actions {
+  display: flex; /* İşlem butonlarını yan yana dizer. */
+  align-items: center; /* Butonları dikey ortalar. */
+  gap: 7px; /* Butonlar arasında boşluk bırakır. */
+  white-space: nowrap; /* Butonların alt satıra geçmesini engeller. */
+}
+
+
+.detail-link,
+.edit-link,
+.registration-link {
+  display: inline-flex; /* Linkleri buton görünümünde kullanmamızı sağlar. */
+  align-items: center; /* Buton yazısını dikey ortalar. */
+  justify-content: center; /* Buton yazısını yatay ortalar. */
+  min-height: 30px; /* Butonların minimum yüksekliğini belirler. */
+  padding: 0 10px; /* Butonun sağında ve solunda boşluk bırakır. */
+  border-radius: 4px; /* Buton köşelerini hafif yuvarlatır. */
+  font-size: 11px; /* Buton yazısının boyutunu belirler. */
+  font-weight: 700; /* Buton yazısını kalın yapar. */
+  text-decoration: none; /* Linklerin varsayılan alt çizgisini kaldırır. */
+}
+
+
+.detail-link {
+  background-color: #003267; /* Detay butonunu lacivert yapar. */
+  color: #ffffff; /* Detay butonu yazısını beyaz yapar. */
+}
+
+
+.detail-link:hover {
+  background-color: #00234b; /* Mouse üzerine geldiğinde detay butonunu koyulaştırır. */
+}
+
+
+.edit-link {
+  background-color: #f68929; /* Güncelle butonunu turuncu yapar. */
+  color: #ffffff; /* Güncelle butonu yazısını beyaz yapar. */
+}
+
+
+.edit-link:hover {
+  background-color: #df7115; /* Mouse üzerine geldiğinde turuncuyu koyulaştırır. */
+}
+
+
+.registration-link {
+  background-color: #ffffff; /* Kayıtlar butonunun arka planını beyaz yapar. */
+  color: #003267; /* Kayıtlar butonunun yazısını lacivert yapar. */
+  border: 1px solid #003267; /* Kayıtlar butonuna lacivert border ekler. */
+}
+
+
+.registration-link:hover {
+  background-color: #f8fafc; /* Mouse üzerine geldiğinde hafif gri arka plan gösterir. */
+}
+
+
+/* ==================================================
+   SAYFALAMA
+   ================================================== */
+
+.pagination {
+  display: flex; /* Sayfalama elemanlarını yan yana dizer. */
+  align-items: center; /* Sayfalama elemanlarını dikey ortalar. */
+  justify-content: center; /* Sayfalamayı sayfanın ortasına yerleştirir. */
+  gap: 16px; /* Elemanlar arasında boşluk bırakır. */
+  margin-top: 22px; /* Tablo ile sayfalama arasında boşluk bırakır. */
+}
+
+
+.pagination-button {
+  min-height: 36px; /* Sayfalama butonlarının minimum yüksekliğini belirler. */
+  padding: 0 15px; /* Butonların sağında ve solunda boşluk bırakır. */
+  background-color: #ffffff; /* Önceki butonunun arka planını beyaz yapar. */
+  color: #003267; /* Buton yazısını lacivert yapar. */
+  border: 1px solid #003267; /* Butona lacivert border ekler. */
+  border-radius: 5px; /* Buton köşelerini yuvarlatır. */
+  font-size: 12px; /* Buton yazısının boyutunu belirler. */
+  font-weight: 700; /* Buton yazısını kalın yapar. */
+  cursor: pointer; /* Kullanıcıya butonun tıklanabilir olduğunu gösterir. */
+}
+
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #f8fafc; /* Aktif butonun üzerine gelindiğinde hafif gri arka plan gösterir. */
+}
+
+
+.pagination-button-primary {
+  background-color: #003267; /* Sonraki butonunu lacivert yapar. */
+  color: #ffffff; /* Sonraki butonunun yazısını beyaz yapar. */
+}
+
+
+.pagination-button-primary:hover:not(:disabled) {
+  background-color: #00234b; /* Sonraki butonunun hover rengini koyulaştırır. */
+}
+
+
+.pagination-button:disabled {
+  opacity: 0.4; /* Kullanılamayan sayfalama butonunu soluk gösterir. */
+  cursor: not-allowed; /* Butonun kullanılamadığını gösteren cursor kullanır. */
+}
+
+
+.page-number {
+  color: #64748b; /* Sayfa bilgisinin normal yazı rengini belirler. */
+  font-size: 12px; /* Sayfa bilgisinin yazı boyutunu belirler. */
+}
+
+
+.page-number strong {
+  color: #003267; /* Aktif ve toplam sayfa sayılarını lacivert yapar. */
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 950px) { /* Ekran genişliği 950px veya altına düştüğünde çalışır. */
+
+  .filter-grid {
+    grid-template-columns: repeat(2, 1fr); /* Filtreleri üç kolondan iki kolona düşürür. */
+  }
+
+}
+
+
+@media (max-width: 650px) { /* Telefon boyutundaki ekranlarda çalışır. */
+
+  .page-header {
+    align-items: flex-start; /* Başlık elemanlarını sola hizalar. */
+    flex-direction: column; /* Başlık ve oluştur butonunu alt alta dizer. */
+  }
+
+
+  .page-header h1 {
+    font-size: 25px; /* Mobilde ana başlığı biraz küçültür. */
+  }
+
+
+  .create-button {
+    width: 100%; /* Mobilde yeni etkinlik butonunu tam genişlik yapar. */
+  }
+
+
+  .filter-grid {
+    grid-template-columns: 1fr; /* Mobilde tüm filtreleri tek kolon halinde gösterir. */
+  }
+
+
+  .filter-actions {
+    align-items: stretch; /* Butonların aynı genişliğe yayılmasını sağlar. */
+    flex-direction: column; /* Filtre butonlarını alt alta dizer. */
+  }
+
+
+  .filter-button,
+  .clear-button {
+    width: 100%; /* Mobilde filtre butonlarını tam genişlik yapar. */
+  }
+
+
+  .pagination {
+    gap: 10px; /* Mobilde sayfalama elemanları arasındaki boşluğu azaltır. */
+  }
+
+}

@@ -1,0 +1,380 @@
+/* ==================================================
+   KULLANICI YÖNETİMİ
+   ================================================== */
+
+.user-management-page {
+  width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
+}
+
+
+/* ==================================================
+   SAYFA BAŞLIĞI
+   ================================================== */
+
+.page-header {
+  display: flex; // Başlık ile yenile butonunu yan yana dizer.
+  align-items: center; // Başlık ve butonu dikey olarak ortalar.
+  justify-content: space-between; // Başlığı sola, butonu sağa yerleştirir.
+  gap: 20px; // Başlık ile buton arasında boşluk bırakır.
+  margin-bottom: 28px; // Başlık ile filtre bölümü arasında boşluk bırakır.
+}
+
+.page-header h1 {
+  margin: 0 0 6px; // Başlığın varsayılan marginini düzenler.
+  color: #003267; // Başlığı CampusBody lacivert rengine boyar.
+  font-size: 30px; // Ana başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.page-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  font-size: 14px; // Açıklama yazı boyutunu belirler.
+}
+
+.refresh-button {
+  min-height: 40px; // Yenile butonunun minimum yüksekliğini belirler.
+  padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #003267; // Butonun arka planını lacivert yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: none; // Tarayıcının varsayılan buton borderını kaldırır.
+  border-radius: 6px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 13px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+}
+
+.refresh-button:hover:not(:disabled) {
+  background-color: #00234b; // Mouse üzerine geldiğinde butonu daha koyu lacivert yapar.
+}
+
+.refresh-button:disabled {
+  opacity: 0.6; // Yükleme sırasında butonu soluk gösterir.
+  cursor: not-allowed; // Butonun geçici olarak kullanılamadığını belirtir.
+}
+
+
+/* ==================================================
+   FİLTRE
+   ================================================== */
+
+.filter-card {
+  margin-bottom: 28px; // Filtre kartı ile sonraki içerik arasında boşluk bırakır.
+  background-color: #ffffff; // Filtre kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına ince border ekler.
+  border-radius: 8px; // Kartın köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.filter-header {
+  padding: 18px 20px; // Filtre başlık alanının içerisine boşluk verir.
+  border-bottom: 1px solid #e7edf3; // Başlık ile filtre alanları arasına çizgi ekler.
+}
+
+.filter-header h2 {
+  margin: 0 0 5px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Filtre başlığını lacivert yapar.
+  font-size: 17px; // Başlık yazı boyutunu belirler.
+  font-weight: 700; // Filtre başlığını kalın yapar.
+}
+
+.filter-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Filtre açıklamasını açık renkte gösterir.
+  font-size: 12px; // Açıklama yazı boyutunu belirler.
+}
+
+.filter-content {
+  display: grid; // Filtre alanlarını grid yapısında düzenler.
+  grid-template-columns: 1fr 1fr auto; // İsim ve bölüm alanlarını eşit, buton alanını içeriği kadar geniş yapar.
+  align-items: end; // Filtre alanlarının alt kısımlarını aynı hizaya getirir.
+  gap: 18px; // Filtre alanları arasında boşluk bırakır.
+  padding: 20px; // Filtrelerin kart kenarlarına yapışmasını engeller.
+}
+
+.form-field {
+  display: flex; // Label ve form alanını flex yapısına geçirir.
+  flex-direction: column; // Labelı input veya select alanının üstünde gösterir.
+  gap: 7px; // Label ile form alanı arasında boşluk bırakır.
+}
+
+.form-field label {
+  color: #334155; // Label yazısını koyu gri-lacivert yapar.
+  font-size: 12px; // Label yazı boyutunu belirler.
+  font-weight: 700; // Labelı kalın yapar.
+}
+
+.form-field input,
+.form-field select {
+  width: 100%; // Input ve selectin kullanılabilir genişliğin tamamını kaplamasını sağlar.
+  height: 40px; // Form alanlarının yüksekliğini belirler.
+  padding: 0 12px; // Yazının form alanı kenarlarına yapışmasını engeller.
+  background-color: #ffffff; // Form alanlarının arka planını beyaz yapar.
+  color: #334155; // Form alanlarındaki yazı rengini belirler.
+  border: 1px solid #cbd5e1; // Form alanlarının etrafına ince border ekler.
+  border-radius: 5px; // Form alanlarının köşelerini hafif yuvarlatır.
+  outline: none; // Tarayıcının varsayılan focus çizgisini kaldırır.
+  font-size: 13px; // Form alanlarındaki yazı boyutunu belirler.
+}
+
+.form-field input::placeholder {
+  color: #94a3b8; // Arama inputundaki placeholder yazısını açık gri yapar.
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #003267; // Kullanıcı form alanına tıkladığında borderı lacivert yapar.
+}
+
+.clear-button {
+  height: 40px; // Temizleme butonunu inputlarla aynı yüksekliğe getirir.
+  padding: 0 16px; // Butonun sağında ve solunda boşluk bırakır.
+  background-color: #ffffff; // Butonun arka planını beyaz yapar.
+  color: #003267; // Buton yazısını lacivert yapar.
+  border: 1px solid #003267; // Butona lacivert border ekler.
+  border-radius: 5px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 12px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+  white-space: nowrap; // Buton yazısının iki satıra geçmesini engeller.
+}
+
+.clear-button:hover {
+  background-color: #f8fafc; // Mouse üzerine geldiğinde butonun arka planını hafif gri yapar.
+}
+
+
+/* ==================================================
+   MESAJLAR
+   ================================================== */
+
+.page-message,
+.empty-card {
+  margin-bottom: 24px; // Mesaj ile sonraki içerik arasında boşluk bırakır.
+  padding: 17px; // Mesaj kutusunun içine boşluk verir.
+  background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
+  color: #64748b; // Normal mesaj yazısını gri-lacivert yapar.
+  border: 1px solid #dbe3ec; // Mesaj kutusuna ince border ekler.
+  border-radius: 8px; // Mesaj kutusunun köşelerini hafif yuvarlatır.
+  font-size: 13px; // Mesaj yazı boyutunu belirler.
+}
+
+.error-message {
+  background-color: #fef2f2; // Hata mesajına açık kırmızı arka plan verir.
+  color: #b91c1c; // Hata mesajı yazısını kırmızı yapar.
+  border-color: #fecaca; // Hata mesajının borderını açık kırmızı yapar.
+}
+
+.success-message {
+  background-color: #ecfdf3; // Başarı mesajına açık yeşil arka plan verir.
+  color: #166534; // Başarı mesajı yazısını koyu yeşil yapar.
+  border-color: #bbf7d0; // Başarı mesajının borderını yeşil yapar.
+}
+
+
+/* ==================================================
+   KULLANICI LİSTESİ
+   ================================================== */
+
+.users-section {
+  width: 100%; // Kullanıcı listesi bölümünün tam genişlik kullanmasını sağlar.
+}
+
+.section-header {
+  margin-bottom: 15px; // Liste başlığı ile tablo arasında boşluk bırakır.
+}
+
+.section-header h2 {
+  margin: 0 0 5px; // Başlık ile açıklama arasında boşluk bırakır.
+  color: #003267; // Liste başlığını lacivert yapar.
+  font-size: 20px; // Liste başlığı boyutunu belirler.
+  font-weight: 700; // Liste başlığını kalın yapar.
+}
+
+.section-header p {
+  margin: 0; // Paragrafın varsayılan marginini kaldırır.
+  color: #64748b; // Kullanıcı sayısını açık renkte gösterir.
+  font-size: 13px; // Açıklama yazı boyutunu belirler.
+}
+
+
+/* ==================================================
+   TABLO
+   ================================================== */
+
+.table-card {
+  width: 100%; // Tablo kartının tam genişlik kullanmasını sağlar.
+  background-color: #ffffff; // Tablo arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Tablo kartının etrafına ince border ekler.
+  border-radius: 8px; // Tablo kartının köşelerini hafif yuvarlatır.
+  overflow: hidden; // Kart dışına taşan içeriği gizler.
+}
+
+.table-wrapper {
+  width: 100%; // Tablo kapsayıcısının tam genişlik kullanmasını sağlar.
+  overflow-x: auto; // Küçük ekranlarda tabloyu yatay kaydırılabilir yapar.
+}
+
+.users-table {
+  width: 100%; // Tabloyu kapsayıcısının tamamına yayar.
+  min-width: 850px; // Kolonların gereğinden fazla sıkışmasını engeller.
+  border-collapse: collapse; // Hücre çizgilerinin birleşmesini sağlar.
+}
+
+.users-table thead {
+  background-color: #f8fafc; // Tablo başlık bölümünü açık gri yapar.
+}
+
+.users-table th {
+  padding: 14px 15px; // Tablo başlıklarının içine boşluk verir.
+  color: #475569; // Başlık yazılarının rengini belirler.
+  border-bottom: 1px solid #dbe3ec; // Başlık satırının altına ince çizgi ekler.
+  text-align: left; // Başlık yazılarını sola hizalar.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 700; // Başlık yazılarını kalın yapar.
+  white-space: nowrap; // Başlıkların alt satıra geçmesini engeller.
+}
+
+.users-table td {
+  padding: 15px; // Tablo hücrelerinin içerisine boşluk verir.
+  color: #475569; // Normal tablo yazılarının rengini belirler.
+  border-bottom: 1px solid #edf1f5; // Kullanıcı satırları arasına ince çizgi ekler.
+  font-size: 12px; // Tablo yazı boyutunu belirler.
+  vertical-align: middle; // Hücre içeriğini dikey olarak ortalar.
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none; // Son satırın altındaki gereksiz çizgiyi kaldırır.
+}
+
+.users-table tbody tr:hover {
+  background-color: #fafbfd; // Mouse kullanıcı satırının üzerine geldiğinde arka planı direkt değiştirir.
+}
+
+.user-name {
+  color: #003267 !important; // Kullanıcının adını CampusBody laciverti yapar.
+  font-weight: 700; // Kullanıcı adını kalın gösterir.
+}
+
+.department-admin {
+  color: #003267; // Yönetim bölümünü lacivert gösterir.
+  font-weight: 700; // Yönetim yazısını belirgin hale getirir.
+}
+
+
+/* ==================================================
+   ROL ETİKETLERİ
+   ================================================== */
+
+.role-badge {
+  display: inline-block; // Rol etiketinin yalnızca içeriği kadar geniş olmasını sağlar.
+  padding: 5px 9px; // Rol etiketinin içine boşluk verir.
+  border-radius: 4px; // Etiket köşelerini hafif yuvarlatır.
+  font-size: 11px; // Etiket yazı boyutunu belirler.
+  font-weight: 700; // Rol yazısını kalın yapar.
+  white-space: nowrap; // Rol adının iki satıra geçmesini engeller.
+}
+
+.role-admin {
+  background-color: #e8eef6; // Admin etiketine açık lacivert-gri arka plan verir.
+  color: #003267; // Admin yazısını lacivert yapar.
+}
+
+.role-manager {
+  background-color: #fff3e6; // Kulüp Yöneticisi etiketine açık turuncu arka plan verir.
+  color: #d9680d; // Kulüp Yöneticisi yazısını turuncu yapar.
+}
+
+.role-student {
+  background-color: #ecfdf3; // Öğrenci etiketine açık yeşil arka plan verir.
+  color: #15803d; // Öğrenci yazısını yeşil yapar.
+}
+
+
+/* ==================================================
+   ROL DEĞİŞTİRME BUTONLARI
+   ================================================== */
+
+.role-button {
+  min-height: 32px; // Rol değiştirme butonunun minimum yüksekliğini belirler.
+  padding: 0 12px; // Butonun sağında ve solunda boşluk bırakır.
+  border-radius: 4px; // Buton köşelerini hafif yuvarlatır.
+  font-size: 11px; // Buton yazı boyutunu belirler.
+  font-weight: 700; // Buton yazısını kalın yapar.
+  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+  white-space: nowrap; // Buton yazısının iki satıra geçmesini engeller.
+}
+
+.manager-button {
+  background-color: #f68929; // Kulüp Yöneticisi Yap butonunu CampusBody turuncusu yapar.
+  color: #ffffff; // Buton yazısını beyaz yapar.
+  border: 1px solid #f68929; // Buton borderını turuncu yapar.
+}
+
+.manager-button:hover:not(:disabled) {
+  background-color: #df7115; // Mouse üzerine geldiğinde turuncuyu koyulaştırır.
+  border-color: #df7115; // Hover sırasında border rengini de koyulaştırır.
+}
+
+.student-button {
+  background-color: #ffffff; // Öğrenci Yap butonunun arka planını beyaz yapar.
+  color: #003267; // Buton yazısını lacivert yapar.
+  border: 1px solid #003267; // Butona lacivert border ekler.
+}
+
+.student-button:hover:not(:disabled) {
+  background-color: #f8fafc; // Mouse üzerine geldiğinde hafif gri arka plan gösterir.
+}
+
+.role-button:disabled {
+  opacity: 0.6; // Rol değiştirme işlemi sırasında butonları soluk gösterir.
+  cursor: not-allowed; // Kullanıcıya butonun geçici olarak kullanılamadığını gösterir.
+}
+
+.own-account {
+  color: #94a3b8; // Kendi hesabınız yazısını geri planda gösterir.
+  font-size: 11px; // Yazı boyutunu küçük tutar.
+  font-weight: 600; // Yazıyı hafif kalın gösterir.
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 800px) { // Tablet ve daha küçük ekranlarda çalışır.
+  .filter-content {
+    grid-template-columns: 1fr 1fr; // Filtre alanlarını iki kolona düşürür.
+  }
+
+  .filter-actions {
+    grid-column: 1 / -1; // Temizleme butonunun iki kolonu birden kaplamasını sağlar.
+  }
+
+  .clear-button {
+    width: 100%; // Temizleme butonunu tam genişlik yapar.
+  }
+}
+
+@media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
+  .page-header {
+    align-items: flex-start; // Başlık ve butonu sola hizalar.
+    flex-direction: column; // Başlık ile yenile butonunu alt alta dizer.
+  }
+
+  .page-header h1 {
+    font-size: 25px; // Mobilde sayfa başlığını biraz küçültür.
+  }
+
+  .refresh-button {
+    width: 100%; // Mobilde yenile butonunu tam genişlik yapar.
+  }
+
+  .filter-content {
+    grid-template-columns: 1fr; // Mobilde bütün filtre alanlarını tek kolon haline getirir.
+  }
+
+  .filter-actions {
+    grid-column: auto; // Mobilde filtre butonunun normal grid davranışına dönmesini sağlar.
+  }
+}
