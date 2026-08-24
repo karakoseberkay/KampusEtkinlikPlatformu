@@ -14,7 +14,7 @@
     </header>
 
     <!-- Login formunu TypeScript tarafındaki form değişkenine bağlar ve gönderildiğinde submit metodunu çalıştırır -->
-    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate> <!--tarayıcının kendi hazır validatiom mesajlarını kapatır-->
       <!-- E-posta form alanıdır -->
       <div class="form-field">
         <label for="email">E-posta</label> <!-- Input alanının e-posta için olduğunu belirtir. -->
@@ -39,7 +39,7 @@
         <label for="password">Şifre</label> <!-- Input alanının şifre için olduğunu belirtir. -->
         <input
           id="password"
-          type="password"
+          type="password" //parolanın gizlenmesi için
           formControlName="password"
           placeholder="Şifreniz"
           autocomplete="current-password"
@@ -56,11 +56,11 @@
       <!-- Backend login işleminde hata oluşursa kullanıcıya gösterilir -->
       @if (errorMessage()) {
         <div class="alert-error" role="alert">
-          {{ errorMessage() }}
+          {{ errorMessage() }}//interpolation: bir değeri html içine yazdırma
         </div>
       }
 
-      <!-- Login formunu gönderir, işlem devam ederken tekrar tıklanamaz -->
+      <!-- Login formunu gönderir işlem devam ederken tekrar tıklanamaz -->
       <button class="primary-button" type="submit" [disabled]="loading()">
         @if (loading()) {
           Giriş Yapılıyor...

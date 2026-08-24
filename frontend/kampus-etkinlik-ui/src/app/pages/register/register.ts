@@ -37,13 +37,10 @@ export class RegisterPage { // Kayıt Ol sayfasının TypeScript classıdır.
     this.loading.set(true); // Kayıt işleminin başladığını belirtir.
     this.errorMessage.set(null); // Daha önce gösterilmiş hata mesajını temizler.
 
-    this.authService
-      .register(this.form.getRawValue()) // Formdaki Ad Soyad, Bölüm, E-posta ve Şifre bilgilerini AuthService üzerinden backend'e gönderir.
-      .pipe(
+    this.authService.register(this.form.getRawValue()) // Formdaki Ad Soyad, Bölüm, E-posta ve Şifre bilgilerini AuthService üzerinden backend'e gönderir.
+      .pipe(                          //getrawvalue: verileri obje olarak alır
         finalize(() => this.loading.set(false)) // İşlem başarılı veya hatalı sonuçlansa da sonunda loading durumunu kapatır.
-      )
-      .subscribe({
-        next: () => { // Backend kayıt işlemini başarılı tamamladığında çalışır.
+      ).subscribe({ next: () => { // Backend kayıt işlemini başarılı tamamladığında çalışır.
           void this.router.navigateByUrl('/home'); // Kullanıcıyı kayıt işleminden sonra Ana Sayfa ekranına yönlendirir.
         },
         error: (error: HttpErrorResponse) => { // Backend kayıt isteği hata verdiğinde çalışır.
@@ -55,7 +52,7 @@ export class RegisterPage { // Kayıt Ol sayfasının TypeScript classıdır.
 
   private getErrorMessage(error: HttpErrorResponse): string { // Backendden gelen kayıt hatasını kullanıcıya gösterilecek metne dönüştürür.
     if (error.status === 0) { // Backend sunucusuna bağlantı kurulamadıysa çalışır.
-      return 'Backend bağlantısı kurulamadı. API ve CORS ayarlarını kontrol et.'; // Kullanıcıya bağlantı problemini bildirir.
+      return 'Backend bağlantısı kurulamadı. API ve CORS ayarlarını kontrol ett!!!'; // Kullanıcıya bağlantı problemini bildirir.
     }
 
     if (typeof error.error?.message === 'string') { // Backend hata cevabında message alanı varsa çalışır.

@@ -79,7 +79,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
                 <!-- Backendden gelen popüler etkinlikleri tabloya basar -->
                 <tbody>
-                  @for (event of events(); track event.id; let index = $index) {
+                  @for (event of events(); track event.id; let index = $index) {<!--$index kaçıncı elemanda olduğunu verir-->
                     <tr>
                       <!-- Etkinliğin listedeki sırasını gösterir -->
                       <td class="ranking-cell">

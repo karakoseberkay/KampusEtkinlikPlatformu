@@ -37,11 +37,11 @@ export class LoginPage { // Giriş Yap sayfasının TypeScript classıdır.
     this.errorMessage.set(null); // Daha önce gösterilmiş hata mesajını temizler.
 
     this.authService.login(this.form.getRawValue()) // Formdaki e-posta ve şifre bilgisini AuthService üzerinden backend'e gönderir.
-      .pipe(
-        finalize(() => this.loading.set(false)) // Login başarılı da olsa hatalı da olsa işlem bittiğinde loading durumunu kapatır.
-      )
-      .subscribe({
-        next: () => { // Backend login işlemini başarılı tamamladığında çalışır.
+      .pipe(finalize(() => this.loading.set(false)))
+         // Login başarılı da olsa hatalı da olsa işlem bittiğinde loading durumunu kapatır.
+      
+      .subscribe({next: () => {
+         // Backend login işlemini başarılı tamamladığında çalışır.
           const requestedReturnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl'); // AuthGuard tarafından URLye eklenmiş returnUrl parametresini alır.
           const returnUrl = requestedReturnUrl?.startsWith('/') ? requestedReturnUrl : '/home'; // Geçerli bir returnUrl varsa onu, yoksa ana sayfayı hedef olarak belirler.
           void this.router.navigateByUrl(returnUrl); // Kullanıcıyı belirlenen sayfaya yönlendirir.

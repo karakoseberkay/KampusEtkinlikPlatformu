@@ -1,6 +1,5 @@
-/* ==================================================
-   LOGIN SAYFASI
-   ================================================== */
+//LOGIN SAYFASI
+ 
 
 .auth-page {
   width: 100%; // Login sayfasının kullanılabilir genişliğin tamamını kullanmasını sağlar.
@@ -27,7 +26,7 @@
 
 
 /* ==================================================
-   CAMPUSBODY LOGOSU
+   LOGO
    ================================================== */
 
 .brand {
@@ -192,7 +191,7 @@
 
 /* ==================================================
    RESPONSIVE
-   ================================================== */
+   ================================================== 
 
 @media (max-width: 550px) { // Telefon boyutundaki ekranlarda çalışır.
   .auth-page {
@@ -218,4 +217,4 @@
   .auth-header h1 {
     font-size: 22px; // Mobilde login başlığını biraz küçültür.
   }
-}
+}*/

@@ -113,7 +113,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                 type="text"
                 placeholder="Etkinlik adı..."
                 [value]="searchText()"
-                (input)="searchText.set($any($event.target).value)"
+                (input)="searchText.set($any($event.target).value)"//inputa yazılan değeri alıp searchtext signaline koyuyor
               >
 
             </div>

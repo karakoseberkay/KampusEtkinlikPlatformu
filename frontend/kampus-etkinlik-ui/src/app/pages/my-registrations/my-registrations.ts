@@ -93,7 +93,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Tablo bölümünün başlığıdır -->
           <div class="section-header">
             <h2>Kayıt Geçmişi</h2> <!-- Kayıt listesinin başlığını gösterir. -->
-            <p>Başvuru yaptığınız etkinlikleri ve kayıt durumlarını gösterir.</p> <!-- Tablo hakkında kısa açıklama verir. -->
+            <p>Başvuru yaptığınız etkinlikleri ve kayıt durumlarını gösterir.</p> <!-- Tablo hakkında kısa açıklama -->
           </div>
 
           <!-- Tabloyu kart görünümünde tutar -->

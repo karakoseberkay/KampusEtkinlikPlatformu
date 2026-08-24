@@ -42,8 +42,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               id="search"
               type="text"
               placeholder="Kullanıcı adı..."
-              [value]="searchText()"
-              (input)="searchText.set($any($event.target).value)"
+              [value]="searchText()"//değiştikçe yeniden hesaplanıyor
+              (input)="searchText.set($any($event.target).value)"//input/select değiştiğinde kullanıcının yazdığı veya seçtiği değeri alıyor
             >
           </div>
 
@@ -168,9 +168,9 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                           <span class="role-badge role-admin">Admin</span>
                         } @else if (user.roles.includes('ClubManager')) {
                           <span class="role-badge role-manager">Kulüp Yöneticisi</span>
-                        } @else {
-                          <span class="role-badge role-student">Öğrenci</span>
-                        }
+                        } @else {<span class="role-badge role-student">Öğrenci</span>}
+                          
+                        
                       </td>
 
                       <!-- Kullanıcı üzerinde yapılabilecek işlemleri gösterir -->
@@ -236,12 +236,12 @@ export class UserManagement implements OnInit { // Kullanıcı Yönetimi sayfas�
   readonly successMessage = signal(''); // Kullanıcıya gösterilecek başarılı işlem mesajını tutar.
 
   readonly departments = computed(() => { // Backendden gelen kullanıcılara göre bölüm filtre seçeneklerini otomatik oluşturur.
-    const departments = this.users() // Kullanıcı listesini alır.
-      .map(user => user.department) // Her kullanıcının sadece bölüm bilgisini alır.
+    const departments = this.users().map(user => user.department) // Kullanıcı listesini alır.
+      // Her kullanıcının sadece bölüm bilgisini alır.
       .filter((department): department is string => !!department && department.trim().length > 0); // Boş veya null bölüm bilgilerini listeden çıkarır.
 
-    return [...new Set(departments)] // Aynı bölümün birden fazla kez görünmesini engelleyerek benzersiz bir liste oluşturur.
-      .sort((a, b) => a.localeCompare(b, 'tr')); // Bölümleri Türkçe alfabetik sıraya göre sıralar.
+    return [...new Set(departments)].sort((a, b) => a.localeCompare(b, 'tr')); // Aynı bölümün birden fazla kez görünmesini engelleyerek benzersiz bir liste oluşturur.
+       // Bölümleri Türkçe alfabetik sıraya göre sıralar.
   });
 
   readonly filteredUsers = computed(() => { // İsim ve bölüm filtresine göre ekranda gösterilecek kullanıcıları hesaplar.

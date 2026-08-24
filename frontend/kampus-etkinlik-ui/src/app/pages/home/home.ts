@@ -11,7 +11,7 @@ import { AuthService } from '../../core/services/auth.service'; // Giriş yapan 
     <section class="home-page">
       <!-- Sayfanın üst başlık alanıdır -->
       <div class="page-header">
-        <h1>Ana Sayfa</h1> <!-- Sayfanın ana başlığını gösterir. -->
+        <h1>Ana Sayfa</h1> <!-- Sayfanın ana başlığı -->
         <!-- Giriş yapan kullanıcı varsa ismiyle hoş geldin mesajı gösterir -->
         @if (auth.currentUser(); as user) {
           <p>Hoş geldin, {{ user.fullName }}</p>
