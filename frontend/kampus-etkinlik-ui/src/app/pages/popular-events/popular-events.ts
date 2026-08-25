@@ -155,11 +155,9 @@ export class PopularEvents implements OnInit { // Popüler Etkinlikler sayfasın
   readonly loading = signal(false); // Popüler etkinlikler yüklenirken işlemin devam edip etmediğini tutar.
   readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
 
-
   ngOnInit(): void { // Sayfa ilk açıldığında Angular tarafından otomatik olarak çalıştırılır.
     this.loadEvents(); // Sayfa açılır açılmaz popüler etkinlikleri backendden getirir.
   }
-
 
   loadEvents(): void { // Backendden en popüler 10 etkinliği getiren metottur.
     this.loading.set(true); // Backend isteğinin başladığını belirtir.

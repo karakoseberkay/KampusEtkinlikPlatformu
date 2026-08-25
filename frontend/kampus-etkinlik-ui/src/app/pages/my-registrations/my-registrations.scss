@@ -1,16 +1,9 @@
-/* ==================================================
-   KAYITLARIM SAYFASI
-   ================================================== */
-
+/* Kayıtlarım sayfası */
 .registrations-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   SAYFA BAŞLIĞI
-   ================================================== */
-
+/* Sayfa başlığı */
 .page-header {
   display: flex; // Başlık ile yenile butonunu yan yana dizer.
   align-items: center; // Başlık ve butonu dikey olarak ortalar.
@@ -53,11 +46,7 @@
   cursor: not-allowed; // Butonun kullanılamadığını gösterir.
 }
 
-
-/* ==================================================
-   MESAJLAR
-   ================================================== */
-
+/* Mesajlar */
 .page-message {
   margin-bottom: 24px; // Mesaj ile sonraki içerik arasında boşluk bırakır.
   padding: 17px; // Mesaj kutusunun içine boşluk verir.
@@ -74,11 +63,7 @@
   border-color: #fecaca; // Hata kutusunun borderını açık kırmızı yapar.
 }
 
-
-/* ==================================================
-   BÖLÜM BAŞLIKLARI
-   ================================================== */
-
+/* Bölüm başlıkları */
 .summary-section,
 .history-section {
   margin-bottom: 34px; // Ana bölümler arasında boşluk bırakır.
@@ -101,11 +86,7 @@
   font-size: 13px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   ÖZET KARTLARI
-   ================================================== */
-
+/* Özet kartları */
 .summary-grid {
   display: grid; // Özet kartlarını grid yapısıyla düzenler.
   grid-template-columns: repeat(4, 1fr); // Büyük ekranda dört eşit kolon oluşturur.
@@ -148,11 +129,7 @@
   color: #b91c1c; // Reddedilen kayıt sayısını kırmızı gösterir.
 }
 
-
-/* ==================================================
-   KAYIT BULUNAMADI
-   ================================================== */
-
+/* Kayıt bulunamadı */
 .empty-card {
   padding: 18px; // Mesaj kutusunun içerisine boşluk verir.
   background-color: #ffffff; // Kutunun arka planını beyaz yapar.
@@ -162,11 +139,7 @@
   font-size: 13px; // Mesaj yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   KAYIT GEÇMİŞİ TABLOSU
-   ================================================== */
-
+/* Kayıt geçmişi tablosu */
 .table-card {
   width: 100%; // Tablo kartının bütün genişliği kullanmasını sağlar.
   background-color: #ffffff; // Tablo kartının arka planını beyaz yapar.
@@ -221,11 +194,7 @@
   font-weight: 700; // Etkinlik başlığını kalın yapar.
 }
 
-
-/* ==================================================
-   KAYIT DURUM ETİKETLERİ
-   ================================================== */
-
+/* Kayıt durum etiketleri */
 .status-badge {
   display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
   padding: 5px 9px; // Etiketin içine boşluk verir.
@@ -255,11 +224,7 @@
   color: #64748b; // Bilinmeyen durum yazısını gri yapar.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== 
-
+/* Responsive
 @media (max-width: 900px) { // Tablet boyutundaki ekranlarda çalışır.
   .summary-grid {
     grid-template-columns: repeat(2, 1fr); // Özet kartlarını dört kolondan iki kolona düşürür.

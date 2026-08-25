@@ -1,16 +1,9 @@
-/* ==================================================
-   KULLANICI YÖNETİMİ
-   ================================================== */
-
+/* Kullanıcı Yönetimi sayfası */
 .user-management-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   SAYFA BAŞLIĞI
-   ================================================== */
-
+/* Sayfa başlığı */
 .page-header {
   display: flex; // Başlık ile yenile butonunu yan yana dizer.
   align-items: center; // Başlık ve butonu dikey olarak ortalar.
@@ -32,6 +25,7 @@
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
+/* Kullanıcıları yenileme butonu */
 .refresh-button {
   min-height: 40px; // Yenile butonunun minimum yüksekliğini belirler.
   padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
@@ -53,11 +47,7 @@
   cursor: not-allowed; // Butonun geçici olarak kullanılamadığını belirtir.
 }
 
-
-/* ==================================================
-   FİLTRE
-   ================================================== */
-
+/* Filtre alanı */
 .filter-card {
   margin-bottom: 28px; // Filtre kartı ile sonraki içerik arasında boşluk bırakır.
   background-color: #ffffff; // Filtre kartının arka planını beyaz yapar.
@@ -126,6 +116,7 @@
   border-color: #003267; // Kullanıcı form alanına tıkladığında borderı lacivert yapar.
 }
 
+/* Filtreleri temizleme butonu */
 .clear-button {
   height: 40px; // Temizleme butonunu inputlarla aynı yüksekliğe getirir.
   padding: 0 16px; // Butonun sağında ve solunda boşluk bırakır.
@@ -143,11 +134,7 @@
   background-color: #f8fafc; // Mouse üzerine geldiğinde butonun arka planını hafif gri yapar.
 }
 
-
-/* ==================================================
-   MESAJLAR
-   ================================================== */
-
+/* Mesaj alanları */
 .page-message,
 .empty-card {
   margin-bottom: 24px; // Mesaj ile sonraki içerik arasında boşluk bırakır.
@@ -171,11 +158,7 @@
   border-color: #bbf7d0; // Başarı mesajının borderını yeşil yapar.
 }
 
-
-/* ==================================================
-   KULLANICI LİSTESİ
-   ================================================== */
-
+/* Kullanıcı listesi */
 .users-section {
   width: 100%; // Kullanıcı listesi bölümünün tam genişlik kullanmasını sağlar.
 }
@@ -197,11 +180,7 @@
   font-size: 13px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   TABLO
-   ================================================== */
-
+/* Kullanıcı tablosu */
 .table-card {
   width: 100%; // Tablo kartının tam genişlik kullanmasını sağlar.
   background-color: #ffffff; // Tablo arka planını beyaz yapar.
@@ -248,7 +227,7 @@
 }
 
 .users-table tbody tr:hover {
-  background-color: #fafbfd; // Mouse kullanıcı satırının üzerine geldiğinde arka planı direkt değiştirir.
+  background-color: #fafbfd; // Mouse kullanıcı satırının üzerine geldiğinde arka planı değiştirir.
 }
 
 .user-name {
@@ -261,11 +240,7 @@
   font-weight: 700; // Yönetim yazısını belirgin hale getirir.
 }
 
-
-/* ==================================================
-   ROL ETİKETLERİ
-   ================================================== */
-
+/* Rol etiketleri */
 .role-badge {
   display: inline-block; // Rol etiketinin yalnızca içeriği kadar geniş olmasını sağlar.
   padding: 5px 9px; // Rol etiketinin içine boşluk verir.
@@ -290,11 +265,7 @@
   color: #15803d; // Öğrenci yazısını yeşil yapar.
 }
 
-
-/* ==================================================
-   ROL DEĞİŞTİRME BUTONLARI
-   ================================================== */
-
+/* Rol değiştirme butonları */
 .role-button {
   min-height: 32px; // Rol değiştirme butonunun minimum yüksekliğini belirler.
   padding: 0 12px; // Butonun sağında ve solunda boşluk bırakır.
@@ -337,11 +308,7 @@
   font-weight: 600; // Yazıyı hafif kalın gösterir.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== 
-
+/* Responsive düzen */
 @media (max-width: 800px) { // Tablet ve daha küçük ekranlarda çalışır.
   .filter-content {
     grid-template-columns: 1fr 1fr; // Filtre alanlarını iki kolona düşürür.
@@ -377,4 +344,4 @@
   .filter-actions {
     grid-column: auto; // Mobilde filtre butonunun normal grid davranışına dönmesini sağlar.
   }
-}*/
+}

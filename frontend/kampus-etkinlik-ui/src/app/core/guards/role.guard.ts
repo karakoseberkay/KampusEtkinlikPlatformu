@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-function roleGuard(role: string): boolean | UrlTree { // verilen role göre sayfa erişimini kontrol eder
+function roleGuard(role: string): boolean | UrlTree { // verilen role göre sayfa erişimini kontrol eder (ya true/false ya da başka url)
   const authService = inject(AuthService); // kullanıcının oturum ve rol bilgilerine erişmemizi sağlar
   const router = inject(Router); // kullanıcıyı farklı routelara yönlendirmemizi sağlar
 
@@ -31,11 +31,7 @@ export const adminGuard: CanActivateFn = () => {
 
   const user = authService.currentUser();
 
-  if (
-    !user || !authService.hasRole('ClubManager') || user.email.toLowerCase() !== 'manager@kampus.com'
-    
-   
-  ) {
+  if (!user || !authService.hasRole('ClubManager') || user.email.toLowerCase() !== 'manager@kampus.com'){
     return router.createUrlTree(['/home']); 
     // sadece manager@kampus.com admin hesabına izin verir
   }

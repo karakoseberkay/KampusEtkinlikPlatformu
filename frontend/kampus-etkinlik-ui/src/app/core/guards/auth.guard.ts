@@ -2,7 +2,10 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = (_route, state) => {
+export const authGuard: CanActivateFn = (_route, state) => {//canactivatefn: bunun bir route guard fonksiyonu olduğunu belirtir
+//_route: gidilmek istenen route hakkında bilgi
+//state: mevcut yönelendirme hakkında bilgi
+
   const authService = inject(AuthService); // kullanıcının oturum bilgilerine erişmemizi sağlar
   const router = inject(Router); // kullanıcıyı farklı routelara yönlendirmemizi sağlar
 
@@ -12,10 +15,9 @@ export const authGuard: CanActivateFn = (_route, state) => {
 
   return router.createUrlTree(//yoksa login sayfasına paslar, ama adresi saklar böylece giriş yaptığı anda o adrese yönlendirir
     ['/login'],
-    {
-      queryParams: {
+
+    {queryParams: {
         returnUrl: state.url // giriş yaptıktan sonra kullanıcının gitmek istediği sayfaya dönebilmek için url bilgisini taşır
-      }
-    }
+      }}
   );
 };

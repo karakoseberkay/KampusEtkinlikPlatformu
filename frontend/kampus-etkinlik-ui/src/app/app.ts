@@ -11,4 +11,4 @@ import { AuthService } from './core/services/auth.service'; // Giriş yapan kull
 })
 export class App { // Uygulamanın en üst seviyedeki ana component classıdır.
   readonly auth = inject(AuthService); // Kullanıcı giriş durumu ve rol kontrolleri için AuthService'i enjekte eder.
-}
+}//inject: başka bir classın özelliklerini/metotlarını bu component içerisinde kullanmamızı sağlar

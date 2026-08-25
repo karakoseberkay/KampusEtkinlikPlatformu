@@ -1,9 +1,9 @@
-/* Ana Sayfanın genel alanıdır. */
+/* Ana sayfa */
 .home-page {
   width: 100%; // Sayfanın kullanılabilir genişliğin tamamını kullanmasını sağlar.
 }
 
-/* Sayfanın üst başlık alanıdır. */
+/* Sayfa başlığı */
 .page-header {
   margin-bottom: 28px; // Başlık ile kullanıcı kartı arasında boşluk bırakır.
 }
@@ -21,7 +21,7 @@
   font-size: 14px; // Hoş geldin mesajının yazı boyutunu belirler.
 }
 
-/* Kullanıcı bilgilerinin bulunduğu karttır. */
+/* Kullanıcı kartı */
 .user-card {
   margin-bottom: 34px; // Kullanıcı kartı ile sonraki bölüm arasında boşluk bırakır.
   background-color: #ffffff; // Kart arka planını beyaz yapar.
@@ -30,7 +30,7 @@
   overflow: hidden; // Kart dışına taşan içeriği gizler.
 }
 
-/* Kullanıcı kartının başlık alanıdır. */
+/* Kart başlığı */
 .card-header {
   padding: 18px 20px; // Başlık alanının içine boşluk verir.
   border-bottom: 1px solid #e7edf3; // Başlık ile kullanıcı bilgileri arasına çizgi ekler.
@@ -49,14 +49,13 @@
   font-size: 12px; // Açıklama yazı boyutunu belirler.
 }
 
-/* Kullanıcı bilgilerini yan yana düzenler. */
+/* Kullanıcı bilgileri */
 .user-information {
   display: grid; // Kullanıcı bilgilerini grid yapısında düzenler.
   grid-template-columns: repeat(3, 1fr); // Ad Soyad, E-posta ve Rol için üç eşit kolon oluşturur.
   padding: 8px 20px; // Bilgilerin kart kenarlarına yapışmasını engeller.
 }
 
-/* Kullanıcı bilgilerindeki her bir alanı düzenler. */
 .information-item {
   display: flex; // Label ve değeri flex yapısına geçirir.
   flex-direction: column; // Labelı üstte, değeri altta gösterir.
@@ -64,21 +63,19 @@
   padding: 18px 0; // Bilgi alanına üstten ve alttan boşluk verir.
 }
 
-/* Kullanıcı bilgisi başlıklarının tasarımıdır. */
 .information-label {
   color: #64748b; // Label rengini açık gri-lacivert yapar.
   font-size: 11px; // Label yazı boyutunu belirler.
   font-weight: 600; // Labelı belirgin gösterir.
 }
 
-/* Kullanıcının asıl bilgi değerlerinin tasarımıdır. */
 .information-value {
   color: #1e293b; // Bilgi değerlerini koyu renkte gösterir.
   font-size: 14px; // Bilgi değerlerinin yazı boyutunu belirler.
   font-weight: 600; // Bilgi değerlerini belirgin hale getirir.
 }
 
-/* Kullanıcı rolünü etiket şeklinde gösterir. */
+/* Rol etiketi */
 .role-badge {
   width: fit-content; // Rol etiketinin sadece yazı kadar geniş olmasını sağlar.
   padding: 5px 9px; // Etiketin içine boşluk verir.
@@ -89,12 +86,12 @@
   font-weight: 700; // Rol yazısını kalın yapar.
 }
 
-/* Ana Sayfadaki her işlem bölümünü düzenler. */
+/* Ana sayfa bölümleri */
 .home-section {
   margin-bottom: 34px; // İşlem bölümleri arasında boşluk bırakır.
 }
 
-/* İşlem bölümlerinin başlık alanıdır. */
+/* Bölüm başlığı */
 .section-header {
   margin-bottom: 15px; // Başlık ile kartlar arasında boşluk bırakır.
 }
@@ -112,19 +109,19 @@
   font-size: 13px; // Açıklama yazı boyutunu belirler.
 }
 
-/* İşlem kartlarını grid şeklinde düzenler. */
+/* İşlem kartları */
 .action-grid {
   display: grid; // İşlem kartlarını grid yapısına geçirir.
   grid-template-columns: repeat(3, 1fr); // Büyük ekranda üç eşit kolon oluşturur.
   gap: 14px; // Kartlar arasında boşluk bırakır.
 }
 
-/* Öğrenci işlemlerindeki iki kartı iki kolon halinde gösterir. */
+/* Küçük işlem kartları */
 .action-grid--small {
   grid-template-columns: repeat(2, 1fr); // Öğrenci kartlarını iki eşit kolona böler.
 }
 
-/* Ana Sayfadaki tıklanabilir işlem kartlarıdır. */
+/* İşlem kartı */
 .action-card {
   min-height: 170px; // Kartların minimum yüksekliğini belirler.
   display: flex; // Kart içerisindeki elemanları flex yapısına geçirir.
@@ -137,12 +134,11 @@
   text-decoration: none; // Kart linkinin alt çizgisini kaldırır.
 }
 
-/* Mouse kartın üzerine geldiğinde sadece border rengini değiştirir. */
 .action-card:hover {
   border-color: #f68929; // Kartın borderını CampusBody turuncusu yapar.
 }
 
-/* Kart içerisindeki numara ve başlığı yan yana düzenler. */
+/* Kart üst alanı */
 .action-card__top {
   display: flex; // Numara ile başlığı yan yana dizer.
   align-items: center; // Numara ve başlığı dikey ortalar.
@@ -150,7 +146,7 @@
   margin-bottom: 12px; // Başlık alanı ile açıklama arasında boşluk bırakır.
 }
 
-/* İşlem kartlarının sıra numarasıdır. */
+/* Kart numarası */
 .action-number {
   display: inline-flex; // Numarayı etiket içerisinde hizalar.
   align-items: center; // Numarayı dikey ortalar.
@@ -164,7 +160,7 @@
   font-weight: 700; // Numarayı kalın yapar.
 }
 
-/* İşlem kartlarının başlığıdır. */
+/* Kart başlığı */
 .action-card h3 {
   margin: 0; // Başlığın varsayılan marginini kaldırır.
   color: #003267; // Kart başlığını CampusBody laciverti yapar.
@@ -172,7 +168,7 @@
   font-weight: 700; // Kart başlığını kalın yapar.
 }
 
-/* İşlem kartlarının açıklamasıdır. */
+/* Kart açıklaması */
 .action-card p {
   margin: 0 0 18px; // Açıklama ile alt bağlantı arasında boşluk bırakır.
   color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
@@ -180,7 +176,7 @@
   line-height: 1.6; // Açıklamanın daha rahat okunmasını sağlar.
 }
 
-/* Kartın altındaki işlem yazısıdır. */
+/* Kart işlem yazısı */
 .action-link {
   margin-top: auto; // İşlem yazısını kartın en altına iter.
   color: #f68929; // İşlem yazısını CampusBody turuncusu yapar.
@@ -188,7 +184,7 @@
   font-weight: 700; // İşlem yazısını kalın yapar.
 }
 
-/* Orta boy ekranlarda kartları iki kolona düşürür. */
+/* Orta ekranlar */
 @media (max-width: 1000px) {
   .action-grid,
   .action-grid--small {
@@ -200,7 +196,7 @@
   }
 }
 
-/* Telefon boyutundaki ekranlarda bütün içerikleri tek kolon yapar. */
+/* Telefon ekranları */
 @media (max-width: 650px) {
   .page-header h1 {
     font-size: 25px; // Mobilde Ana Sayfa başlığını küçültür.

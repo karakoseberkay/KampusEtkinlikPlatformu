@@ -1,371 +1,358 @@
-import { Component, inject, OnInit, signal } from '@angular/core'; // Angular componenti, servis enjeksiyonu, OnInit ve signal yapısını kullanmak için gerekli araçları içe aktarır.
-import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'; // Reactive Form oluşturmak ve validation kurallarını kullanmak için gerekli yapıları içe aktarır.
-import { ActivatedRoute, Router } from '@angular/router'; // URLdeki etkinlik IDsini almak ve sayfalar arasında yönlendirme yapmak için kullanılır.
+import { Component, inject, OnInit, signal } from '@angular/core'; // Component, inject, OnInit ve signal kullanmak için
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'; // Reactive Form ve validation işlemleri için
+import { ActivatedRoute, Router } from '@angular/router'; // URL parametresini almak ve sayfa yönlendirmeleri için
+import { AuthService } from '../../core/services/auth.service'; // Giriş yapan kullanıcı bilgileri için
+import { ClubService } from '../../core/services/club.service'; // Kulüp verilerini backendden almak için
+import { EventService } from '../../core/services/event.service'; // Etkinlik oluşturma, güncelleme, getirme ve iptal işlemleri için
+import { ClubResponse, CreateEventRequest, EventVisibility, UpdateEventRequest } from '../../core/models/api.models'; // Kullanılan etkinlik ve kulüp modelleri
+import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
 
-import { AuthService } from '../../core/services/auth.service'; // Giriş yapan kullanıcının bilgilerine erişmemizi sağlar.
-import { ClubService } from '../../core/services/club.service'; // Kulüp verilerini backendden almak için kullanılır.
-import { EventService } from '../../core/services/event.service'; // Etkinlik oluşturma, güncelleme, getirme ve iptal işlemlerini yapar.
-import { ClubResponse, CreateEventRequest, EventVisibility, UpdateEventRequest } from '../../core/models/api.models'; // Form ve backend cevaplarında kullanılan TypeScript tiplerini içe aktarır.
-import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
-
-@Component({ // Bu classın Angular componenti olduğunu belirtir.
-  selector: 'app-event-manage', // Componentin selector adını belirler.
-  standalone: true, // Componentin NgModule kullanmadan bağımsız çalışmasını sağlar.
-  imports: [ReactiveFormsModule], // Template içinde formGroup ve formControlName kullanabilmemizi sağlar.
+@Component({ // Bu classın Angular componenti olduğunu belirtir
+  selector: 'app-event-manage', // Componentin selector adı
+  standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
+  imports: [ReactiveFormsModule], // Template içinde Reactive Form kullanılmasını sağlar
   template: `
-    <!-- Sayfanın tamamını kapsayan ana alan -->
+    <!-- Etkinlik yönetim sayfası -->
     <section class="event-manage-page">
 
       <!-- Sayfa başlığı -->
       <div class="page-header">
-        <h1>{{ isEditMode() ? 'Etkinlik Güncelle' : 'Etkinlik Oluştur' }}</h1> <!-- Edit modundaysa Güncelle, değilse Oluştur başlığını gösterir. -->
-        <p>{{ isEditMode() ? 'Etkinlik bilgilerini düzenleyebilirsiniz.' : 'Kulübünüz için yeni bir etkinlik oluşturabilirsiniz.' }}</p> <!-- Sayfanın moduna göre açıklama gösterir. -->
+        <h1>{{ isEditMode() ? 'Etkinlik Güncelle' : 'Etkinlik Oluştur' }}</h1> <!-- Moda göre başlığı değiştirir -->
+        <p>{{ isEditMode() ? 'Etkinlik bilgilerini düzenleyebilirsiniz.' : 'Kulübünüz için yeni bir etkinlik oluşturabilirsiniz.' }}</p> <!-- Moda göre açıklamayı değiştirir -->
       </div>
 
-      <!-- Backend isteği devam ederken gösterilir -->
+      <!-- Etkinlik bilgileri yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
           Etkinlik bilgileri yükleniyor...
         </div>
       }
 
-      <!-- Hata oluştuğunda gösterilir -->
+      <!-- Hata mesajı -->
       @if (errorMessage()) {
         <div class="page-message error-message">
           {{ errorMessage() }}
         </div>
       }
 
-      <!-- İşlem başarılı olduğunda gösterilir -->
+      <!-- Başarılı işlem mesajı -->
       @if (successMessage()) {
         <div class="page-message success-message">
           {{ successMessage() }}
         </div>
       }
 
-      <!-- Etkinlik oluşturma ve güncelleme formunu Angular Reactive Form yapısına bağlar -->
+      <!-- Formu TypeScript tarafındaki form değişkenine bağlar -->
       <form class="event-form" [formGroup]="form" (ngSubmit)="submit()">
 
-        <!-- Formun üst açıklama alanıdır -->
+        <!-- Form başlığı -->
         <div class="form-header">
-          <h2>Etkinlik Bilgileri</h2> <!-- Form bölümünün başlığını gösterir. -->
-          <p>Zorunlu alanları doldurarak işlemi tamamlayabilirsiniz.</p> <!-- Kullanıcıya form hakkında kısa bilgi verir. -->
+          <h2>Etkinlik Bilgileri</h2>
+          <p>Zorunlu alanları doldurarak işlemi tamamlayabilirsiniz.</p>
         </div>
 
-        <!-- Form alanlarının tamamını kapsar -->
+        <!-- Form alanları -->
         <div class="form-content">
 
-          <!-- Sadece yeni etkinlik oluşturulurken kulüp seçimi gösterilir -->
+          <!-- Sadece oluşturma modunda kulüp seçimi gösterilir -->
           @if (!isEditMode()) {
             <div class="form-field full-width">
-              <label for="clubId">Kulüp</label> <!-- Kulüp seçim alanının başlığıdır. -->
-              <select id="clubId" formControlName="clubId"> <!-- Seçilen kulübü formdaki clubId alanına bağlar. -->
-                <option value="">Kulüp seçin</option> <!-- Varsayılan boş seçeneği gösterir. -->
+              <label for="clubId">Kulüp</label>
+              <select id="clubId" formControlName="clubId"> <!-- Seçilen kulübü clubId alanına bağlar -->
+                <option value="">Kulüp seçin</option>
                 @for (club of myClubs(); track club.id) {
-                  <option [value]="club.id">{{ club.name }}</option> <!-- Giriş yapan managerın yönettiği kulüpleri listeler. -->
+                  <option [value]="club.id">{{ club.name }}</option> <!-- Managerın yönettiği kulüpleri listeler -->
                 }
               </select>
             </div>
           }
 
-          <!-- Başlık alanı -->
+          <!-- Etkinlik başlığı -->
           <div class="form-field full-width">
-            <label for="title">Başlık</label> <!-- Etkinlik başlığı inputunun açıklamasıdır. -->
-            <input id="title" type="text" formControlName="title" placeholder="Etkinlik başlığını girin"> <!-- Başlık değerini formdaki title alanına bağlar. -->
+            <label for="title">Başlık</label>
+            <input id="title" type="text" formControlName="title" placeholder="Etkinlik başlığını girin"> <!-- Başlığı forma bağlar -->
           </div>
 
-          <!-- Açıklama alanı -->
+          <!-- Etkinlik açıklaması -->
           <div class="form-field full-width">
-            <label for="description">Açıklama</label> <!-- Açıklama alanının başlığıdır. -->
-            <textarea id="description" formControlName="description" rows="6" placeholder="Etkinlik açıklamasını girin"></textarea> <!-- Etkinlik açıklamasını formdaki description alanına bağlar. -->
+            <label for="description">Açıklama</label>
+            <textarea id="description" formControlName="description" rows="6" placeholder="Etkinlik açıklamasını girin"></textarea> <!-- Açıklamayı forma bağlar -->
           </div>
 
-          <!-- Tarih alanı -->
+          <!-- Başlangıç tarihi -->
           <div class="form-field">
-            <label for="startDate">Başlangıç Tarihi</label> <!-- Başlangıç tarihi alanının açıklamasıdır. -->
-            <input id="startDate" type="datetime-local" formControlName="startDate"> <!-- Tarihi formdaki startDate alanına bağlar. -->
+            <label for="startDate">Başlangıç Tarihi</label>
+            <input id="startDate" type="datetime-local" formControlName="startDate"> <!-- Tarihi forma bağlar -->
           </div>
 
-          <!-- Konum alanı -->
+          <!-- Konum -->
           <div class="form-field">
-            <label for="location">Konum</label> <!-- Konum inputunun açıklamasıdır. -->
-            <input id="location" type="text" formControlName="location" placeholder="Örn: Konferans Salonu"> <!-- Konum değerini formdaki location alanına bağlar. -->
+            <label for="location">Konum</label>
+            <input id="location" type="text" formControlName="location" placeholder="Örn: Konferans Salonu"> <!-- Konumu forma bağlar -->
           </div>
 
-          <!-- Kapasite alanı -->
+          <!-- Kapasite -->
           <div class="form-field">
-            <label for="capacity">Kapasite</label> <!-- Kapasite inputunun açıklamasıdır. -->
-            <input id="capacity" type="number" min="1" formControlName="capacity" placeholder="Örn: 100"> <!-- Maksimum katılımcı sayısını capacity alanına bağlar. -->
+            <label for="capacity">Kapasite</label>
+            <input id="capacity" type="number" min="1" formControlName="capacity" placeholder="Örn: 100"> <!-- Kapasiteyi forma bağlar -->
           </div>
 
-          <!-- Kategori alanı -->
+          <!-- Kategori -->
           <div class="form-field">
-            <label for="category">Kategori</label> <!-- Kategori inputunun açıklamasıdır. -->
-            <input id="category" type="text" formControlName="category" placeholder="Örn: Teknoloji"> <!-- Kategori değerini formdaki category alanına bağlar. -->
+            <label for="category">Kategori</label>
+            <input id="category" type="text" formControlName="category" placeholder="Örn: Teknoloji"> <!-- Kategoriyi forma bağlar -->
           </div>
 
-          <!-- Katılım tipi alanı -->
+          <!-- Katılım tipi -->
           <div class="form-field full-width">
-            <label for="visibility">Katılım Tipi</label> <!-- Katılım tipi seçim alanının başlığıdır. -->
-            <select id="visibility" formControlName="visibility"> <!-- Seçilen katılım tipini formdaki visibility alanına bağlar. -->
-              <option value="Public">Herkese Açık</option> <!-- Kullanıcının direkt kayıt olabildiği etkinlik tipidir. -->
-              <option value="ApprovalRequired">Onay Gerekli</option> <!-- Kayıtların manager tarafından onaylanması gereken etkinlik tipidir. -->
+            <label for="visibility">Katılım Tipi</label>
+            <select id="visibility" formControlName="visibility"> <!-- Katılım tipini visibility alanına bağlar -->
+              <option value="Public">Herkese Açık</option> <!-- Direkt kayıt olunabilir -->
+              <option value="ApprovalRequired">Onay Gerekli</option> <!-- Manager onayı gerekir -->
             </select>
           </div>
-
         </div>
 
-        <!-- Form işlemlerini içerir -->
+        <!-- Form işlem butonları -->
         <div class="form-actions">
-          <!-- Form geçersizse veya işlem devam ediyorsa buton devre dışı kalır -->
-          <button class="save-button" type="submit" [disabled]="form.invalid || saving()">
+          <button class="save-button" type="submit" [disabled]="form.invalid || saving()"> <!-- Form geçersizse veya işlem devam ediyorsa pasif olur -->
             {{ saving() ? 'İşlem Yapılıyor...' : (isEditMode() ? 'Etkinliği Güncelle' : 'Etkinlik Oluştur') }}
           </button>
 
-          <!-- Sadece güncelleme modunda etkinliği iptal etme butonu gösterilir -->
+          <!-- Sadece güncelleme modunda iptal butonu gösterilir -->
           @if (isEditMode()) {
             <button class="cancel-button" type="button" [disabled]="saving()" (click)="cancelEvent()">
               Etkinliği İptal Et
             </button>
           }
         </div>
-
       </form>
-
     </section>
   `,
-  styleUrl: './event-manage.scss' // Bu componentin tasarımını event-manage.scss dosyasından almasını sağlar.
+  styleUrl: './event-manage.scss' // Componentin tasarım dosyası
 })
-export class EventManage implements OnInit { // Etkinlik oluşturma ve güncelleme sayfasının TypeScript classıdır.
-  readonly auth = inject(AuthService); // Giriş yapan kullanıcının bilgilerine erişmek için AuthService'i enjekte eder.
-  private readonly fb = inject(FormBuilder); // Reactive Form oluşturmak için FormBuilder'ı enjekte eder.
-  private readonly route = inject(ActivatedRoute); // URL içindeki etkinlik IDsini okumak için ActivatedRoute'u enjekte eder.
-  private readonly router = inject(Router); // İşlem sonrası farklı sayfalara yönlendirme yapmak için Router'ı enjekte eder.
-  private readonly clubService = inject(ClubService); // Kulüp verilerini backendden almak için ClubService'i enjekte eder.
-  private readonly eventService = inject(EventService); // Etkinlik işlemlerini yapmak için EventService'i enjekte eder.
+export class EventManage implements OnInit {
+  readonly auth = inject(AuthService); // Giriş yapan kullanıcı bilgilerine erişmek için
+  private readonly fb = inject(FormBuilder); // Reactive Form oluşturmak için
+  private readonly route = inject(ActivatedRoute); // URL içindeki etkinlik IDsini okumak için
+  private readonly router = inject(Router); // Sayfa yönlendirmeleri yapmak için
+  private readonly clubService = inject(ClubService); // Kulüp verilerini backendden almak için
+  private readonly eventService = inject(EventService); // Etkinlik işlemlerini yapmak için
 
-  private eventId: number | null = null; // Güncellenen veya iptal edilen etkinliğin IDsini tutar.
+  private eventId: number | null = null; // Güncellenen veya iptal edilen etkinliğin IDsini tutar
 
-  readonly isEditMode = signal(false); // Sayfanın oluşturma mı güncelleme mi olduğunu tutar.
-  readonly myClubs = signal<ClubResponse[]>([]); // Giriş yapan managerın yönettiği kulüpleri tutar.
-  readonly loading = signal(false); // Etkinlik bilgileri yüklenirken işlemin devam edip etmediğini tutar.
-  readonly saving = signal(false); // Oluşturma, güncelleme veya iptal işleminin devam edip etmediğini tutar.
-  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
-  readonly successMessage = signal(''); // Kullanıcıya gösterilecek başarılı işlem mesajını tutar.
+  readonly isEditMode = signal(false); // Sayfanın oluşturma mı güncelleme mi olduğunu tutar
+  readonly myClubs = signal<ClubResponse[]>([]); // Managerın yönettiği kulüpleri tutar
+  readonly loading = signal(false); // Etkinlik bilgileri yüklenme durumunu tutar
+  readonly saving = signal(false); // Oluşturma, güncelleme veya iptal işleminin durumunu tutar
+  readonly errorMessage = signal(''); // Hata mesajını tutar
+  readonly successMessage = signal(''); // Başarı mesajını tutar
 
-  readonly form = this.fb.nonNullable.group({ // Etkinlik formunu ve validation kurallarını oluşturur.
-    clubId: ['', [Validators.required]], // Kulüp seçimini zorunlu yapar.
-    title: ['', [Validators.required, Validators.maxLength(200)]], // Başlığı zorunlu yapar ve maksimum 200 karakter sınırı koyar.
-    description: ['', [Validators.required, Validators.maxLength(3000)]], // Açıklamayı zorunlu yapar ve maksimum 3000 karakter sınırı koyar.
-    startDate: ['', [Validators.required]], // Başlangıç tarihini zorunlu yapar.
-    location: ['', [Validators.required, Validators.maxLength(250)]], // Konumu zorunlu yapar ve maksimum 250 karakter sınırı koyar.
-    capacity: [1, [Validators.required, Validators.min(1)]], // Kapasiteyi zorunlu yapar ve minimum 1 olmasını sağlar.
-    category: ['', [Validators.required, Validators.maxLength(100)]], // Kategoriyi zorunlu yapar ve maksimum 100 karakter sınırı koyar.
-    visibility: ['Public' as EventVisibility, [Validators.required]] // Katılım tipini zorunlu yapar ve varsayılan olarak Public seçer.
+  readonly form = this.fb.nonNullable.group({ // Etkinlik formunu ve validation kurallarını oluşturur
+    clubId: ['', [Validators.required]], // Kulüp seçimini zorunlu yapar
+    title: ['', [Validators.required, Validators.maxLength(200)]], // Başlık zorunlu ve maksimum 200 karakter
+    description: ['', [Validators.required, Validators.maxLength(3000)]], // Açıklama zorunlu ve maksimum 3000 karakter
+    startDate: ['', [Validators.required]], // Başlangıç tarihini zorunlu yapar
+    location: ['', [Validators.required, Validators.maxLength(250)]], // Konum zorunlu ve maksimum 250 karakter
+    capacity: [1, [Validators.required, Validators.min(1)]], // Kapasite zorunlu ve minimum 1
+    category: ['', [Validators.required, Validators.maxLength(100)]], // Kategori zorunlu ve maksimum 100 karakter
+    visibility: ['Public' as EventVisibility, [Validators.required]] // Katılım tipi zorunlu ve varsayılan Public
   });
 
+  ngOnInit(): void { // Sayfa ilk açıldığında otomatik çalışır
+    this.loadMyClubs(); // Managerın yönettiği kulüpleri getirir
 
-  ngOnInit(): void { // Sayfa ilk açıldığında otomatik çalışan metottur.
-    this.loadMyClubs(); // Giriş yapan managerın yönettiği kulüpleri backendden getirir.
+    const idParam = this.route.snapshot.paramMap.get('id'); // URL içindeki id parametresini alır
 
-    const idParam = this.route.snapshot.paramMap.get('id'); // URL içindeki id parametresini alır.
-
-    if (!idParam) { // URLde id yoksa yeni etkinlik oluşturma modunda kalır.
-      return; // Metodun devam etmesini engeller.
+    if (!idParam) { // URLde id yoksa oluşturma modunda kalır
+      return; // Metodun devam etmesini engeller
     }
 
-    const id = Number(idParam); // URLden gelen string ID değerini number tipine çevirir.
+    const id = Number(idParam); // URLden gelen IDyi number tipine çevirir
 
-    if (!Number.isInteger(id) || id <= 0) { // ID geçerli bir pozitif tam sayı değilse kontrol içerisine girer.
-      this.errorMessage.set('Geçersiz etkinlik ID.'); // Kullanıcıya geçersiz etkinlik ID mesajı gösterir.
-      return; // İşlemin devam etmesini engeller.
+    if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
+      this.errorMessage.set('Geçersiz etkinlik ID.'); // Hata mesajı gösterir
+      return; // İşlemi durdurur
     }
 
-    this.eventId = id; // Güncellenecek etkinliğin IDsini class değişkenine kaydeder.
-    this.isEditMode.set(true); // Sayfanın güncelleme modunda olduğunu belirtir.
-    this.loadEvent(id); // Etkinliğin mevcut bilgilerini backendden getirir.
+    this.eventId = id; // Etkinlik IDsini kaydeder
+    this.isEditMode.set(true); // Sayfayı güncelleme moduna geçirir
+    this.loadEvent(id); // Etkinlik bilgilerini backendden getirir
   }
 
+  loadMyClubs(): void { // Managerın yönettiği kulüpleri backendden getirir
+    this.clubService.getAll().subscribe({ // Backendden bütün kulüpleri ister
+      next: clubs => { // İstek başarılı olduğunda çalışır
+        const user = this.auth.currentUser(); // Giriş yapan kullanıcıyı alır
 
-  loadMyClubs(): void { // Giriş yapan managerın yönettiği kulüpleri backendden getirir.
-    this.clubService.getAll().subscribe({ // Backendden bütün kulüpleri getirir.
-      next: clubs => { // Backend isteği başarılı olduğunda çalışır.
-        const user = this.auth.currentUser(); // Giriş yapan kullanıcının bilgilerini alır.
-
-        if (!user) { // Kullanıcı bilgisi bulunamazsa kontrol içerisine girer.
-          this.myClubs.set([]); // Managerın kulüp listesini boş yapar.
-          return; // Metodun devam etmesini engeller.
+        if (!user) { // Kullanıcı bilgisi yoksa
+          this.myClubs.set([]); // Kulüp listesini boşaltır
+          return; // Metodu sonlandırır
         }
 
         this.myClubs.set(
-          clubs.filter(club => club.managerUserId === user.userId) // Sadece giriş yapan kullanıcının yönettiği kulüpleri filtreler.
+          clubs.filter(club => club.managerUserId === user.userId) // Sadece kullanıcının yönettiği kulüpleri alır
         );
       },
-      error: (error: HttpErrorResponse) => { // Kulüpler alınırken hata oluşursa çalışır.
-        this.myClubs.set([]); // Kulüp listesini boşaltır.
+      error: (error: HttpErrorResponse) => { // Kulüpler alınırken hata oluşursa
+        this.myClubs.set([]); // Kulüp listesini boşaltır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüpler alınamadı.') // Backend hatasını kullanıcıya anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Kulüpler alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
       }
     });
   }
 
+  loadEvent(id: number): void { // Güncellenecek etkinliğin bilgilerini backendden getirir
+    this.loading.set(true); // Yükleme işlemini başlatır
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
 
-  loadEvent(id: number): void { // Güncellenecek etkinliğin mevcut bilgilerini backendden getirir.
-    this.loading.set(true); // Yükleme işleminin başladığını belirtir.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
-
-    this.eventService.getById(id).subscribe({ // Verilen IDye göre etkinlik detayını backendden ister.
-      next: event => { // Backend isteği başarılı olduğunda çalışır.
-        this.form.patchValue({ // Backendden gelen etkinlik bilgilerini form alanlarına yerleştirir.
-          clubId: String(event.clubId), // Kulüp IDsini stringe çevirerek forma yerleştirir.
-          title: event.title, // Etkinlik başlığını forma yerleştirir.
-          description: event.description, // Etkinlik açıklamasını forma yerleştirir.
-          startDate: this.toDateTimeLocal(event.startDate), // Backend tarihini datetime-local inputunun kullanacağı formata çevirir.
-          location: event.location, // Etkinlik konumunu forma yerleştirir.
-          capacity: event.capacity, // Etkinlik kapasitesini forma yerleştirir.
-          category: event.category, // Etkinlik kategorisini forma yerleştirir.
-          visibility: event.visibility // Etkinlik katılım tipini forma yerleştirir.
+    this.eventService.getById(id).subscribe({ // IDye göre etkinlik detayını ister
+      next: event => { // İstek başarılı olduğunda çalışır
+        this.form.patchValue({ // Gelen etkinlik bilgilerini forma yerleştirir
+          clubId: String(event.clubId), // Kulüp IDsini string olarak forma aktarır
+          title: event.title, // Başlığı forma aktarır
+          description: event.description, // Açıklamayı forma aktarır
+          startDate: this.toDateTimeLocal(event.startDate), // Tarihi datetime-local formatına çevirir
+          location: event.location, // Konumu forma aktarır
+          capacity: event.capacity, // Kapasiteyi forma aktarır
+          category: event.category, // Kategoriyi forma aktarır
+          visibility: event.visibility // Katılım tipini forma aktarır
         });
-        this.loading.set(false); // Yükleme işleminin tamamlandığını belirtir.
+        this.loading.set(false); // Yükleme işlemini bitirir
       },
-      error: (error: HttpErrorResponse) => { // Etkinlik bilgileri alınırken hata oluşursa çalışır.
+      error: (error: HttpErrorResponse) => { // Etkinlik bilgileri alınırken hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik bilgileri alınamadı.') // Backend hatasını kullanıcıya anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Etkinlik bilgileri alınamadı.') // Hatayı anlaşılır mesaja çevirir
         );
-        this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
+        this.loading.set(false); // Hata olsa bile yüklemeyi bitirir
       }
     });
   }
 
-
-  submit(): void { // Form gönderildiğinde oluşturma veya güncelleme işlemini başlatır.
-    if (this.form.invalid || this.saving()) { // Form geçersizse veya işlem zaten devam ediyorsa kontrol içerisine girer.
-      return; // İkinci bir işlem başlatılmasını engeller.
+  submit(): void { // Form gönderildiğinde oluşturma veya güncelleme işlemini başlatır
+    if (this.form.invalid || this.saving()) { // Form geçersizse veya işlem devam ediyorsa
+      return; // Yeni işlem başlatılmasını engeller
     }
 
-    this.saving.set(true); // Kaydetme işleminin başladığını belirtir.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
-    this.successMessage.set(''); // Önceki başarı mesajını temizler.
+    this.saving.set(true); // Kaydetme işlemini başlatır
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
+    this.successMessage.set(''); // Önceki başarı mesajını temizler
 
-    const value = this.form.getRawValue(); // Formdaki bütün alanların güncel değerlerini alır.
+    const value = this.form.getRawValue(); // Formdaki bütün değerleri alır
 
-    const commonRequest = { // Oluşturma ve güncelleme işlemlerinde ortak kullanılan alanları tek nesnede toplar.
-      title: value.title.trim(), // Başlığın başındaki ve sonundaki boşlukları temizler.
-      description: value.description.trim(), // Açıklamanın başındaki ve sonundaki boşlukları temizler.
-      startDate: new Date(value.startDate).toISOString(), // Formdaki tarihi backendin kullanacağı ISO formatına çevirir.
-      location: value.location.trim(), // Konum bilgisindeki gereksiz boşlukları temizler.
-      capacity: Number(value.capacity), // Kapasite değerini number tipine çevirir.
-      category: value.category.trim(), // Kategori bilgisindeki gereksiz boşlukları temizler.
-      visibility: value.visibility // Seçilen katılım tipini requeste ekler.
+    const commonRequest = { // Oluşturma ve güncellemede ortak kullanılacak alanları toplar
+      title: value.title.trim(), // Başlığın gereksiz boşluklarını temizler
+      description: value.description.trim(), // Açıklamanın gereksiz boşluklarını temizler
+      startDate: new Date(value.startDate).toISOString(), // Tarihi backend için ISO formatına çevirir
+      location: value.location.trim(), // Konumun gereksiz boşluklarını temizler
+      capacity: Number(value.capacity), // Kapasiteyi number tipine çevirir
+      category: value.category.trim(), // Kategorinin gereksiz boşluklarını temizler
+      visibility: value.visibility // Katılım tipini requeste ekler
     };
 
-    if (this.isEditMode() && this.eventId) { // Sayfa güncelleme modundaysa ve geçerli etkinlik IDsi varsa çalışır.
+    if (this.isEditMode() && this.eventId) { // Güncelleme modundaysa ve etkinlik IDsi varsa
       const request: UpdateEventRequest = {
-        ...commonRequest // Ortak alanların tamamını güncelleme requestine kopyalar.
+        ...commonRequest // Ortak alanları güncelleme requestine ekler
       };
 
-      this.updateEvent(this.eventId, request); // Güncelleme metodunu çağırır.
-      return; // Yeni etkinlik oluşturma kodunun çalışmasını engeller.
+      this.updateEvent(this.eventId, request); // Güncelleme metodunu çağırır
+      return; // Oluşturma kodunun çalışmasını engeller
     }
 
     const request: CreateEventRequest = {
-      clubId: Number(value.clubId), // Seçilen kulüp IDsini number tipine çevirip requeste ekler.
-      ...commonRequest // Ortak etkinlik alanlarının tamamını oluşturma requestine ekler.
+      clubId: Number(value.clubId), // Seçilen kulüp IDsini number tipine çevirir
+      ...commonRequest // Ortak alanları oluşturma requestine ekler
     };
 
-    this.createEvent(request); // Yeni etkinlik oluşturma metodunu çağırır.
+    this.createEvent(request); // Yeni etkinlik oluşturur
   }
 
-
-  createEvent(request: CreateEventRequest): void { // Yeni etkinlik oluşturma isteğini backend'e gönderir.
-    this.eventService.create(request).subscribe({ // EventService içindeki create metoduyla backend isteği gönderir.
-      next: event => { // Etkinlik başarıyla oluşturulduğunda çalışır.
-        this.saving.set(false); // Kaydetme işleminin bittiğini belirtir.
-        void this.router.navigate(['/events', event.id]); // Kullanıcıyı yeni oluşturulan etkinliğin detay sayfasına yönlendirir.
+  createEvent(request: CreateEventRequest): void { // Yeni etkinlik oluşturma isteğini backend'e gönderir
+    this.eventService.create(request).subscribe({ // EventService üzerinden oluşturma isteği gönderir
+      next: event => { // Etkinlik başarıyla oluşturulduğunda çalışır
+        this.saving.set(false); // Kaydetme işlemini bitirir
+        void this.router.navigate(['/events', event.id]); // Yeni etkinliğin detay sayfasına gider
       },
-      error: (error: HttpErrorResponse) => { // Oluşturma işlemi hata verdiğinde çalışır.
+      error: (error: HttpErrorResponse) => { // Oluşturma sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik oluşturulamadı.') // Backend hatasını kullanıcıya anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Etkinlik oluşturulamadı.') // Hatayı anlaşılır mesaja çevirir
         );
-        this.saving.set(false); // Hata olsa bile kaydetme işlemini sonlandırır.
+        this.saving.set(false); // Hata olsa bile kaydetme işlemini bitirir
       }
     });
   }
 
+  updateEvent(id: number, request: UpdateEventRequest): void { // Var olan etkinliği günceller
+    this.eventService.update(id, request).subscribe({ // EventService üzerinden güncelleme isteği gönderir
+      next: event => { // Güncelleme başarılı olduğunda çalışır
+        this.successMessage.set('Etkinlik güncellendi.'); // Başarı mesajını gösterir
 
-  updateEvent(id: number, request: UpdateEventRequest): void { // Var olan etkinliğin bilgilerini güncellemek için backend'e istek gönderir.
-    this.eventService.update(id, request).subscribe({ // EventService içindeki update metodunu çağırır.
-      next: event => { // Güncelleme başarılı olduğunda çalışır.
-        this.successMessage.set('Etkinlik güncellendi.'); // Kullanıcıya başarılı güncelleme mesajı gösterir.
-
-        this.form.patchValue({ // Backendden dönen güncel etkinlik bilgilerini tekrar forma yerleştirir.
-          title: event.title, // Güncel başlığı forma aktarır.
-          description: event.description, // Güncel açıklamayı forma aktarır.
-          startDate: this.toDateTimeLocal(event.startDate), // Güncel tarihi form inputunun formatına çevirir.
-          location: event.location, // Güncel konumu forma aktarır.
-          capacity: event.capacity, // Güncel kapasiteyi forma aktarır.
-          category: event.category, // Güncel kategoriyi forma aktarır.
-          visibility: event.visibility // Güncel katılım tipini forma aktarır.
+        this.form.patchValue({ // Backendden dönen güncel bilgileri tekrar forma yerleştirir
+          title: event.title, // Güncel başlığı forma aktarır
+          description: event.description, // Güncel açıklamayı forma aktarır
+          startDate: this.toDateTimeLocal(event.startDate), // Tarihi datetime-local formatına çevirir
+          location: event.location, // Güncel konumu forma aktarır
+          capacity: event.capacity, // Güncel kapasiteyi forma aktarır
+          category: event.category, // Güncel kategoriyi forma aktarır
+          visibility: event.visibility // Güncel katılım tipini forma aktarır
         });
 
-        this.saving.set(false); // Güncelleme işleminin tamamlandığını belirtir.
+        this.saving.set(false); // Güncelleme işlemini bitirir
       },
-      error: (error: HttpErrorResponse) => { // Güncelleme işlemi hata verdiğinde çalışır.
+      error: (error: HttpErrorResponse) => { // Güncelleme sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik güncellenemedi.') // Backend hatasını kullanıcıya anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Etkinlik güncellenemedi.') // Hatayı anlaşılır mesaja çevirir
         );
-        this.saving.set(false); // Hata olsa bile kaydetme işlemini sonlandırır.
+        this.saving.set(false); // Hata olsa bile kaydetme işlemini bitirir
       }
     });
   }
 
-
-  cancelEvent(): void { // Mevcut etkinliği iptal etmek için kullanılan metottur.
-    if (!this.eventId || this.saving()) { // Etkinlik IDsi yoksa veya başka işlem devam ediyorsa kontrol içerisine girer.
-      return; // İptal işlemini başlatmaz.
+  cancelEvent(): void { // Mevcut etkinliği iptal eder
+    if (!this.eventId || this.saving()) { // Etkinlik IDsi yoksa veya işlem devam ediyorsa
+      return; // İptal işlemini başlatmaz
     }
 
-    const approved = window.confirm('Etkinliği iptal etmek istediğinize emin misiniz?'); // Kullanıcıdan iptal işlemi için onay ister.
+    const approved = window.confirm('Etkinliği iptal etmek istediğinize emin misiniz?'); // Kullanıcıdan iptal onayı ister
 
-    if (!approved) { // Kullanıcı onay vermediyse kontrol içerisine girer.
-      return; // İptal işlemini durdurur.
+    if (!approved) { // Kullanıcı onaylamadıysa
+      return; // İşlemi iptal eder
     }
 
-    this.saving.set(true); // İptal işleminin başladığını belirtir.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
-    this.successMessage.set(''); // Önceki başarı mesajını temizler.
+    this.saving.set(true); // İptal işlemini başlatır
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
+    this.successMessage.set(''); // Önceki başarı mesajını temizler
 
-    this.eventService.cancel(this.eventId).subscribe({ // EventService üzerinden etkinliği iptal etme isteği gönderir.
-      next: () => { // İptal işlemi başarılı olduğunda çalışır.
-        this.successMessage.set('Etkinlik iptal edildi.'); // Kullanıcıya başarılı iptal mesajı gösterir.
-        this.saving.set(false); // İptal işleminin tamamlandığını belirtir.
+    this.eventService.cancel(this.eventId).subscribe({ // EventService üzerinden iptal isteği gönderir
+      next: () => { // İptal işlemi başarılı olduğunda çalışır
+        this.successMessage.set('Etkinlik iptal edildi.'); // Başarı mesajını gösterir
+        this.saving.set(false); // İptal işlemini bitirir
       },
-      error: (error: HttpErrorResponse) => { // İptal işlemi hata verdiğinde çalışır.
+      error: (error: HttpErrorResponse) => { // İptal sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik iptal edilemedi.') // Backend hatasını kullanıcıya anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Etkinlik iptal edilemedi.') // Hatayı anlaşılır mesaja çevirir
         );
-        this.saving.set(false); // Hata olsa bile iptal işlemini sonlandırır.
+        this.saving.set(false); // Hata olsa bile işlemi bitirir
       }
     });
   }
 
-
-  private toDateTimeLocal(value: string): string { // Backendden gelen tarihi datetime-local inputunun kullanacağı formata çevirir.
-    const date = new Date(value); // Backendden gelen tarih stringini JavaScript Date nesnesine dönüştürür.
-    const pad = (number: number) => number.toString().padStart(2, '0'); // Tek haneli tarih değerlerinin başına 0 ekler.
+  private toDateTimeLocal(value: string): string { // Backend tarihini datetime-local input formatına çevirir
+    const date = new Date(value); // Tarih stringini Date nesnesine çevirir
+    const pad = (number: number) => number.toString().padStart(2, '0'); // Tek haneli değerlerin başına 0 ekler
 
     return (
-      date.getFullYear() + // Yıl bilgisini ekler.
+      date.getFullYear() + // Yılı ekler
       '-' +
-      pad(date.getMonth() + 1) + // Ay bilgisini ekler; JavaScript ayları 0dan başlattığı için 1 eklenir.
+      pad(date.getMonth() + 1) + // Ayı ekler, JavaScript ayları 0dan başlattığı için 1 eklenir
       '-' +
-      pad(date.getDate()) + // Gün bilgisini ekler.
+      pad(date.getDate()) + // Günü ekler
       'T' +
-      pad(date.getHours()) + // Saat bilgisini ekler.
+      pad(date.getHours()) + // Saati ekler
       ':' +
-      pad(date.getMinutes()) // Dakika bilgisini ekler.
+      pad(date.getMinutes()) // Dakikayı ekler
     );
   }
 }

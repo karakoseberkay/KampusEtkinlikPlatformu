@@ -1,59 +1,100 @@
 <!-- Kayıt sayfasının tamamını kapsar -->
 <main class="auth-page">
-  <!-- Kayıt formunun bulunduğu beyaz kart -->
+
+  <!-- Kayıt formunun bulunduğu kart -->
   <section class="auth-card">
-    <!-- CampusBody logosunu gösterir -->
+
+    <!-- CampusBody logosu -->
     <div class="brand">
-      <img src="/LOGO.png" alt="CampusBody"> <!-- Login sayfasında çalışan aynı logo dosyasını kullanır. -->
+      <img src="/LOGO.png" alt="CampusBody"> <!-- Login sayfasında kullanılan aynı logo dosyası -->
     </div>
 
-    <!-- Sayfanın başlık alanı -->
+    <!-- Sayfa başlığı -->
     <header class="auth-header">
-      <h1>Yeni Hesap Oluştur</h1> <!-- Kayıt ekranının ana başlığıdır. -->
-      <p>Kampüs etkinliklerine katılmak için hesabınızı oluşturun.</p> <!-- Kullanıcıya kısa açıklama gösterir. -->
+      <h1>Yeni Hesap Oluştur</h1> <!-- Kayıt ekranının ana başlığı -->
+      <p>Kampüs etkinliklerine katılmak için hesabınızı oluşturun.</p> <!-- Kısa açıklama -->
     </header>
 
-    <!-- Reactive Form yapısını TypeScript tarafındaki form değişkenine bağlar -->
+    <!-- Formu TypeScript tarafındaki form değişkenine bağlar -->
     <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
       <!-- Ad Soyad alanı -->
       <div class="form-field">
-        <label for="fullName">Ad Soyad</label>
-        <input id="fullName" type="text" formControlName="fullName" placeholder="Adınız ve soyadınız" autocomplete="name">
+        <label for="fullName">Ad Soyad</label> <!-- Alanın başlığı -->
+        <input
+          id="fullName"
+          type="text"
+          formControlName="fullName"
+          placeholder="Adınız ve soyadınız"
+          autocomplete="name"
+        > <!-- Girilen değeri fullName form alanına bağlar -->
+
         @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
-          <small class="field-error">Ad soyad alanı zorunludur ve en fazla 150 karakter olabilir.</small>
+          <small class="field-error">
+            Ad soyad alanı zorunludur ve en fazla 150 karakter olabilir.
+          </small>
         }
       </div>
 
       <!-- Bölüm alanı -->
       <div class="form-field">
-        <label for="department">Bölüm</label>
-        <input id="department" type="text" formControlName="department" placeholder="Örn: Bilgisayar Mühendisliği" autocomplete="organization-title">
+        <label for="department">Bölüm</label> <!-- Alanın başlığı -->
+        <input
+          id="department"
+          type="text"
+          formControlName="department"
+          placeholder="Örn: Bilgisayar Mühendisliği"
+          autocomplete="organization-title"
+        > <!-- Girilen değeri department form alanına bağlar -->
+
         @if (form.controls.department.touched && form.controls.department.invalid) {
-          <small class="field-error">Bölüm en fazla 150 karakter olabilir.</small>
+          <small class="field-error">
+            Bölüm en fazla 150 karakter olabilir.
+          </small>
         }
       </div>
 
       <!-- E-posta alanı -->
       <div class="form-field">
-        <label for="email">E-posta</label>
-        <input id="email" type="email" formControlName="email" placeholder="E-posta adresiniz" autocomplete="email">
+        <label for="email">E-posta</label> <!-- Alanın başlığı -->
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="E-posta adresiniz"
+          autocomplete="email"
+        > <!-- Girilen değeri email form alanına bağlar -->
+
         @if (form.controls.email.touched && form.controls.email.invalid) {
-          <small class="field-error">Geçerli bir e-posta adresi girin.</small>
+          <small class="field-error">
+            Geçerli bir e-posta adresi girin.
+          </small>
         }
       </div>
 
       <!-- Şifre alanı -->
       <div class="form-field">
-        <label for="password">Şifre</label>
-        <input id="password" type="password" formControlName="password" placeholder="En az 8 karakter" autocomplete="new-password">
+        <label for="password">Şifre</label> <!-- Alanın başlığı -->
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="En az 8 karakter"
+          autocomplete="new-password"
+        > <!-- Girilen değeri password form alanına bağlar -->
+
         @if (form.controls.password.touched && form.controls.password.invalid) {
-          <small class="field-error">Şifre en az 8 karakter olmalıdır.</small>
+          <small class="field-error">
+            Şifre en az 8 karakter olmalıdır.
+          </small>
         }
       </div>
 
-      <!-- Backend hata mesajını gösterir -->
+      <!-- Backend hata mesajı -->
       @if (errorMessage()) {
-        <div class="alert-error" role="alert">{{ errorMessage() }}</div>
+        <div class="alert-error" role="alert">
+          {{ errorMessage() }}
+        </div>
       }
 
       <!-- Kayıt işlemini başlatır -->

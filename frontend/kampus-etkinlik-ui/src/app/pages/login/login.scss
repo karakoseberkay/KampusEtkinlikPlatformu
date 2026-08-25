@@ -1,6 +1,4 @@
-//LOGIN SAYFASI
- 
-
+// Login sayfası
 .auth-page {
   width: 100%; // Login sayfasının kullanılabilir genişliğin tamamını kullanmasını sağlar.
   min-height: calc(100vh - 180px); // Login kartının ekranın büyük bölümünde dikey ortalanabilmesi için minimum yükseklik verir.
@@ -10,11 +8,7 @@
   padding: 30px 0; // Küçük ekranlarda kartın üst ve alt kenara yapışmasını engeller.
 }
 
-
-/* ==================================================
-   LOGIN KARTI
-   ================================================== */
-
+/* Login kartı */
 .auth-card {
   width: 100%; // Kartın kullanılabilir genişliği kullanmasını sağlar.
   max-width: 430px; // Kartın masaüstünde gereğinden fazla genişlemesini engeller.
@@ -24,11 +18,7 @@
   border-radius: 8px; // Kart köşelerini hafif yuvarlatır.
 }
 
-
-/* ==================================================
-   LOGO
-   ================================================== */
-
+/* Logo */
 .brand {
   width: 220px; // Logo için ayrılan alanın genişliğini belirler.
   height: 120px; // Logo için ayrılan alanın yüksekliğini belirler.
@@ -47,11 +37,7 @@
   transform: scale(1.7); // PNG dosyasının içindeki boşluk nedeniyle asıl logoyu büyütür.
 }
 
-
-/* ==================================================
-   BAŞLIK
-   ================================================== */
-
+/* Başlık */
 .auth-header {
   margin-bottom: 26px; // Başlık alanı ile form arasında boşluk bırakır.
   text-align: center; // Başlık ve açıklama yazısını ortalar.
@@ -71,11 +57,7 @@
   line-height: 1.5; // Açıklamanın daha rahat okunmasını sağlar.
 }
 
-
-/* ==================================================
-   LOGIN FORMU
-   ================================================== */
-
+/* Login formu */
 .auth-form {
   display: flex; // Form alanlarını flex yapısında düzenler.
   flex-direction: column; // Form alanlarını alt alta dizer.
@@ -120,11 +102,7 @@
   line-height: 1.4; // Hata mesajının daha rahat okunmasını sağlar.
 }
 
-
-/* ==================================================
-   BACKEND HATA MESAJI
-   ================================================== */
-
+/* Backend hata mesajı */
 .alert-error {
   padding: 12px 14px; // Hata mesajının kutu kenarlarına yapışmasını engeller.
   background-color: #fef2f2; // Hata kutusuna açık kırmızı arka plan verir.
@@ -135,11 +113,7 @@
   line-height: 1.5; // Uzun hata mesajlarının daha rahat okunmasını sağlar.
 }
 
-
-/* ==================================================
-   GİRİŞ YAP BUTONU
-   ================================================== */
-
+/* Giriş yap butonu */
 .primary-button {
   width: 100%; // Giriş Yap butonunu formun tam genişliği yapar.
   min-height: 42px; // Butonun minimum yüksekliğini belirler.
@@ -163,11 +137,7 @@
   cursor: not-allowed; // Kullanıcıya butonun geçici olarak kullanılamadığını gösterir.
 }
 
-
-/* ==================================================
-   KAYIT OL LİNKİ
-   ================================================== */
-
+/* Kayıt ol linki */
 .auth-footer {
   margin: 24px 0 0; // Form ile footer arasında boşluk bırakır.
   padding-top: 20px; // Üst çizgi ile yazı arasında boşluk bırakır.
@@ -188,11 +158,7 @@
   text-decoration: underline; // Kullanıcının bunun link olduğunu daha rahat anlamasını sağlar.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== 
-
+/* Responsive
 @media (max-width: 550px) { // Telefon boyutundaki ekranlarda çalışır.
   .auth-page {
     min-height: auto; // Mobilde gereksiz dikey ortalama yüksekliğini kaldırır.

@@ -1,16 +1,9 @@
-/* ==================================================
-   ETKİNLİK DETAY SAYFASI
-   ================================================== */
-
+/* Etkinlik detay sayfası */
 .event-detail-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   SAYFA BAŞLIĞI
-   ================================================== */
-
+/* Sayfa başlığı */
 .page-header {
   margin-bottom: 28px; // Sayfa başlığı ile detay kartı arasında boşluk bırakır.
 }
@@ -28,11 +21,7 @@
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   BİLGİ VE HATA MESAJLARI
-   ================================================== */
-
+/* Bilgi ve hata mesajları */
 .page-message {
   padding: 18px; // Mesaj kutusunun içine boşluk verir.
   background-color: #ffffff; // Mesaj kutusunun arka planını beyaz yapar.
@@ -48,11 +37,7 @@
   border-color: #fecaca; // Hata kutusunun border rengini açık kırmızı yapar.
 }
 
-
-/* ==================================================
-   DETAY KARTI
-   ================================================== */
-
+/* Detay kartı */
 .detail-card {
   background-color: #ffffff; // Detay kartının arka planını beyaz yapar.
   border: 1px solid #dbe3ec; // Kartın etrafına ince gri border ekler.
@@ -84,11 +69,7 @@
   line-height: 1.7; // Uzun açıklamaların daha rahat okunmasını sağlar.
 }
 
-
-/* ==================================================
-   KATEGORİ ETİKETİ
-   ================================================== */
-
+/* Kategori etiketi */
 .category-badge {
   display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
   padding: 5px 9px; // Etiketin içerisine boşluk verir.
@@ -99,11 +80,7 @@
   font-weight: 700; // Etiket yazısını kalın yapar.
 }
 
-
-/* ==================================================
-   DURUM ETİKETLERİ
-   ================================================== */
-
+/* Durum etiketleri */
 .status-badge {
   display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
   padding: 6px 10px; // Durum etiketinin içine boşluk verir.
@@ -123,11 +100,7 @@
   color: #64748b; // Aktif olmayan durum yazısını gri yapar.
 }
 
-
-/* ==================================================
-   ETKİNLİK BİLGİLERİ
-   ================================================== */
-
+/* Etkinlik bilgileri */
 .detail-grid {
   display: grid; // Bilgileri grid yapısıyla düzenler.
   grid-template-columns: repeat(3, 1fr); // Büyük ekranda üç eşit kolon oluşturur.
@@ -159,11 +132,7 @@
   font-weight: 600; // Bilgi değerini belirgin hale getirir.
 }
 
-
-/* ==================================================
-   KAYIT BUTONU
-   ================================================== */
-
+/* Kayıt butonu */
 .detail-actions {
   display: flex; // İşlem butonlarını flex yapısında tutar.
   justify-content: flex-end; // Kayıt ol butonunu sağ tarafa hizalar.
@@ -192,11 +161,7 @@
   cursor: not-allowed; // Butonun geçici olarak kullanılamadığını belirtir.
 }
 
-
-/* ==================================================
-   BAŞARILI KAYIT MESAJI
-   ================================================== */
-
+/* Başarılı kayıt mesajı */
 .success-message {
   margin: 0 24px 24px; // Mesajın kart kenarlarıyla ve alt bölümle boşluğunu ayarlar.
   padding: 12px 14px; // Mesaj kutusunun içine boşluk verir.
@@ -207,11 +172,7 @@
   font-size: 13px; // Mesaj yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== */
-
+/* Responsive düzen 
 @media (max-width: 900px) { // Ekran genişliği 900px veya altına düştüğünde çalışır.
   .detail-grid {
     grid-template-columns: repeat(2, 1fr); // Detay bilgilerini üç kolondan iki kolona düşürür.
@@ -256,4 +217,4 @@
   .register-button {
     width: 100%; // Mobilde kayıt butonunu tam genişlik yapar.
   }
-}
+}*/

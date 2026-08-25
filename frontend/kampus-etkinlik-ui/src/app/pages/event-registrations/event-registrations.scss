@@ -1,16 +1,9 @@
-/* ==================================================
-   ETKİNLİK KAYITLARI SAYFASI
-   ================================================== */
-
+/* Etkinlik Kayıtları sayfası */
 .event-registrations-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   SAYFA BAŞLIĞI
-   ================================================== */
-
+/* Sayfa başlığı */
 .page-header {
   display: flex; // Başlık ile yenile butonunu yan yana dizer.
   align-items: center; // Başlık ve butonu dikey olarak ortalar.
@@ -32,6 +25,7 @@
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
+/* Kayıtları yenileme butonu */
 .refresh-button {
   min-height: 40px; // Yenile butonunun minimum yüksekliğini belirler.
   padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
@@ -53,11 +47,7 @@
   cursor: not-allowed; // Kullanıcıya butonun kullanılamadığını gösterir.
 }
 
-
-/* ==================================================
-   FİLTRE
-   ================================================== */
-
+/* Filtre alanı */
 .filter-card {
   max-width: 500px; // Basit filtre kartının gereksiz yere bütün ekranı kaplamasını engeller.
   margin-bottom: 28px; // Filtre kartı ile sonraki içerik arasında boşluk bırakır.
@@ -117,11 +107,7 @@
   border-color: #003267; // Select seçildiğinde border rengini lacivert yapar.
 }
 
-
-/* ==================================================
-   MESAJLAR
-   ================================================== */
-
+/* Mesaj alanları */
 .page-message,
 .empty-card {
   margin-bottom: 24px; // Mesaj kutuları ile sonraki içerik arasında boşluk bırakır.
@@ -145,11 +131,7 @@
   border-color: #bbf7d0; // Başarı kutusuna yeşil border ekler.
 }
 
-
-/* ==================================================
-   KAYIT LİSTESİ
-   ================================================== */
-
+/* Kayıt listesi */
 .registrations-section {
   width: 100%; // Kayıt listesi bölümünün bütün genişliği kullanmasını sağlar.
 }
@@ -171,11 +153,7 @@
   font-size: 13px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   TABLO
-   ================================================== */
-
+/* Kayıt tablosu */
 .table-card {
   width: 100%; // Tablo kartının tam genişlik kullanmasını sağlar.
   background-color: #ffffff; // Tablo kartının arka planını beyaz yapar.
@@ -222,7 +200,7 @@
 }
 
 .registrations-table tbody tr:hover {
-  background-color: #fafbfd; // Mouse satırın üzerine geldiğinde arka plan rengini direkt değiştirir.
+  background-color: #fafbfd; // Mouse satırın üzerine geldiğinde arka plan rengini değiştirir.
 }
 
 .student-name {
@@ -235,11 +213,7 @@
   font-weight: 700; // Etkinlik başlığını kalın gösterir.
 }
 
-
-/* ==================================================
-   DURUM ETİKETLERİ
-   ================================================== */
-
+/* Durum etiketleri */
 .status-badge {
   display: inline-block; // Durum etiketinin sadece içeriği kadar geniş olmasını sağlar.
   padding: 5px 9px; // Etiketin içerisine boşluk verir.
@@ -269,11 +243,7 @@
   color: #64748b; // Bilinmeyen durum yazısını gri yapar.
 }
 
-
-/* ==================================================
-   İŞLEM BUTONLARI
-   ================================================== */
-
+/* İşlem butonları */
 .table-actions {
   display: flex; // Onayla ve Reddet butonlarını yan yana dizer.
   align-items: center; // Butonları dikey olarak ortalar.
@@ -323,11 +293,7 @@
   font-weight: 600; // Yazıyı hafif kalın gösterir.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== */
-
+/* Responsive düzen 
 @media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
   .page-header {
     align-items: flex-start; // Başlık ve butonu sola hizalar.
@@ -345,4 +311,4 @@
   .filter-card {
     max-width: none; // Mobilde filtre kartının kullanılabilir alanın tamamını kaplamasını sağlar.
   }
-}
+}*/

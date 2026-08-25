@@ -1,142 +1,121 @@
-import { Component, inject, OnInit, signal } from '@angular/core'; // Component, servis enjeksiyonu, OnInit ve signal yapısını kullanmak için gerekli Angular araçlarını içe aktarır.
-import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
-import { FormsModule } from '@angular/forms'; // Template içerisinde ngModel kullanabilmemizi sağlar.
-import { ActivatedRoute } from '@angular/router'; // URL içindeki etkinlik ID değerine erişmek için kullanılır.
-import { RegistrationService } from '../../core/services/registration.service'; // Etkinlik kayıtlarını getirmek, onaylamak ve reddetmek için kullanılır.
-import { RegistrationApprovalStatus, RegistrationResponse } from '../../core/models/api.models'; // Kayıt durumlarının ve kayıt nesnelerinin TypeScript tiplerini içe aktarır.
-import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+import { Component, inject, OnInit, signal } from '@angular/core'; // Component, inject, OnInit ve signal kullanmak için
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için
+import { FormsModule } from '@angular/forms'; // Template içinde ngModel kullanmak için
+import { ActivatedRoute } from '@angular/router'; // URL içindeki etkinlik ID değerini almak için
+import { RegistrationService } from '../../core/services/registration.service'; // Kayıtları getirmek, onaylamak ve reddetmek için
+import { RegistrationApprovalStatus, RegistrationResponse } from '../../core/models/api.models'; // Kayıt durumları ve kayıt modelleri
+import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
 
-@Component({ // Bu classın Angular componenti olduğunu belirtir.
-  selector: 'app-event-registrations', // Componentin selector adını belirler.
-  standalone: true, // Componentin NgModule kullanmadan bağımsız çalışmasını sağlar.
-  imports: [FormsModule], // Template içerisinde ngModel kullanabilmemizi sağlar.
+@Component({ // Bu classın Angular componenti olduğunu belirtir
+  selector: 'app-event-registrations', // Componentin selector adı
+  standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
+  imports: [FormsModule], // Template içinde ngModel kullanılmasını sağlar
   template: `
-    <!-- Etkinlik kayıtları sayfasının tamamını kapsar -->
+    <!-- Etkinlik kayıtları sayfası -->
     <section class="event-registrations-page">
 
-      <!-- Sayfanın üst başlık alanıdır -->
+      <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Etkinlik Kayıtları</h1> <!-- Sayfanın ana başlığını gösterir. -->
-          <p>Etkinliğe yapılan öğrenci kayıtlarını görüntüleyebilir ve yönetebilirsiniz.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
+          <h1>Etkinlik Kayıtları</h1>
+          <p>Etkinliğe yapılan öğrenci kayıtlarını görüntüleyebilir ve yönetebilirsiniz.</p>
         </div>
 
-        <!-- Kayıt listesini backendden tekrar çekmek için kullanılır -->
+        <!-- Kayıt listesini yeniden yükler -->
         <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadRegistrations()">
           {{ loading() ? 'Yükleniyor...' : 'Kayıtları Yenile' }}
         </button>
       </div>
 
-      <!-- Filtre alanını kart içerisinde gösterir -->
+      <!-- Kayıt durumu filtresi -->
       <section class="filter-card">
         <div class="filter-header">
-          <h2>Kayıt Durumu</h2> <!-- Filtre bölümünün başlığını gösterir. -->
-          <p>Kayıtları onay durumlarına göre filtreleyebilirsiniz.</p> <!-- Filtrenin ne işe yaradığını açıklar. -->
+          <h2>Kayıt Durumu</h2>
+          <p>Kayıtları onay durumlarına göre filtreleyebilirsiniz.</p>
         </div>
 
         <div class="filter-content">
           <div class="form-field">
-            <label for="approvalStatus">Durum</label> <!-- Select alanının açıklamasıdır. -->
+            <label for="approvalStatus">Durum</label>
 
-            <!-- Seçilen kayıt durumunu selectedStatus signalına bağlar -->
+            <!-- Seçilen durumu selectedStatus signalına bağlar -->
             <select
               id="approvalStatus"
               [ngModel]="selectedStatus()"
-              (ngModelChange)="changeStatus($event)"
+              (ngModelChange)="changeStatus($event)"//Select'in seçili değeri değiştiği anda çalışır
             >
-              <option value="">Tümü</option> <!-- Herhangi bir durum filtresi uygulamaz. -->
-              <option value="Pending">Bekleyen</option> <!-- Sadece onay bekleyen kayıtları gösterir. -->
-              <option value="Approved">Onaylanan</option> <!-- Sadece onaylanmış kayıtları gösterir. -->
-              <option value="Rejected">Reddedilen</option> <!-- Sadece reddedilmiş kayıtları gösterir. -->
+              <option value="">Tümü</option>
+              <option value="Pending">Bekleyen</option>
+              <option value="Approved">Onaylanan</option>
+              <option value="Rejected">Reddedilen</option>
             </select>
           </div>
         </div>
       </section>
 
-      <!-- Backend isteği devam ederken ve tablo henüz boşsa gösterilir -->
+      <!-- Kayıtlar yüklenirken gösterilir -->
       @if (loading() && registrations().length === 0) {
         <div class="page-message">
           Etkinlik kayıtları yükleniyor...
         </div>
       }
 
-      <!-- Backend isteğinde hata oluşursa gösterilir -->
+      <!-- Hata mesajı -->
       @if (errorMessage()) {
         <div class="page-message error-message">
           {{ errorMessage() }}
         </div>
       }
 
-      <!-- Onaylama veya reddetme işlemi başarılı olduğunda gösterilir -->
+      <!-- Başarılı işlem mesajı -->
       @if (successMessage()) {
         <div class="page-message success-message">
           {{ successMessage() }}
         </div>
       }
 
-      <!-- Yükleme tamamlandıysa, hata yoksa ve kayıt bulunamadıysa gösterilir -->
+      <!-- Kayıt bulunamadığında gösterilir -->
       @if (!loading() && registrations().length === 0 && !errorMessage()) {
         <div class="empty-card">
           Seçilen duruma uygun kayıt bulunamadı.
         </div>
       }
 
-      <!-- En az bir kayıt bulunuyorsa tabloyu gösterir -->
+      <!-- Kayıt listesi -->
       @if (registrations().length > 0) {
         <section class="registrations-section">
 
-          <!-- Tablo bölümünün başlığını gösterir -->
+          <!-- Liste başlığı -->
           <div class="section-header">
-            <h2>Kayıt Listesi</h2> <!-- Kayıt listesinin başlığıdır. -->
-            <p>Toplam {{ registrations().length }} kayıt görüntüleniyor.</p> <!-- O anda ekranda bulunan kayıt sayısını gösterir. -->
+            <h2>Kayıt Listesi</h2>
+            <p>Toplam {{ registrations().length }} kayıt görüntüleniyor.</p>
           </div>
 
-          <!-- Tabloyu kart görünümünde tutar -->
+          <!-- Kayıt tablosu -->
           <div class="table-card">
-            <!-- Küçük ekranlarda tablonun yatay kaydırılabilmesini sağlar -->
             <div class="table-wrapper">
-
-              <!-- Etkinlik kayıtlarının gösterildiği tablo -->
               <table class="registrations-table">
-
-                <!-- Tablo kolon başlıkları -->
                 <thead>
                   <tr>
-                    <th>Öğrenci</th> <!-- Kayıt yapan öğrencinin adını gösterir. -->
-                    <th>Etkinlik</th> <!-- Kayıt yapılan etkinliğin adını gösterir. -->
-                    <th>Kulüp</th> <!-- Etkinliği oluşturan kulübün adını gösterir. -->
-                    <th>Kayıt Tarihi</th> <!-- Öğrencinin ne zaman kayıt olduğunu gösterir. -->
-                    <th>Durum</th> <!-- Kaydın onay durumunu gösterir. -->
-                    <th>İşlem</th> <!-- Onayla ve Reddet butonlarının bulunduğu kolondur. -->
+                    <th>Öğrenci</th>
+                    <th>Etkinlik</th>
+                    <th>Kulüp</th>
+                    <th>Kayıt Tarihi</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
                   </tr>
                 </thead>
 
-                <!-- Backendden gelen kayıtları tabloya basar -->
                 <tbody>
+                  <!-- Backendden gelen kayıtları tabloya ekler -->
                   @for (registration of registrations(); track registration.id) {
                     <tr>
+                      <td class="student-name">{{ registration.userFullName }}</td> <!-- Öğrencinin adı -->
+                      <td class="event-title">{{ registration.eventTitle }}</td> <!-- Etkinlik adı -->
+                      <td>{{ registration.clubName }}</td> <!-- Kulüp adı -->
+                      <td>{{ registration.registeredAt }}</td> <!-- Kayıt tarihi -->
 
-                      <!-- Kayıt yapan öğrencinin adını gösterir -->
-                      <td class="student-name">
-                        {{ registration.userFullName }}
-                      </td>
-
-                      <!-- Öğrencinin kayıt olduğu etkinliği gösterir -->
-                      <td class="event-title">
-                        {{ registration.eventTitle }}
-                      </td>
-
-                      <!-- Etkinliği oluşturan kulübün adını gösterir -->
-                      <td>
-                        {{ registration.clubName }}
-                      </td>
-
-                      <!-- Kayıt tarihini gösterir -->
-                      <td>
-                        {{ registration.registeredAt }}
-                      </td>
-
-                      <!-- Kayıt durumunu kullanıcıya Türkçe ve renkli etiket şeklinde gösterir -->
+                      <!-- Kayıt durumunu gösterir -->
                       <td>
                         @if (registration.approvalStatus === 'Pending') {
                           <span class="status-badge status-pending">
@@ -157,13 +136,12 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                         }
                       </td>
 
-                      <!-- Kayıtla ilgili yönetim işlemlerini gösterir -->
+                      <!-- Kayıt yönetim işlemleri -->
                       <td>
-                        <!-- Sadece Pending durumundaki kayıtlar onaylanabilir veya reddedilebilir -->
                         @if (registration.approvalStatus === 'Pending') {
                           <div class="table-actions">
 
-                            <!-- Öğrenci kaydını onaylamak için kullanılır -->
+                            <!-- Kaydı onaylar -->
                             <button
                               class="approve-button"
                               type="button"
@@ -173,7 +151,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                               {{ processingId() === registration.id ? 'İşleniyor...' : 'Onayla' }}
                             </button>
 
-                            <!-- Öğrenci kaydını reddetmek için kullanılır -->
+                            <!-- Kaydı reddeder -->
                             <button
                               class="reject-button"
                               type="button"
@@ -182,139 +160,128 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                             >
                               Reddet
                             </button>
-
                           </div>
                         } @else {
-                          <!-- Kayıt daha önce sonuçlandırılmışsa tekrar işlem yapılmasını engeller -->
                           <span class="completed-text">
                             İşlem tamamlandı
                           </span>
                         }
                       </td>
-
                     </tr>
                   }
                 </tbody>
-
               </table>
             </div>
           </div>
-
         </section>
       }
-
     </section>
   `,
-  styleUrl: './event-registrations.scss' // Bu componentin tasarımını event-registrations.scss dosyasından almasını sağlar.
+  styleUrl: './event-registrations.scss' // Componentin tasarım dosyası
 })
-export class EventRegistrations implements OnInit { // Etkinlik kayıt yönetimi sayfasının TypeScript classıdır.
-  private readonly route = inject(ActivatedRoute); // URL içindeki etkinlik ID değerini almak için ActivatedRoute'u enjekte eder.
-  private readonly registrationService = inject(RegistrationService); // Kayıtları getirmek, onaylamak ve reddetmek için RegistrationService'i enjekte eder.
+export class EventRegistrations implements OnInit {
+  private readonly route = inject(ActivatedRoute); // URL içindeki etkinlik IDsine erişmek için
+  private readonly registrationService = inject(RegistrationService); // Kayıt işlemlerini yapmak için
 
-  private eventId: number | null = null; // Kayıtları görüntülenecek etkinliğin ID değerini tutar.
+  private eventId: number | null = null; // Kayıtları gösterilecek etkinliğin IDsini tutar
 
-  readonly registrations = signal<RegistrationResponse[]>([]); // Backendden gelen etkinlik kayıtlarını tutar.
-  readonly selectedStatus = signal<RegistrationApprovalStatus | ''>(''); // Kullanıcının seçtiği kayıt durumu filtresini tutar.
-  readonly loading = signal(false); // Kayıtlar backendden yüklenirken işlemin devam edip etmediğini tutar.
-  readonly processingId = signal<number | null>(null); // Onaylama veya reddetme işlemi yapılan kaydın IDsini tutar.
-  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
-  readonly successMessage = signal(''); // Kullanıcıya gösterilecek başarılı işlem mesajını tutar.
+  readonly registrations = signal<RegistrationResponse[]>([]); // Backendden gelen kayıt listesini tutar
+  readonly selectedStatus = signal<RegistrationApprovalStatus | ''>(''); // Seçilen durum filtresini tutar
+  readonly loading = signal(false); // Kayıtların yüklenme durumunu tutar
+  readonly processingId = signal<number | null>(null); // İşlem yapılan kaydın IDsini tutar
+  readonly errorMessage = signal(''); // Hata mesajını tutar
+  readonly successMessage = signal(''); // Başarı mesajını tutar
 
+  ngOnInit(): void { // Sayfa ilk açıldığında otomatik çalışır
+    const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki etkinlik IDsini alıp numbera çevirir
 
-  ngOnInit(): void { // Sayfa ilk açıldığında otomatik olarak çalışır.
-    const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki etkinlik ID değerini alır ve number tipine çevirir.
-
-    if (!Number.isInteger(id) || id <= 0) { // ID geçerli bir pozitif tam sayı değilse kontrol içerisine girer.
-      this.errorMessage.set('Geçersiz etkinlik ID.'); // Kullanıcıya geçersiz etkinlik ID mesajını gösterir.
-      return; // Backend isteğinin yapılmasını engeller.
+    if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
+      this.errorMessage.set('Geçersiz etkinlik ID.'); // Kullanıcıya hata mesajı gösterir
+      return; // Backend isteğinin yapılmasını engeller
     }
 
-    this.eventId = id; // Geçerli etkinlik IDsini class değişkenine kaydeder.
-    this.loadRegistrations(); // Etkinliğe yapılan kayıtları backendden getirir.
+    this.eventId = id; // Geçerli etkinlik IDsini kaydeder
+    this.loadRegistrations(); // Etkinlik kayıtlarını backendden getirir
   }
 
-
-  changeStatus(value: RegistrationApprovalStatus | ''): void { // Kullanıcı durum filtresini değiştirdiğinde çalışır.
-    this.selectedStatus.set(value); // Select içerisinden gelen yeni değeri selectedStatus signalına aktarır.
-    this.loadRegistrations(); // Yeni filtre değerine göre kayıtları backendden tekrar getirir.
+  changeStatus(value: RegistrationApprovalStatus | ''): void { // Durum filtresi değiştiğinde çalışır
+    this.selectedStatus.set(value); // Yeni filtre değerini kaydeder
+    this.loadRegistrations(); // Yeni filtreye göre kayıtları tekrar getirir
   }
 
-
-  loadRegistrations(clearSuccess = true): void { // Etkinliğin kayıtlarını seçilen durum filtresine göre backendden getirir.
-    if (!this.eventId) { // Geçerli bir etkinlik IDsi bulunmuyorsa kontrol içerisine girer.
-      return; // Backend isteğinin yapılmasını engeller.
+  loadRegistrations(clearSuccess = true): void { // Etkinlik kayıtlarını seçilen filtreye göre getirir
+    if (!this.eventId) { // Geçerli etkinlik IDsi yoksa
+      return; // Backend isteğini engeller
     }
 
-    this.loading.set(true); // Backend isteğinin başladığını belirtir.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
+    this.loading.set(true); // Yükleme işlemini başlatır
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
 
-    if (clearSuccess) { // Metot normal şekilde çağrılmışsa kontrol içerisine girer.
-      this.successMessage.set(''); // Daha önce gösterilen başarı mesajını temizler.
+    if (clearSuccess) { // Normal yükleme işlemiyse
+      this.successMessage.set(''); // Önceki başarı mesajını temizler
     }
 
-    const selected = this.selectedStatus(); // Kullanıcının seçtiği durum filtresini değişkene alır.
-    const status: RegistrationApprovalStatus | undefined = selected === '' ? undefined : selected; // Tümü seçildiyse backend'e filtre göndermez, diğer durumlarda seçilen değeri gönderir.
+    const selected = this.selectedStatus(); // Seçilen durum filtresini alır
+    const status: RegistrationApprovalStatus | undefined = selected === '' ? undefined : selected; // Tümü seçiliyse filtre göndermez
 
-    this.registrationService.getForEvent(this.eventId, status).subscribe({ // Etkinlik IDsi ve varsa durum filtresiyle backendden kayıtları ister.
-      next: registrations => { // Backend isteği başarılı olduğunda çalışır.
-        this.registrations.set(registrations); // Backendden gelen kayıt listesini registrations signalına aktarır.
-        this.loading.set(false); // Yükleme işleminin tamamlandığını belirtir.
+    this.registrationService.getForEvent(this.eventId, status).subscribe({ // Etkinlik IDsi ve durum filtresiyle backend'e istek gönderir
+      next: registrations => { // İstek başarılı olduğunda çalışır
+        this.registrations.set(registrations); // Gelen kayıtları signal içine kaydeder
+        this.loading.set(false); // Yükleme işlemini bitirir
       },
-      error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
+      error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik kayıtları alınamadı.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Etkinlik kayıtları alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
-        this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
+        this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }
     });
   }
 
-
-  approve(registrationId: number): void { // Verilen kayıt talebini onaylamak için kullanılır.
-    if (this.processingId() !== null) { // Başka bir kayıt üzerinde işlem devam ediyorsa kontrol içerisine girer.
-      return; // Aynı anda ikinci bir onay veya reddetme işlemi yapılmasını engeller.
+  approve(registrationId: number): void { // Verilen kaydı onaylar
+    if (this.processingId() !== null) { // Başka bir işlem devam ediyorsa
+      return; // Yeni işlem başlatılmasını engeller
     }
 
-    this.processingId.set(registrationId); // İşlem yapılan kaydın IDsini processingId signalına kaydeder.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
-    this.successMessage.set(''); // Önceki başarı mesajını temizler.
+    this.processingId.set(registrationId); // İşlem yapılan kaydın IDsini kaydeder
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
+    this.successMessage.set(''); // Önceki başarı mesajını temizler
 
-    this.registrationService.approve(registrationId).subscribe({ // RegistrationService üzerinden kayıt onaylama isteğini backend'e gönderir.
-      next: () => { // Backend kayıt onaylama işlemini başarıyla tamamladığında çalışır.
-        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler.
-        this.successMessage.set('Kayıt onaylandı.'); // Kullanıcıya başarılı onay mesajını gösterir.
-        this.loadRegistrations(false); // Listeyi tekrar getirir ancak başarı mesajının silinmesini engeller.
+    this.registrationService.approve(registrationId).subscribe({ // Kayıt onaylama isteğini backend'e gönderir
+      next: () => { // Onaylama işlemi başarılı olduğunda çalışır
+        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
+        this.successMessage.set('Kayıt onaylandı.'); // Başarı mesajını gösterir
+        this.loadRegistrations(false); // Listeyi tekrar getirir ve başarı mesajını korur
       },
-      error: (error: HttpErrorResponse) => { // Onaylama işlemi sırasında hata oluşursa çalışır.
+      error: (error: HttpErrorResponse) => { // Onaylama sırasında hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kayıt onaylanamadı.') // Backend hatasını kullanıcıya anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Kayıt onaylanamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
-        this.processingId.set(null); // Hata sonrasında işlem yapılan kayıt ID bilgisini temizler.
+        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
       }
     });
   }
 
-
-  reject(registrationId: number): void { // Verilen kayıt talebini reddetmek için kullanılır.
-    if (this.processingId() !== null) { // Başka bir kayıt üzerinde işlem devam ediyorsa kontrol içerisine girer.
-      return; // Aynı anda ikinci bir işlem yapılmasını engeller.
+  reject(registrationId: number): void { // Verilen kaydı reddeder
+    if (this.processingId() !== null) { // Başka bir işlem devam ediyorsa
+      return; // Yeni işlem başlatılmasını engeller
     }
 
-    this.processingId.set(registrationId); // İşlem yapılan kaydın IDsini processingId signalına kaydeder.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
-    this.successMessage.set(''); // Önceki başarı mesajını temizler.
+    this.processingId.set(registrationId); // İşlem yapılan kaydın IDsini kaydeder
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
+    this.successMessage.set(''); // Önceki başarı mesajını temizler
 
-    this.registrationService.reject(registrationId).subscribe({ // RegistrationService üzerinden kayıt reddetme isteğini backend'e gönderir.
-      next: () => { // Backend kayıt reddetme işlemini başarıyla tamamladığında çalışır.
-        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler.
-        this.successMessage.set('Kayıt reddedildi.'); // Kullanıcıya başarılı reddetme mesajı gösterir.
-        this.loadRegistrations(false); // Listeyi tekrar getirir ancak başarı mesajının silinmesini engeller.
+    this.registrationService.reject(registrationId).subscribe({ // Kayıt reddetme isteğini backend'e gönderir
+      next: () => { // Reddetme işlemi başarılı olduğunda çalışır
+        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
+        this.successMessage.set('Kayıt reddedildi.'); // Başarı mesajını gösterir
+        this.loadRegistrations(false); // Listeyi tekrar getirir ve başarı mesajını korur
       },
-      error: (error: HttpErrorResponse) => { // Reddetme işlemi sırasında hata oluşursa çalışır.
+      error: (error: HttpErrorResponse) => { // Reddetme sırasında hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kayıt reddedilemedi.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Kayıt reddedilemedi.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
-        this.processingId.set(null); // Hata sonrasında işlem yapılan kayıt ID bilgisini temizler.
+        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
       }
     });
   }

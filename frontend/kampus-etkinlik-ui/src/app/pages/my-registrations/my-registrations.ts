@@ -10,7 +10,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
   template: `
     <!-- Kayıtlarım sayfasının tamamını kapsar -->
     <section class="registrations-page">
-
       <!-- Sayfanın üst başlık alanıdır -->
       <div class="page-header">
         <div>
@@ -41,7 +40,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Yükleme tamamlandıysa ve hata yoksa özet istatistikleri gösterir -->
       @if (!loading() && !errorMessage()) {
         <section class="summary-section">
-
           <!-- Bölüm başlığı -->
           <div class="section-header">
             <h2>Katılım Bilgileri</h2> <!-- Öğrencinin kayıt durumlarının özetlendiği bölümün başlığıdır. -->
@@ -50,7 +48,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
           <!-- Özet kutularını grid şeklinde gösterir -->
           <div class="summary-grid">
-
             <!-- Öğrencinin toplam kayıt sayısını gösterir -->
             <div class="summary-card">
               <span class="summary-label">Toplam Kayıt</span>
@@ -74,7 +71,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               <span class="summary-label">Reddedilen</span>
               <strong class="summary-value rejected-value">{{ rejectedCount() }}</strong>
             </div>
-
           </div>
         </section>
       }
@@ -89,7 +85,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- En az bir kayıt varsa kayıt geçmişi tablosunu gösterir -->
       @if (registrations().length > 0) {
         <section class="history-section">
-
           <!-- Tablo bölümünün başlığıdır -->
           <div class="section-header">
             <h2>Kayıt Geçmişi</h2> <!-- Kayıt listesinin başlığını gösterir. -->
@@ -100,10 +95,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <div class="table-card">
             <!-- Küçük ekranlarda tablonun yatay kaydırılabilmesini sağlar -->
             <div class="table-wrapper">
-
               <!-- Öğrencinin etkinlik kayıtlarının gösterildiği tablo -->
               <table class="registrations-table">
-
                 <!-- Tablo kolon başlıkları -->
                 <thead>
                   <tr>
@@ -118,7 +111,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                 <tbody>
                   @for (registration of registrations(); track registration.id) {
                     <tr>
-
                       <!-- Kayıt olunan etkinliğin başlığını gösterir -->
                       <td class="event-title">
                         {{ registration.eventTitle }}
@@ -154,18 +146,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                           </span>
                         }
                       </td>
-
                     </tr>
                   }
                 </tbody>
-
               </table>
             </div>
           </div>
-
         </section>
       }
-
     </section>
   `,
   styleUrl: './my-registrations.scss' // Bu componentin tasarımını my-registrations.scss dosyasından almasını sağlar.
@@ -182,11 +170,9 @@ export class MyRegistrations implements OnInit { // Kayıtlarım sayfasının Ty
   readonly pendingCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Pending').length); // Onay bekleyen kayıtların sayısını hesaplar.
   readonly rejectedCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Rejected').length); // Reddedilen kayıtların sayısını hesaplar.
 
-
   ngOnInit(): void { // Sayfa ilk açıldığında otomatik olarak çalışır.
     this.loadRegistrations(); // Giriş yapan öğrencinin kendi kayıtlarını backendden getirir.
   }
-
 
   loadRegistrations(): void { // Giriş yapan kullanıcının kendi etkinlik kayıtlarını backendden getirir.
     this.loading.set(true); // Backend isteğinin başladığını belirtir.

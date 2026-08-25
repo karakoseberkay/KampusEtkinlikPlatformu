@@ -1,16 +1,9 @@
-/* ==================================================
-   KULÜP DETAY SAYFASI
-   ================================================== */
-
+/* Kulüp detay sayfası */
 .club-detail-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   SAYFA BAŞLIĞI
-   ================================================== */
-
+/* Sayfa başlığı */
 .page-header {
   margin-bottom: 28px; // Sayfa başlığı ile detay kartı arasında boşluk bırakır.
 }
@@ -28,11 +21,7 @@
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   MESAJLAR
-   ================================================== */
-
+/* Mesaj alanları */
 .page-message {
   padding: 18px; // Mesaj kutusunun içine boşluk verir.
   background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
@@ -48,11 +37,7 @@
   border-color: #fecaca; // Hata kutusunun borderını açık kırmızı yapar.
 }
 
-
-/* ==================================================
-   DETAY KARTI
-   ================================================== */
-
+/* Detay kartı */
 .detail-card {
   max-width: 900px; // Kartın gereğinden fazla genişlemesini engeller.
   background-color: #ffffff; // Kartın arka planını beyaz yapar.
@@ -81,11 +66,7 @@
   line-height: 1.7; // Uzun açıklamaların daha rahat okunmasını sağlar.
 }
 
-
-/* ==================================================
-   KULÜP BİLGİLERİ
-   ================================================== */
-
+/* Kulüp bilgileri */
 .detail-grid {
   display: grid; // Kulüp bilgilerini grid yapısında düzenler.
   grid-template-columns: repeat(2, 1fr); // Büyük ekranda iki eşit kolon oluşturur.
@@ -118,11 +99,7 @@
   font-weight: 600; // Bilgi değerini belirgin hale getirir.
 }
 
-
-/* ==================================================
-   ETKİNLİK SAYISI
-   ================================================== */
-
+/* Etkinlik sayısı */
 .event-count {
   width: fit-content; // Etiketin sadece sayı kadar geniş olmasını sağlar.
   padding: 5px 10px; // Etiketin içine boşluk verir.
@@ -131,11 +108,7 @@
   border-radius: 4px; // Etiket köşelerini hafif yuvarlatır.
 }
 
-
-/* ==================================================
-   LOGO URL
-   ================================================== */
-
+/* Logo URL */
 .logo-url {
   max-width: 100%; // URL bilgisinin kart genişliğini aşmasını engeller.
   overflow-wrap: anywhere; // Çok uzun URLlerin gerektiğinde satır kırmasını sağlar.
@@ -143,11 +116,7 @@
   font-weight: 500; // URL yazısını normal bilgi değerlerinden biraz daha ince gösterir.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== */
-
+/* Responsive düzen */
 @media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
   .page-header h1 {
     font-size: 25px; // Mobilde ana başlığı biraz küçültür.

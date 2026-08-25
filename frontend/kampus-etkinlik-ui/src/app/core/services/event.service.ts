@@ -79,6 +79,6 @@ export class EventService {
   }
 
   cancel(id: number): Observable<EventResponse> { // verilen idye sahip etkinliği iptal eder
-    return this.http.put<EventResponse>(`${API_BASE_URL}/Events/${id}/cancel`, {});//boş body gönderiyoruz çünkü backendin ihtiyacı olan bilgi zaten urldeki id
+    return this.http.put<EventResponse>(`${API_BASE_URL}/Events/${id}/cancel`, {});
   }
 }

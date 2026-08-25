@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';//gerçekten tarayıcıda mı çalışıyor çünkü localstorage sadece tarayıcı ortamında var
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { AuthResponse } from '../models/auth.models';
 
@@ -10,25 +10,25 @@ export class AuthStorageService {
   private readonly storageKey = 'kampus_etkinlik_auth'; // kullanıcı oturumunun localStorageda tutulacağı keyi belirler
 
   save(session: AuthResponse): void { // kullanıcı oturumunu localStoragea kaydeder
-    if (!isPlatformBrowser(this.platformId)) {
+    if (!isPlatformBrowser(this.platformId)) {//önlem
       return;
     }
 
-    localStorage.setItem(this.storageKey, JSON.stringify(session)); // session bilgisini jsona çevirerek kaydeder
+    localStorage.setItem(this.storageKey, JSON.stringify(session)); // session bilgisini (stringi) jsona (objeye) çevirerek kaydeder
   }
 
   getValidSession(): AuthResponse | null { // kayıtlı oturumun geçerli olup olmadığını kontrol eder
     const session = this.read();
 
-    if (session === null) {
+    if (session === null) {//önlem
       return null;
     }
 
     const expirationTime = new Date(session.expiresAtUtc).getTime(); // tokenın bitiş zamanını milisaniyeye çevirir
     const isExpired = Number.isNaN(expirationTime) || expirationTime <= Date.now(); // tokenın süresi dolmuş mu kontrol eder
 
-    if (isExpired) {
-      this.clear();
+    if (isExpired) {//önlem
+      this.clear();//localstorage temizlenir
       return null;
     }
 
@@ -40,7 +40,7 @@ export class AuthStorageService {
   }
 
   clear(): void { // localStoragedaki kullanıcı oturumunu siler
-    if (!isPlatformBrowser(this.platformId)) {
+    if (!isPlatformBrowser(this.platformId)) {//önlem
       return;
     }
 

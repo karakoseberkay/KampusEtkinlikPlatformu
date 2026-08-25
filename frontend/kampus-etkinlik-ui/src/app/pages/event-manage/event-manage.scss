@@ -1,11 +1,9 @@
-/* ==================================================
-   ETKİNLİK OLUŞTUR / GÜNCELLE SAYFASI
-   ================================================== */
-
+/* Etkinlik oluştur / güncelle sayfası */
 .event-manage-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
+/* Sayfa başlığı */
 .page-header {
   margin-bottom: 28px; // Başlık ile form arasında boşluk bırakır.
 }
@@ -23,11 +21,7 @@
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   MESAJLAR
-   ================================================== */
-
+/* Mesaj alanları */
 .page-message {
   margin-bottom: 20px; // Mesaj ile form arasında boşluk bırakır.
   padding: 14px 16px; // Mesaj kutusunun içine boşluk verir.
@@ -50,11 +44,7 @@
   border-color: #bbf7d0; // Başarı kutusunun borderını yeşil yapar.
 }
 
-
-/* ==================================================
-   FORM KARTI
-   ================================================== */
-
+/* Form kartı */
 .event-form {
   max-width: 900px; // Formun gereğinden fazla genişlemesini engeller.
   background-color: #ffffff; // Form kartının arka planını beyaz yapar.
@@ -92,11 +82,7 @@
   grid-column: 1 / -1; // İlgili form alanının iki kolonu da kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   FORM ALANLARI
-   ================================================== */
-
+/* Form alanları */
 .form-field {
   display: flex; // Label ve inputu flex yapısına geçirir.
   flex-direction: column; // Labelı inputun üstünde gösterir.
@@ -146,11 +132,7 @@
   border-color: #003267; // Form alanına tıklandığında borderı lacivert yapar.
 }
 
-
-/* ==================================================
-   FORM BUTONLARI
-   ================================================== */
-
+/* Form butonları */
 .form-actions {
   display: flex; // Form butonlarını yan yana dizer.
   justify-content: flex-end; // Butonları formun sağ tarafına hizalar.
@@ -194,14 +176,10 @@
 .save-button:disabled,
 .cancel-button:disabled {
   opacity: 0.6; // Disabled durumdaki butonları soluk gösterir.
-  cursor: not-allowed; // Butonların kullanılamadığını gösteren cursor kullanır.
+  cursor: not-allowed; // Butonların kullanılamadığını gösterir.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== */
-
+/* Responsive düzen 
 @media (max-width: 700px) { // Ekran genişliği 700px veya altına düştüğünde çalışır.
   .page-header h1 {
     font-size: 25px; // Mobilde ana başlığı biraz küçültür.
@@ -223,4 +201,4 @@
   .cancel-button {
     width: 100%; // Mobilde butonları tam genişlik yapar.
   }
-}
+}*/

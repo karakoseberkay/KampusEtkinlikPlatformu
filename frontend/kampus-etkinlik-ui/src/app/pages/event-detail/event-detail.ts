@@ -1,63 +1,62 @@
-import { Component, inject, OnInit, signal } from '@angular/core'; // Angular componenti, servis enjeksiyonu, OnInit ve signal yapısını kullanmak için gerekli araçları içe aktarır.
-import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
-import { ActivatedRoute } from '@angular/router'; // URL içindeki etkinlik ID değerini almak için kullanılır.
+import { Component, inject, OnInit, signal } from '@angular/core'; // Component, inject, OnInit ve signal kullanmak için
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için
+import { ActivatedRoute } from '@angular/router'; // URL içindeki etkinlik IDsini almak için
+import { AuthService } from '../../core/services/auth.service'; // Kullanıcının rol bilgilerine erişmek için
+import { EventService } from '../../core/services/event.service'; // Etkinlik detayını backendden almak için
+import { RegistrationService } from '../../core/services/registration.service'; // Etkinliğe kayıt işlemi yapmak için
+import { EventResponse } from '../../core/models/api.models'; // Backendden gelen etkinlik modelini kullanmak için
+import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
 
-import { AuthService } from '../../core/services/auth.service'; // Giriş yapan kullanıcının rol bilgilerine erişmemizi sağlar.
-import { EventService } from '../../core/services/event.service'; // Etkinlik detayını backendden almak için kullanılır.
-import { RegistrationService } from '../../core/services/registration.service'; // Kullanıcıyı etkinliğe kaydetmek için kullanılır.
-import { EventResponse } from '../../core/models/api.models'; // Backendden gelen etkinlik nesnesinin TypeScript tipidir.
-import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
-
-@Component({ // Bu classın Angular componenti olduğunu belirtir.
-  selector: 'app-event-detail', // Componentin selector adını belirler.
-  standalone: true, // Componentin NgModule kullanmadan bağımsız çalışmasını sağlar.
+@Component({ // Bu classın Angular componenti olduğunu belirtir
+  selector: 'app-event-detail', // Componentin selector adı
+  standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
   template: `
-    <!-- Etkinlik detay sayfasının tamamını kapsar -->
+    <!-- Etkinlik detay sayfası -->
     <section class="event-detail-page">
 
-      <!-- Sayfanın üst başlık alanı -->
+      <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Etkinlik Detayı</h1> <!-- Sayfanın ana başlığıdır. -->
-          <p>Etkinliğe ait detaylı bilgileri buradan görüntüleyebilirsiniz.</p> <!-- Sayfanın kısa açıklamasıdır. -->
+          <h1>Etkinlik Detayı</h1>
+          <p>Etkinliğe ait detaylı bilgileri buradan görüntüleyebilirsiniz.</p>
         </div>
       </div>
 
-      <!-- Backend isteği devam ederken gösterilir -->
+      <!-- Etkinlik bilgileri yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
           Etkinlik bilgileri yükleniyor...
         </div>
       }
 
-      <!-- Backend isteğinde hata oluşursa gösterilir -->
+      <!-- Hata mesajı -->
       @if (errorMessage()) {
         <div class="page-message error-message">
           {{ errorMessage() }}
         </div>
       }
 
-      <!-- Backendden etkinlik başarıyla geldiyse detay kartını gösterir -->
+      <!-- Etkinlik bilgisi geldiyse detay kartını gösterir -->
       @if (event(); as eventItem) {
         <section class="detail-card">
 
-          <!-- Etkinliğin başlık kısmını gösterir -->
+          <!-- Etkinlik başlığı ve açıklaması -->
           <div class="detail-card-header">
             <div>
               <span class="category-badge">
                 {{ eventItem.category }}
-              </span> <!-- Etkinliğin kategorisini turuncu etiket olarak gösterir. -->
+              </span> <!-- Etkinlik kategorisini gösterir -->
 
               <h2>
                 {{ eventItem.title }}
-              </h2> <!-- Etkinliğin başlığını gösterir. -->
+              </h2> <!-- Etkinlik başlığını gösterir -->
 
               <p>
                 {{ eventItem.description }}
-              </p> <!-- Etkinlik açıklamasını gösterir. -->
+              </p> <!-- Etkinlik açıklamasını gösterir -->
             </div>
 
-            <!-- Etkinliğin durumunu gösterir -->
+            <!-- Etkinlik durumunu gösterir -->
             @if (eventItem.status === 'Active') {
               <span class="status-badge status-active">
                 Aktif
@@ -69,54 +68,36 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
             }
           </div>
 
-          <!-- Etkinlikle ilgili temel bilgileri grid şeklinde gösterir -->
+          <!-- Etkinliğin temel bilgileri -->
           <div class="detail-grid">
 
             <!-- Kulüp bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">
-                Kulüp
-              </span>
-              <span class="detail-value">
-                {{ eventItem.clubName }}
-              </span>
+              <span class="detail-label">Kulüp</span>
+              <span class="detail-value">{{ eventItem.clubName }}</span>
             </div>
 
             <!-- Tarih bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">
-                Tarih
-              </span>
-              <span class="detail-value">
-                {{ eventItem.startDate }}
-              </span>
+              <span class="detail-label">Tarih</span>
+              <span class="detail-value">{{ eventItem.startDate }}</span>
             </div>
 
             <!-- Konum bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">
-                Konum
-              </span>
-              <span class="detail-value">
-                {{ eventItem.location }}
-              </span>
+              <span class="detail-label">Konum</span>
+              <span class="detail-value">{{ eventItem.location }}</span>
             </div>
 
             <!-- Kapasite bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">
-                Kapasite
-              </span>
-              <span class="detail-value">
-                {{ eventItem.capacity }} kişi
-              </span>
+              <span class="detail-label">Kapasite</span>
+              <span class="detail-value">{{ eventItem.capacity }} kişi</span>
             </div>
 
-            <!-- Katılım tipini kullanıcıya Türkçe olarak gösterir -->
+            <!-- Katılım tipi -->
             <div class="detail-item">
-              <span class="detail-label">
-                Katılım Tipi
-              </span>
+              <span class="detail-label">Katılım Tipi</span>
 
               @if (eventItem.visibility === 'Public') {
                 <span class="detail-value">
@@ -129,19 +110,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               }
             </div>
 
-            <!-- Etkinliğin oluşturulma tarihini gösterir -->
+            <!-- Oluşturulma tarihi -->
             <div class="detail-item">
-              <span class="detail-label">
-                Oluşturulma Tarihi
-              </span>
-              <span class="detail-value">
-                {{ eventItem.createdAt }}
-              </span>
+              <span class="detail-label">Oluşturulma Tarihi</span>
+              <span class="detail-value">{{ eventItem.createdAt }}</span>
             </div>
-
           </div>
 
-          <!-- Student veya ClubManager kullanıcıların kayıt olabilmesini sağlar -->
+          <!-- Student veya ClubManager etkinliğe kayıt olabilir -->
           @if (auth.hasRole('Student') || auth.hasRole('ClubManager')) {
             <div class="detail-actions">
               <button
@@ -155,87 +131,82 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
             </div>
           }
 
-          <!-- Kayıt işlemi başarılı olduğunda gösterilir -->
+          <!-- Başarılı kayıt mesajı -->
           @if (successMessage()) {
             <div class="success-message">
               {{ successMessage() }}
             </div>
           }
-
         </section>
       }
-
     </section>
   `,
-  styleUrl: './event-detail.scss' // Bu componentin tasarımını event-detail.scss dosyasından almasını sağlar.
+  styleUrl: './event-detail.scss' // Componentin tasarım dosyası
 })
-export class EventDetail implements OnInit { // Etkinlik detay sayfasının TypeScript classıdır ve OnInit kullanır.
-  readonly auth = inject(AuthService); // Giriş yapan kullanıcının rolünü kontrol etmek için AuthService'i enjekte eder.
-  private readonly route = inject(ActivatedRoute); // URL içindeki etkinlik ID değerini okumak için ActivatedRoute'u enjekte eder.
-  private readonly eventService = inject(EventService); // Etkinlik detayını backendden çekmek için EventService'i enjekte eder.
-  private readonly registrationService = inject(RegistrationService); // Etkinlik kayıt işlemini yapmak için RegistrationService'i enjekte eder.
+export class EventDetail implements OnInit {
+  readonly auth = inject(AuthService); // Kullanıcının rolünü kontrol etmek için
+  private readonly route = inject(ActivatedRoute); // URL içindeki etkinlik IDsini okumak için
+  private readonly eventService = inject(EventService); // Etkinlik detayını backendden almak için
+  private readonly registrationService = inject(RegistrationService); // Etkinliğe kayıt işlemini yapmak için
 
-  readonly event = signal<EventResponse | null>(null); // Backendden gelen etkinlik detayını tutar.
-  readonly loading = signal(false); // Etkinlik detayının yüklenip yüklenmediğini tutar.
-  readonly registering = signal(false); // Etkinliğe kayıt işleminin devam edip etmediğini tutar.
-  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
-  readonly successMessage = signal(''); // Kayıt işlemi başarılı olduğunda gösterilecek mesajı tutar.
+  readonly event = signal<EventResponse | null>(null); // Backendden gelen etkinlik detayını tutar
+  readonly loading = signal(false); // Etkinlik bilgilerinin yüklenme durumunu tutar
+  readonly registering = signal(false); // Kayıt işleminin devam edip etmediğini tutar
+  readonly errorMessage = signal(''); // Hata mesajını tutar
+  readonly successMessage = signal(''); // Başarılı kayıt mesajını tutar
 
+  ngOnInit(): void { // Sayfa ilk açıldığında otomatik çalışır
+    const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki id değerini alıp numbera çevirir
 
-  ngOnInit(): void { // Sayfa ilk açıldığında otomatik olarak çalışır.
-    const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki id parametresini alır ve number tipine dönüştürür.
-
-    if (!Number.isInteger(id) || id <= 0) { // ID geçerli bir pozitif tam sayı değilse kontrol içerisine girer.
-      this.errorMessage.set('Geçersiz etkinlik ID.'); // Kullanıcıya geçersiz ID mesajını gösterir.
-      return; // Metodun devam etmesini engeller.
+    if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
+      this.errorMessage.set('Geçersiz etkinlik ID.'); // Hata mesajı gösterir
+      return; // Backend isteğinin yapılmasını engeller
     }
 
-    this.loadEvent(id); // URLden alınan IDye göre etkinlik detayını backendden getirir.
+    this.loadEvent(id); // Etkinlik detayını backendden getirir
   }
 
+  loadEvent(id: number): void { // Verilen IDye göre etkinlik detayını getirir
+    this.loading.set(true); // Yükleme işlemini başlatır
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
 
-  loadEvent(id: number): void { // Verilen etkinlik ID değerine göre backendden etkinlik detayını getirir.
-    this.loading.set(true); // Veri yükleme işleminin başladığını belirtir.
-    this.errorMessage.set(''); // Daha önce gösterilmiş hata mesajını temizler.
-
-    this.eventService.getById(id).subscribe({ // EventService içindeki getById metoduyla backend isteği gönderir.
-      next: event => { // Backend isteği başarılı olduğunda çalışır.
-        this.event.set(event); // Backendden gelen etkinlik bilgisini event signalına aktarır.
-        this.loading.set(false); // Yükleme işleminin tamamlandığını belirtir.
+    this.eventService.getById(id).subscribe({ // EventService üzerinden etkinlik detayını ister
+      next: event => { // Backend isteği başarılı olduğunda çalışır
+        this.event.set(event); // Gelen etkinlik bilgisini signal içerisine kaydeder
+        this.loading.set(false); // Yükleme işlemini bitirir
       },
-      error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
-        this.errorMessage.set( // Kullanıcıya gösterilecek hata mesajını belirler.
-          getApiErrorMessage(error, 'Etkinlik alınamadı.') // Backend hatasını daha anlaşılır bir mesaja dönüştürür.
+      error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa
+        this.errorMessage.set(
+          getApiErrorMessage(error, 'Etkinlik alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
-        this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
+        this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }
     });
   }
 
+  register(): void { // Giriş yapan kullanıcıyı etkinliğe kaydeder
+    const eventItem = this.event(); // Ekrandaki etkinlik bilgisini alır
 
-  register(): void { // Giriş yapan kullanıcıyı görüntülenen etkinliğe kaydeder.
-    const eventItem = this.event(); // Ekranda bulunan etkinlik bilgisini eventItem değişkenine alır.
-
-    if (!eventItem) { // Etkinlik bilgisi henüz yüklenmemişse kontrol içerisine girer.
-      return; // Kayıt işleminin yapılmasını engeller.
+    if (!eventItem) { // Etkinlik bilgisi henüz yoksa
+      return; // Kayıt işlemini engeller
     }
 
-    this.registering.set(true); // Kayıt işleminin başladığını belirtir.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
-    this.successMessage.set(''); // Önceki başarı mesajını temizler.
+    this.registering.set(true); // Kayıt işlemini başlatır
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
+    this.successMessage.set(''); // Önceki başarı mesajını temizler
 
-    this.registrationService.register(eventItem.id).subscribe({ // Etkinlik ID değerini backenddeki kayıt metoduna gönderir.
-      next: registration => { // Kayıt işlemi başarılı olduğunda çalışır.
-        this.successMessage.set( // Kullanıcıya başarılı kayıt mesajı gösterir.
-          `Kayıt oluşturuldu. Durum: ${registration.approvalStatus}` // Backendden gelen kayıt durumunu mesaj içinde gösterir.
+    this.registrationService.register(eventItem.id).subscribe({ // Etkinlik IDsini backenddeki kayıt metoduna gönderir
+      next: registration => { // Kayıt işlemi başarılı olduğunda çalışır
+        this.successMessage.set(
+          `Kayıt oluşturuldu. Durum: ${registration.approvalStatus}` // Backendden gelen kayıt durumunu gösterir
         );
-        this.registering.set(false); // Kayıt işleminin tamamlandığını belirtir.
+        this.registering.set(false); // Kayıt işlemini bitirir
       },
-      error: (error: HttpErrorResponse) => { // Kayıt işlemi sırasında backend hata döndürürse çalışır.
-        this.errorMessage.set( // Kullanıcıya hata mesajını gösterir.
-          getApiErrorMessage(error, 'Etkinliğe kayıt olunamadı.') // Backend hatasını kullanıcı dostu mesaja dönüştürür.
+      error: (error: HttpErrorResponse) => { // Kayıt sırasında hata oluşursa
+        this.errorMessage.set(
+          getApiErrorMessage(error, 'Etkinliğe kayıt olunamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
-        this.registering.set(false); // Hata olsa bile kayıt işleminin bittiğini belirtir.
+        this.registering.set(false); // Hata olsa bile kayıt işlemini bitirir
       }
     });
   }

@@ -1,27 +1,27 @@
-import { Component, inject, OnInit, signal } from '@angular/core'; // Angular componenti, servis enjeksiyonu, OnInit ve signal yapısını kullanmak için gerekli araçları içe aktarır.
-import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
-import { RouterLink } from '@angular/router'; // Template içinde routerLink ile sayfa geçişi yapabilmemizi sağlar.
-import { ClubService } from '../../core/services/club.service'; // Kulüp verilerini backendden almak için kullanılır.
-import { AuthService } from '../../core/services/auth.service'; // Giriş yapan kullanıcının rol ve kullanıcı bilgilerine erişmemizi sağlar.
-import { ClubResponse } from '../../core/models/api.models'; // Backendden gelen kulüp nesnesinin TypeScript tipidir.
-import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+import { Component, inject, OnInit, signal } from '@angular/core'; // Component, inject, OnInit ve signal kullanmak için
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için
+import { RouterLink } from '@angular/router'; // Template içinde routerLink kullanmak için
+import { ClubService } from '../../core/services/club.service'; // Kulüp verilerini backendden almak için
+import { AuthService } from '../../core/services/auth.service'; // Kullanıcının rol ve bilgilerine erişmek için
+import { ClubResponse } from '../../core/models/api.models'; // Backendden gelen kulüp modelini kullanmak için
+import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
 
-@Component({ // Bu classın Angular componenti olduğunu belirtir.
-  selector: 'app-clubs', // Componentin selector adını belirler.
-  standalone: true, // Componentin NgModule kullanmadan bağımsız çalışmasını sağlar.
-  imports: [RouterLink], // Template içerisinde routerLink kullanabilmemizi sağlar.
+@Component({ // Bu classın Angular componenti olduğunu belirtir
+  selector: 'app-clubs', // Componentin selector adı
+  standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
+  imports: [RouterLink], // Template içinde routerLink kullanılmasını sağlar
   template: `
-    <!-- Kulüpler sayfasının tamamını kapsar -->
+    <!-- Kulüpler sayfası -->
     <section class="clubs-page">
 
-      <!-- Sayfanın üst başlık alanıdır -->
+      <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Kulüpler</h1> <!-- Sayfanın ana başlığını gösterir. -->
-          <p>Kampüste bulunan öğrenci kulüplerini görüntüleyebilirsiniz.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
+          <h1>Kulüpler</h1>
+          <p>Kampüste bulunan öğrenci kulüplerini görüntüleyebilirsiniz.</p>
         </div>
 
-        <!-- Sadece ClubManager rolündeki kullanıcıya yeni kulüp oluşturma butonu gösterilir -->
+        <!-- Sadece ClubManager yeni kulüp oluşturabilir -->
         @if (auth.hasRole('ClubManager')) {
           <a class="create-button" routerLink="/club-manage">
             + Yeni Kulüp Oluştur
@@ -29,174 +29,148 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         }
       </div>
 
-      <!-- Backend isteği devam ederken kullanıcıya yükleme mesajı gösterilir -->
+      <!-- Kulüpler yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
           Kulüpler yükleniyor...
         </div>
       }
 
-      <!-- Backend isteği hata verdiğinde hata mesajı gösterilir -->
+      <!-- Hata mesajı -->
       @if (errorMessage()) {
         <div class="page-message error-message">
           {{ errorMessage() }}
         </div>
       }
 
-      <!-- Yükleme tamamlandıysa, hata yoksa ve kulüp bulunamadıysa gösterilir -->
+      <!-- Kulüp bulunamadığında gösterilir -->
       @if (!loading() && clubs().length === 0 && !errorMessage()) {
         <div class="page-message">
           Kulüp bulunamadı.
         </div>
       }
 
-      <!-- Kulüp listesinde en az bir kayıt varsa tabloyu gösterir -->
+      <!-- Kulüp listesi -->
       @if (clubs().length > 0) {
         <section class="clubs-section">
 
-          <!-- Tablo üstündeki açıklama alanıdır -->
+          <!-- Liste başlığı -->
           <div class="list-header">
-            <h2>Kulüp Listesi</h2> <!-- Liste bölümünün başlığını gösterir. -->
-            <p>Toplam {{ clubs().length }} kulüp görüntüleniyor.</p> <!-- Ekrandaki toplam kulüp sayısını gösterir. -->
+            <h2>Kulüp Listesi</h2>
+            <p>Toplam {{ clubs().length }} kulüp görüntüleniyor.</p>
           </div>
 
-          <!-- Tabloyu kart görünümünde tutar -->
+          <!-- Kulüp tablosu -->
           <div class="table-card">
-            <!-- Küçük ekranlarda tablonun yatay kaydırılmasını sağlar -->
             <div class="table-wrapper">
-
-              <!-- Kulüp verilerinin gösterildiği tablo -->
               <table class="clubs-table">
-
-                <!-- Tablo başlıkları -->
                 <thead>
                   <tr>
-                    <th>Kulüp Adı</th> <!-- Kulüp adının bulunduğu kolondur. -->
-                    <th>Açıklama</th> <!-- Kulüp açıklamasının bulunduğu kolondur. -->
-                    <th>Logo URL</th> <!-- Kulübün logo bağlantısını metin olarak gösterir. -->
-                    <th>Yönetici</th> <!-- Kulüp yöneticisinin adını gösterir. -->
-                    <th>Etkinlik Sayısı</th> <!-- Kulübün oluşturduğu etkinlik sayısını gösterir. -->
-                    <th>İşlem</th> <!-- Detay ve yönetim işlemlerinin bulunduğu kolondur. -->
+                    <th>Kulüp Adı</th>
+                    <th>Açıklama</th>
+                    <th>Logo URL</th>
+                    <th>Yönetici</th>
+                    <th>Etkinlik Sayısı</th>
+                    <th>İşlem</th>
                   </tr>
                 </thead>
 
-                <!-- Backendden gelen kulüplerin gösterildiği tablo gövdesi -->
                 <tbody>
-
-                  <!-- clubs dizisindeki bütün kulüpleri tek tek dolaşır -->
+                  <!-- Backendden gelen kulüpleri tabloya ekler -->
                   @for (club of clubs(); track club.id) {
                     <tr>
-
-                      <!-- Kulüp adını sadece metin olarak gösterir, yanında görsel bulunmaz -->
                       <td class="club-name">
                         {{ club.name }}
-                      </td>
+                      </td> <!-- Kulüp adını gösterir -->
 
-                      <!-- Kulübün açıklamasını gösterir -->
                       <td class="description-cell">
                         {{ club.description }}
-                      </td>
+                      </td> <!-- Kulüp açıklamasını gösterir -->
 
-                      <!-- Logo URL bilgisini görsele çevirmeden metin olarak gösterir -->
                       <td class="logo-url">
                         {{ club.logoUrl || '-' }}
-                      </td>
+                      </td> <!-- Logo URL bilgisini metin olarak gösterir -->
 
-                      <!-- Kulüp yöneticisinin adını gösterir -->
                       <td>
                         {{ club.managerFullName }}
-                      </td>
+                      </td> <!-- Kulüp yöneticisinin adını gösterir -->
 
-                      <!-- Kulübün toplam etkinlik sayısını gösterir -->
                       <td>
                         <span class="event-count">
                           {{ club.eventCount }}
                         </span>
-                      </td>
+                      </td> <!-- Kulübün etkinlik sayısını gösterir -->
 
-                      <!-- Kulüple ilgili işlem butonlarını gösterir -->
+                      <!-- Kulüp işlem butonları -->
                       <td>
                         <div class="table-actions">
 
-                          <!-- Kulübün detay sayfasına yönlendirir -->
+                          <!-- Kulüp detay sayfasına gider -->
                           <a class="detail-link" [routerLink]="['/clubs', club.id]">
                             Detay
                           </a>
 
-                          <!-- Giriş yapan ClubManager bu kulübün yöneticisiyse çalışır -->
+                          <!-- ClubManager sadece kendi kulübünü yönetebilir -->
                           @if (ownsClub(club)) {
-
-                            <!-- Kulübün güncelleme sayfasına yönlendirir -->
                             <a class="edit-link" [routerLink]="['/club-manage', club.id]">
                               Güncelle
                             </a>
 
-                            <!-- Kulübün istatistik sayfasına yönlendirir -->
                             <a class="stats-link" [routerLink]="['/clubs', club.id, 'stats']">
                               İstatistik
                             </a>
-
                           }
-
                         </div>
                       </td>
-
                     </tr>
                   }
-
                 </tbody>
               </table>
-
             </div>
           </div>
-
         </section>
       }
-
     </section>
   `,
-  styleUrl: './clubs.scss' // Bu componentin tasarımını clubs.scss dosyasından almasını sağlar.
+  styleUrl: './clubs.scss' // Componentin tasarım dosyası
 })
-export class Clubs implements OnInit { // Kulüpler sayfasının TypeScript classıdır ve OnInit yaşam döngüsünü kullanır.
-  readonly auth = inject(AuthService); // Giriş yapan kullanıcının rol ve kullanıcı bilgilerine erişmek için AuthService'i enjekte eder.
-  private readonly clubService = inject(ClubService); // Kulüp verilerini backendden çekmek için ClubService'i enjekte eder.
+export class Clubs implements OnInit {
+  readonly auth = inject(AuthService); // Kullanıcının rol ve bilgilerine erişmek için
+  private readonly clubService = inject(ClubService); // Kulüp verilerini backendden almak için
 
-  readonly clubs = signal<ClubResponse[]>([]); // Backendden gelen kulüp listesini tutar.
-  readonly loading = signal(false); // Kulüpler yüklenirken işlemin devam edip etmediğini tutar.
-  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
+  readonly clubs = signal<ClubResponse[]>([]); // Backendden gelen kulüp listesini tutar
+  readonly loading = signal(false); // Kulüplerin yüklenme durumunu tutar
+  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar
 
-
-  ngOnInit(): void { // Sayfa ilk açıldığında otomatik olarak çalışır.
-    this.loadClubs(); // Backendden bütün kulüpleri getirir.
+  ngOnInit(): void { // Sayfa ilk açıldığında otomatik çalışır
+    this.loadClubs(); // Backendden kulüp listesini getirir
   }
 
-
-  ownsClub(club: ClubResponse): boolean { // Giriş yapan kullanıcının verilen kulübün yöneticisi olup olmadığını kontrol eder.
-    const user = this.auth.currentUser(); // Giriş yapan kullanıcının bilgilerini user değişkenine alır.
+  ownsClub(club: ClubResponse): boolean { // Kullanıcının kulübün yöneticisi olup olmadığını kontrol eder
+    const user = this.auth.currentUser(); // Giriş yapan kullanıcının bilgilerini alır
 
     return (
-      !!user && // Kullanıcı bilgisinin mevcut olup olmadığını kontrol eder.
-      this.auth.hasRole('ClubManager') && // Giriş yapan kullanıcının ClubManager rolüne sahip olup olmadığını kontrol eder.
-      club.managerUserId === user.userId // Kulübün yönetici IDsi ile giriş yapan kullanıcının IDsinin aynı olup olmadığını kontrol eder.
+      !!user && // Kullanıcı bilgisinin var olup olmadığını kontrol eder
+      this.auth.hasRole('ClubManager') && // Kullanıcının ClubManager rolüne sahip olup olmadığını kontrol eder
+      club.managerUserId === user.userId // Kulübün yöneticisi giriş yapan kullanıcı mı kontrol eder
     );
   }
 
+  loadClubs(): void { // Backendden bütün kulüpleri getirir
+    this.loading.set(true); // Yükleme işlemini başlatır
+    this.errorMessage.set(''); // Önceki hata mesajını temizler
 
-  loadClubs(): void { // Backendden bütün kulüpleri getiren metottur.
-    this.loading.set(true); // Backend isteğinin başladığını belirtir.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
-
-    this.clubService.getAll().subscribe({ // ClubService içindeki getAll metodunu çağırır ve backend cevabını dinler.
-      next: clubs => { // Backend isteği başarılı olduğunda çalışır.
-        this.clubs.set(clubs); // Backendden gelen kulüp listesini clubs signalına aktarır.
-        this.loading.set(false); // Yükleme işleminin tamamlandığını belirtir.
+    this.clubService.getAll().subscribe({ // ClubService üzerinden kulüp listesini ister
+      next: clubs => { // Backend isteği başarılı olduğunda çalışır
+        this.clubs.set(clubs); // Gelen kulüpleri signal içine kaydeder
+        this.loading.set(false); // Yükleme işlemini bitirir
       },
-      error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
-        this.clubs.set([]); // Hata durumunda kulüp listesini boşaltır.
+      error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa
+        this.clubs.set([]); // Kulüp listesini boşaltır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüpler alınamadı.') // Backend hatasını kullanıcıya anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Kulüpler alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
-        this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
+        this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }
     });
   }

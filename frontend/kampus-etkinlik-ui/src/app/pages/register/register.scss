@@ -1,4 +1,4 @@
-/* Kayıt sayfasının genel alanıdır. */
+/* Kayıt sayfasının genel alanı */
 .auth-page {
   width: 100%; // Sayfanın kullanılabilir genişliğin tamamını kullanmasını sağlar.
   min-height: calc(100vh - 180px); // Kartın ekran içerisinde ortalanabilmesi için yükseklik verir.
@@ -8,7 +8,7 @@
   padding: 30px 0; // Üst ve altta boşluk bırakır.
 }
 
-/* Kayıt formunun bulunduğu karttır. */
+/* Kayıt formunun bulunduğu kart */
 .auth-card {
   width: 100%; // Kartın kullanılabilir genişliği kullanmasını sağlar.
   max-width: 480px; // Kartın fazla genişlemesini engeller.
@@ -18,7 +18,7 @@
   border-radius: 8px; // Kart köşelerini hafif yuvarlatır.
 }
 
-/* CampusBody logosunun bulunduğu alandır. */
+/* CampusBody logosunun bulunduğu alan */
 .brand {
   width: 220px; // Logo için ayrılan genişliği belirler.
   height: 120px; // Logo için ayrılan yüksekliği belirler.
@@ -37,7 +37,7 @@
   transform: scale(1.7); // PNG dosyasındaki boşluk nedeniyle gerçek logoyu büyütür.
 }
 
-/* Başlık alanıdır. */
+/* Başlık alanı */
 .auth-header {
   margin-bottom: 26px; // Başlık ile form arasına boşluk bırakır.
   text-align: center; // Başlıkları ortalar.
@@ -57,7 +57,7 @@
   line-height: 1.5; // Satır yüksekliğini ayarlar.
 }
 
-/* Form alanlarını düzenler. */
+/* Form alanları */
 .auth-form {
   display: flex; // Formu flex yapısına geçirir.
   flex-direction: column; // Alanları alt alta dizer.
@@ -101,7 +101,7 @@
   font-size: 11px; // Hata mesajı boyutunu belirler.
 }
 
-/* Backend hata mesajıdır. */
+/* Backend hata mesajı */
 .alert-error {
   padding: 12px 14px; // Hata kutusunun iç boşluğunu belirler.
   background-color: #fef2f2; // Açık kırmızı arka plan verir.
@@ -111,7 +111,7 @@
   font-size: 12px; // Yazı boyutunu belirler.
 }
 
-/* Kayıt Ol butonudur. */
+/* Kayıt Ol butonu */
 .primary-button {
   width: 100%; // Butonu tam genişlik yapar.
   min-height: 42px; // Buton yüksekliğini belirler.
@@ -135,7 +135,7 @@
   cursor: not-allowed; // Butonun kullanılamadığını gösterir.
 }
 
-/* Login sayfasına yönlendiren alt alandır. */
+/* Login sayfasına yönlendiren alt alan */
 .auth-footer {
   margin: 24px 0 0; // Form ile footer arasına boşluk bırakır.
   padding-top: 20px; // Üst çizgi ile yazı arasına boşluk bırakır.
@@ -156,7 +156,7 @@
   text-decoration: underline; // Hover durumunda alt çizgi gösterir.
 }
 
-/* Mobil ekran düzenidir. */
+/* Mobil ekran düzeni */
 @media (max-width: 550px) {
   .auth-page {
     min-height: auto; // Mobilde zorunlu minimum yüksekliği kaldırır.

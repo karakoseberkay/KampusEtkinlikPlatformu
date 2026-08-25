@@ -6,7 +6,7 @@ import { API_BASE_URL } from '../config/api.config';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.models';
 import { AuthStorageService } from './auth-storage.service';
 
-@Injectable({
+@Injectable({//angular bu servisten uygulama genelinde tek bir tane oluştursun ve her yerden kullanılabilsin
   providedIn: 'root'
 })
 export class AuthService {
@@ -16,18 +16,18 @@ export class AuthService {
 
   private readonly currentUserSignal = signal<AuthResponse | null>(
     this.authStorage.getValidSession()
-  ); // giriş yapan kullanıcının bilgilerini signal olarak tutar
+  ); // giriş yapan kullanıcının bilgilerini signal olarak tutar yoksa null döner
 
   readonly currentUser = this.currentUserSignal.asReadonly(); // kullanıcı bilgisinin dışarıdan sadece okunmasını sağlar
 
   readonly isAuthenticated = computed(() => this.currentUserSignal() !== null);
     
-   // kullanıcının giriş yapıp yapmadığını kontrol eder
+   // kullanıcının giriş yapıp yapmadığını kontrol eder (varsa true yoksa false)
 
   readonly roles = computed(() => this.currentUserSignal()?.roles ?? []);
     
-   // giriş yapan kullanıcının rollerini tutar kullanıcı yoksa boş dizi tutar
-
+   // giriş yapan kullanıcının rollerini tutar kullanıcı yoksa boş dizi tutar (navbarda kullanılıyor)
+    
   login(request: LoginRequest): Observable<AuthResponse> { // kullanıcı giriş isteğini backende gönderir
     return this.http.post<AuthResponse>(`${API_BASE_URL}/Auth/login`, request)
       .pipe(tap(response => this.setSession(response)));
@@ -38,7 +38,7 @@ export class AuthService {
   register(request: RegisterRequest): Observable<AuthResponse> { // kullanıcı kayıt isteğini backende gönderir
     return this.http.post<AuthResponse>(`${API_BASE_URL}/Auth/register`, request)
       .pipe(tap(response => this.setSession(response)));
-         // başarılı kayıttan sonra oturumu kaydeder
+         // başarılı kayıttan sonra oturumu kaydeder kullanıcının tekrar login ekranına gitmeden giriş yapmasını sağlar
       
   }
 

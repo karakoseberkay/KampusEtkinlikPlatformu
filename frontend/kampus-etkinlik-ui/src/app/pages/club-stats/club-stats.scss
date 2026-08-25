@@ -1,16 +1,9 @@
-/* ==================================================
-   KULÜP İSTATİSTİKLERİ SAYFASI
-   ================================================== */
-
+/* Kulüp istatistikleri sayfası */
 .club-stats-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   SAYFA BAŞLIĞI
-   ================================================== */
-
+/* Sayfa başlığı */
 .page-header {
   display: flex; // Başlık ile yenile butonunu yan yana dizer.
   align-items: center; // Başlık ve butonu dikey olarak ortalar.
@@ -32,6 +25,7 @@
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
+/* Verileri yenileme butonu */
 .refresh-button {
   min-height: 40px; // Yenile butonunun minimum yüksekliğini belirler.
   padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
@@ -53,11 +47,7 @@
   cursor: not-allowed; // Kullanıcıya butonun kullanılamadığını gösterir.
 }
 
-
-/* ==================================================
-   MESAJLAR
-   ================================================== */
-
+/* Mesaj alanları */
 .page-message {
   margin-bottom: 24px; // Mesaj ile sonraki bölüm arasında boşluk bırakır.
   padding: 17px; // Mesaj kutusunun içine boşluk verir.
@@ -74,11 +64,7 @@
   border-color: #fecaca; // Hata mesajının borderını açık kırmızı yapar.
 }
 
-
-/* ==================================================
-   KULÜP ÖZETİ
-   ================================================== */
-
+/* Kulüp özeti */
 .club-summary {
   padding: 22px; // Kulüp özet kartının içerisine boşluk verir.
   margin-bottom: 30px; // Özet kartı ile genel bilgiler arasında boşluk bırakır.
@@ -110,11 +96,7 @@
   font-size: 13px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   BÖLÜM BAŞLIKLARI
-   ================================================== */
-
+/* Bölüm başlıkları */
 .stats-section,
 .chart-section,
 .events-section {
@@ -138,11 +120,7 @@
   font-size: 13px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   İSTATİSTİK KARTLARI
-   ================================================== */
-
+/* İstatistik kartları */
 .stats-grid {
   display: grid; // İstatistik kutularını grid yapısında düzenler.
   grid-template-columns: repeat(4, 1fr); // Büyük ekranda dört eşit kolon oluşturur.
@@ -189,11 +167,7 @@
   color: #b91c1c; // İptal veya reddedilen değerleri kırmızı gösterir.
 }
 
-
-/* ==================================================
-   GRAFİK
-   ================================================== */
-
+/* Kayıt oranı grafiği */
 .chart-card {
   padding: 22px; // Grafik kartının içine boşluk verir.
   background-color: #ffffff; // Grafik kartının arka planını beyaz yapar.
@@ -231,11 +205,7 @@
   font-weight: 700; // Yüzde yazısını kalın yapar.
 }
 
-
-/* ==================================================
-   BOŞ VERİ MESAJI
-   ================================================== */
-
+/* Boş veri mesajı */
 .empty-card {
   padding: 18px; // Mesaj kutusunun içine boşluk verir.
   background-color: #ffffff; // Mesaj kutusunu beyaz yapar.
@@ -245,11 +215,7 @@
   font-size: 13px; // Mesaj yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   ETKİNLİK İSTATİSTİK TABLOSU
-   ================================================== */
-
+/* Etkinlik istatistik tablosu */
 .table-card {
   width: 100%; // Tablo kartının tam genişlik kullanmasını sağlar.
   background-color: #ffffff; // Tablo arka planını beyaz yapar.
@@ -296,7 +262,7 @@
 }
 
 .stats-table tbody tr:hover {
-  background-color: #fafbfd; // Mouse satırın üzerine geldiğinde arka plan rengini direkt değiştirir.
+  background-color: #fafbfd; // Mouse satırın üzerine geldiğinde arka plan rengini değiştirir.
 }
 
 .event-title {
@@ -304,11 +270,7 @@
   font-weight: 700; // Etkinlik başlığını kalın gösterir.
 }
 
-
-/* ==================================================
-   TABLO DURUM ETİKETLERİ
-   ================================================== */
-
+/* Tablo durum etiketleri */
 .status-badge {
   display: inline-block; // Durum etiketinin sadece içeriği kadar geniş olmasını sağlar.
   padding: 5px 9px; // Etiketin içine boşluk verir.
@@ -358,11 +320,7 @@
   font-weight: 700; // Oran değerini kalın yapar.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== */
-
+/* Responsive düzen */
 @media (max-width: 1000px) { // Orta boy ekranlarda çalışır.
   .stats-grid {
     grid-template-columns: repeat(2, 1fr); // İstatistik kartlarını dört kolondan iki kolona düşürür.

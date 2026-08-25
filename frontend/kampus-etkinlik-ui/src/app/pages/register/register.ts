@@ -1,68 +1,69 @@
-import { Component, inject, signal } from '@angular/core'; // Angular componenti oluşturmak, servisleri inject etmek ve signal kullanmak için gerekli araçları içe aktarır.
-import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'; // Kayıt formunu oluşturmak ve validation kurallarını kullanmak için gerekli yapıları içe aktarır.
-import { Router, RouterLink } from '@angular/router'; // Kayıt sonrası yönlendirme yapmak ve template içerisinde routerLink kullanmak için gerekli araçları içe aktarır.
-import { finalize } from 'rxjs'; // Backend isteği başarılı veya hatalı bittiğinde ortak bir işlem çalıştırmamızı sağlar.
-import { AuthService } from '../../core/services/auth.service'; // Kullanıcı kayıt işlemini backend'e göndermek için kullanılır.
+import { Component, inject, signal } from '@angular/core'; // Component oluşturmak, servis inject etmek ve signal kullanmak için
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'; // Reactive Form ve validation işlemleri için
+import { Router, RouterLink } from '@angular/router'; // Sayfa yönlendirmeleri ve routerLink kullanımı için
+import { finalize } from 'rxjs'; // İstek başarılı veya hatalı bittiğinde ortak işlem çalıştırmak için
+import { AuthService } from '../../core/services/auth.service'; // Kullanıcı kayıt işlemini backend'e göndermek için
 
-@Component({ // Bu classın Angular componenti olduğunu belirtir.
-  selector: 'app-register-page', // Componentin selector adını belirler.
-  standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar.
-  imports: [ReactiveFormsModule, RouterLink], // Template içerisinde Reactive Form ve routerLink kullanabilmemizi sağlar.
-  templateUrl: './register.html', // Componentin HTML dosyasını belirtir.
-  styleUrl: './register.scss' // Componentin SCSS dosyasını belirtir.
+@Component({ // Bu classın Angular componenti olduğunu belirtir
+  selector: 'app-register-page', // Componentin selector adı
+  standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
+  imports: [ReactiveFormsModule, RouterLink], // Reactive Form ve routerLink kullanımını sağlar
+  templateUrl: './register.html', // Componentin HTML dosyası
+  styleUrl: './register.scss' // Componentin SCSS dosyası
 })
-export class RegisterPage { // Kayıt Ol sayfasının TypeScript classıdır.
-  private readonly formBuilder = inject(FormBuilder); // Reactive Form oluşturmak için FormBuilder servisini enjekte eder.
-  private readonly authService = inject(AuthService); // Kullanıcı kayıt isteğini backend'e göndermek için AuthService'i enjekte eder.
-  private readonly router = inject(Router); // Kayıt başarılı olduğunda kullanıcıyı başka sayfaya yönlendirmek için Router'ı enjekte eder.
+export class RegisterPage {
+  private readonly formBuilder = inject(FormBuilder); // Reactive Form oluşturmak için
+  private readonly authService = inject(AuthService); // Kayıt işlemini backend'e göndermek için
+  private readonly router = inject(Router); // Kayıt sonrası yönlendirme yapmak için
 
-  readonly loading = signal(false); // Kayıt işleminin devam edip etmediğini tutar.
-  readonly errorMessage = signal<string | null>(null); // Kullanıcıya gösterilecek kayıt hata mesajını tutar.
+  readonly loading = signal(false); // Kayıt işleminin devam edip etmediğini tutar
+  readonly errorMessage = signal<string | null>(null); // Kullanıcıya gösterilecek hata mesajını tutar
 
-  readonly form = this.formBuilder.nonNullable.group({ // Kayıt formunu ve form alanlarının validation kurallarını oluşturur.
-    fullName: ['', [Validators.required, Validators.maxLength(150)]], // Ad Soyad alanını zorunlu yapar ve maksimum 150 karakter olmasını sağlar.
-    department: ['', [Validators.maxLength(150)]], // Bölüm alanını isteğe bağlı bırakır ancak maksimum 150 karakter sınırı koyar.
-    email: ['', [Validators.required, Validators.email]], // E-posta alanını zorunlu yapar ve geçerli e-posta formatında olmasını ister.
-    password: ['', [Validators.required, Validators.minLength(8)]] // Şifre alanını zorunlu yapar ve minimum 8 karakter olmasını ister.
+  readonly form = this.formBuilder.nonNullable.group({ // Kayıt formunu ve validation kurallarını oluşturur
+    fullName: ['', [Validators.required, Validators.maxLength(150)]], // Ad Soyad zorunlu ve maksimum 150 karakter
+    department: ['', [Validators.maxLength(150)]], // Bölüm isteğe bağlı ve maksimum 150 karakter
+    email: ['', [Validators.required, Validators.email]], // E-posta zorunlu ve geçerli formatta olmalı
+    password: ['', [Validators.required, Validators.minLength(8)]] // Şifre zorunlu ve minimum 8 karakter
   });
 
-
-  submit(): void { // Kullanıcı Kayıt Ol butonuna bastığında çalışır.
-    if (this.form.invalid) { // Form validation kurallarından geçmiyorsa kontrol içerisine girer.
-      this.form.markAllAsTouched(); // Bütün form alanlarını touched yaparak validation mesajlarının görünmesini sağlar.
-      return; // Geçersiz formun backend'e gönderilmesini engeller.
+  submit(): void { // Kullanıcı Kayıt Ol butonuna bastığında çalışır
+    if (this.form.invalid) { // Form validation kurallarından geçmiyorsa
+      this.form.markAllAsTouched(); // Hatalı alanların validation mesajlarını görünür yapar
+      return; // Formun backend'e gönderilmesini engeller
     }
 
-    this.loading.set(true); // Kayıt işleminin başladığını belirtir.
-    this.errorMessage.set(null); // Daha önce gösterilmiş hata mesajını temizler.
+    this.loading.set(true); // Kayıt işlemini başlatır
+    this.errorMessage.set(null); // Önceki hata mesajını temizler
 
-    this.authService.register(this.form.getRawValue()) // Formdaki Ad Soyad, Bölüm, E-posta ve Şifre bilgilerini AuthService üzerinden backend'e gönderir.
-      .pipe(                          //getrawvalue: verileri obje olarak alır
-        finalize(() => this.loading.set(false)) // İşlem başarılı veya hatalı sonuçlansa da sonunda loading durumunu kapatır.
-      ).subscribe({ next: () => { // Backend kayıt işlemini başarılı tamamladığında çalışır.
-          void this.router.navigateByUrl('/home'); // Kullanıcıyı kayıt işleminden sonra Ana Sayfa ekranına yönlendirir.
+    this.authService
+      .register(this.form.getRawValue()) // Form bilgilerini AuthService üzerinden backend'e gönderir
+      .pipe(
+        finalize(() => this.loading.set(false)) // İşlem başarılı veya hatalı bitince loading durumunu kapatır
+      )
+      .subscribe({
+        next: () => { // Kayıt işlemi başarılı olduğunda çalışır
+          void this.router.navigateByUrl('/home'); // Kullanıcıyı Ana Sayfaya yönlendirir
         },
-        error: (error: HttpErrorResponse) => { // Backend kayıt isteği hata verdiğinde çalışır.
-          this.errorMessage.set(this.getErrorMessage(error)); // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+        error: (error: HttpErrorResponse) => { // Backend kayıt isteği hata verdiğinde çalışır
+          this.errorMessage.set(this.getErrorMessage(error)); // Hatayı kullanıcıya gösterilecek mesaja çevirir
         }
       });
   }
 
-
-  private getErrorMessage(error: HttpErrorResponse): string { // Backendden gelen kayıt hatasını kullanıcıya gösterilecek metne dönüştürür.
-    if (error.status === 0) { // Backend sunucusuna bağlantı kurulamadıysa çalışır.
-      return 'Backend bağlantısı kurulamadı. API ve CORS ayarlarını kontrol ett!!!'; // Kullanıcıya bağlantı problemini bildirir.
+  private getErrorMessage(error: HttpErrorResponse): string { // Backend hatasını kullanıcıya gösterilecek mesaja dönüştürür
+    if (error.status === 0) { // Backend sunucusuna bağlantı kurulamadıysa
+      return 'Backend bağlantısı kurulamadı. API ve CORS ayarlarını kontrol et.'; // Bağlantı hatasını bildirir
     }
 
-    if (typeof error.error?.message === 'string') { // Backend hata cevabında message alanı varsa çalışır.
-      return error.error.message; // Backendden gelen message değerini kullanıcıya gösterir.
+    if (typeof error.error?.message === 'string') { // Backend message alanında hata mesajı gönderdiyse
+      return error.error.message; // Backendden gelen mesajı gösterir
     }
 
-    if (typeof error.error === 'string') { // Backend hata cevabını doğrudan string olarak gönderdiyse çalışır.
-      return error.error; // Backendden gelen string hata mesajını kullanıcıya gösterir.
+    if (typeof error.error === 'string') { // Backend doğrudan string hata gönderdiyse
+      return error.error; // Gelen string hata mesajını gösterir
     }
 
-    return 'Kayıt oluşturulurken beklenmeyen bir hata oluştu.'; // Tanımlanmamış hata durumlarında genel mesaj gösterir.
+    return 'Kayıt oluşturulurken beklenmeyen bir hata oluştu.'; // Diğer durumlarda genel hata mesajı gösterir
   }
 }

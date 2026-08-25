@@ -1,16 +1,9 @@
-/* ==================================================
-   KULÜP OLUŞTUR / GÜNCELLE SAYFASI
-   ================================================== */
-
+/* Kulüp oluştur / güncelle sayfası */
 .club-manage-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
-
-/* ==================================================
-   SAYFA BAŞLIĞI
-   ================================================== */
-
+/* Sayfa başlığı */
 .page-header {
   margin-bottom: 28px; // Başlık ile form arasında boşluk bırakır.
 }
@@ -28,11 +21,7 @@
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
-
-/* ==================================================
-   MESAJLAR
-   ================================================== */
-
+/* Mesaj alanları */
 .page-message {
   max-width: 800px; // Mesaj kutusunun formdan daha geniş görünmesini engeller.
   margin-bottom: 20px; // Mesaj ile form arasında boşluk bırakır.
@@ -56,11 +45,7 @@
   border-color: #bbf7d0; // Başarı mesajı kutusuna yeşil border ekler.
 }
 
-
-/* ==================================================
-   FORM KARTI
-   ================================================== */
-
+/* Form kartı */
 .club-form {
   max-width: 800px; // Formun çok geniş görünmesini engeller.
   background-color: #ffffff; // Form kartının arka planını beyaz yapar.
@@ -94,11 +79,7 @@
   padding: 22px; // Form alanlarının kart kenarlarına yapışmasını engeller.
 }
 
-
-/* ==================================================
-   FORM ALANLARI
-   ================================================== */
-
+/* Form alanları */
 .form-field {
   display: flex; // Label ve inputu flex yapısına geçirir.
   flex-direction: column; // Labelın inputun üstünde görünmesini sağlar.
@@ -131,7 +112,7 @@
   min-height: 140px; // Açıklama alanının minimum yüksekliğini belirler.
   padding-top: 10px; // Textarea yazısının üst kenara yapışmasını engeller.
   padding-bottom: 10px; // Textarea yazısının alt kenara yapışmasını engeller.
-  resize: vertical; // Kullanıcının textarea yüksekliğini yalnızca dikey olarak değiştirmesini sağlar.
+  resize: vertical; // Kullanıcının textarea yüksekliğini yalnızca dikey değiştirmesini sağlar.
   line-height: 1.5; // Uzun açıklamaların daha rahat okunmasını sağlar.
 }
 
@@ -145,11 +126,7 @@
   border-color: #003267; // Kullanıcı form alanına tıkladığında borderı lacivert yapar.
 }
 
-
-/* ==================================================
-   FORM BUTONLARI
-   ================================================== */
-
+/* Form butonları */
 .form-actions {
   display: flex; // Form butonlarını yan yana dizer.
   justify-content: flex-end; // Butonları formun sağ tarafına hizalar.
@@ -193,14 +170,10 @@
 .save-button:disabled,
 .delete-button:disabled {
   opacity: 0.6; // Disabled durumdaki butonları soluk gösterir.
-  cursor: not-allowed; // Butonların kullanılamadığını gösteren cursor kullanır.
+  cursor: not-allowed; // Butonların kullanılamadığını gösterir.
 }
 
-
-/* ==================================================
-   RESPONSIVE
-   ================================================== */
-
+/* Responsive düzen */
 @media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
   .page-header h1 {
     font-size: 25px; // Mobilde ana başlığı biraz küçültür.
