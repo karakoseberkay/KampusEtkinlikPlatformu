@@ -39,7 +39,7 @@ public sealed class AuthController(
         {
             return Conflict(new
             {
-                message = "Bu e-posta adresi zaten kullanılıyor."
+                message = "This email address is already in use."
             }); // 409 Conflict döndürür
             //400 olmamasının sebebi kullanıcı zaten var, yani istemci hatası değil, çakışma durumu
         }
@@ -127,7 +127,7 @@ public sealed class AuthController(
         {
             return Unauthorized(new
             {
-                message = "E-posta veya şifre hatalı."
+                message = "Incorrect email or password."
             }); // 401 Unauthorized döndürür
         }
 
@@ -143,7 +143,7 @@ public sealed class AuthController(
         {
             return Unauthorized(new
             {
-                message = "E-posta veya şifre hatalı."
+                message = "Incorrect email or password."
             }); // güvenlik için kullanıcı bulunamadığında verilen mesajla aynı mesajı döndürür
         }
         return Ok(await CreateAuthResponseAsync(user));

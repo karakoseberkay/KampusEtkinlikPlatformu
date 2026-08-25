@@ -17,14 +17,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Kulüpler</h1>
-          <p>Kampüste bulunan öğrenci kulüplerini görüntüleyebilirsiniz.</p>
+          <h1>Clubs</h1>
+          <p>View student clubs on campus.</p>
         </div>
 
         <!-- Sadece ClubManager yeni kulüp oluşturabilir -->
         @if (auth.hasRole('ClubManager')) {
           <a class="create-button" routerLink="/club-manage">
-            + Yeni Kulüp Oluştur
+            + Create New Club
           </a>
         }
       </div>
@@ -32,7 +32,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Kulüpler yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
-          Kulüpler yükleniyor...
+          Clubs are loading...
         </div>
       }
 
@@ -46,7 +46,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Kulüp bulunamadığında gösterilir -->
       @if (!loading() && clubs().length === 0 && !errorMessage()) {
         <div class="page-message">
-          Kulüp bulunamadı.
+          No clubs found.
         </div>
       }
 
@@ -56,8 +56,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
           <!-- Liste başlığı -->
           <div class="list-header">
-            <h2>Kulüp Listesi</h2>
-            <p>Toplam {{ clubs().length }} kulüp görüntüleniyor.</p>
+            <h2>Club List</h2>
+            <p>Showing {{ clubs().length }} clubs.</p>
           </div>
 
           <!-- Kulüp tablosu -->
@@ -66,12 +66,12 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               <table class="clubs-table">
                 <thead>
                   <tr>
-                    <th>Kulüp Adı</th>
-                    <th>Açıklama</th>
+                    <th>Club Name</th>
+                    <th>Description</th>
                     <th>Logo URL</th>
-                    <th>Yönetici</th>
-                    <th>Etkinlik Sayısı</th>
-                    <th>İşlem</th>
+                    <th>Manager</th>
+                    <th>Event Count</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
 
@@ -107,17 +107,17 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
                           <!-- Kulüp detay sayfasına gider -->
                           <a class="detail-link" [routerLink]="['/clubs', club.id]">
-                            Detay
+                            Details
                           </a>
 
                           <!-- ClubManager sadece kendi kulübünü yönetebilir -->
                           @if (ownsClub(club)) {
                             <a class="edit-link" [routerLink]="['/club-manage', club.id]">
-                              Güncelle
+                              Update
                             </a>
 
                             <a class="stats-link" [routerLink]="['/clubs', club.id, 'stats']">
-                              İstatistik
+                              Statistics
                             </a>
                           }
                         </div>
@@ -168,7 +168,7 @@ export class Clubs implements OnInit {
       error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa
         this.clubs.set([]); // Kulüp listesini boşaltır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüpler alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load clubs.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }

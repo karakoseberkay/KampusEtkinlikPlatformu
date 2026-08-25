@@ -18,14 +18,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Etkinlikler</h1>
-          <p>Kampüsteki etkinlikleri inceleyebilir ve filtreleyebilirsiniz.</p>
+          <h1>Events</h1>
+          <p>Browse and filter campus events.</p>
         </div>
 
         <!-- Sadece ClubManager yeni etkinlik oluşturabilir -->
         @if (auth.hasRole('ClubManager')) {
           <a class="create-button" routerLink="/event-manage">
-            + Yeni Etkinlik Oluştur
+            + Create New Event
           </a>
         }
       </div>
@@ -33,8 +33,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Arama ve filtreleme alanı -->
       <section class="filter-card">
         <div class="filter-card-header">
-          <h2>Arama ve Filtreleme</h2>
-          <p>Aradığınız etkinlikleri daha kolay bulmak için filtreleri kullanabilirsiniz.</p>
+          <h2>Search and Filter</h2>
+          <p>Use the filters to find events more easily.</p>
         </div>
 
         <div class="filter-content">
@@ -42,11 +42,11 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
             <!-- Etkinlik adına göre arama -->
             <div class="form-field">
-              <label for="search">Etkinlik Ara</label>
+              <label for="search">Search Events</label>
               <input
                 id="search"
                 type="text"
-                placeholder="Etkinlik adı..."
+                placeholder="Event name..."
                 [value]="searchText()"
                 (input)="searchText.set($any($event.target).value)"
               >
@@ -54,11 +54,11 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
             <!-- Kategoriye göre filtreleme -->
             <div class="form-field">
-              <label for="category">Kategori</label>
+              <label for="category">Category</label>
               <input
                 id="category"
                 type="text"
-                placeholder="Kategori..."
+                placeholder="Category..."
                 [value]="category()"
                 (input)="category.set($any($event.target).value)"
               >
@@ -66,13 +66,13 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
             <!-- Kulübe göre filtreleme -->
             <div class="form-field">
-              <label for="club">Kulüp</label>
+              <label for="club">Club</label>
               <select
                 id="club"
                 [value]="selectedClubId()"
                 (change)="selectedClubId.set($any($event.target).value)"
               >
-                <option value="">Tüm Kulüpler</option>
+                <option value="">All Clubs</option>
 
                 <!-- Backendden gelen kulüpleri option olarak oluşturur -->
                 @for (club of clubs(); track club.id) {
@@ -85,7 +85,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
             <!-- Başlangıç tarihine göre filtreleme -->
             <div class="form-field">
-              <label for="dateFrom">Başlangıç Tarihi</label>
+              <label for="dateFrom">Start Date</label>
               <input
                 id="dateFrom"
                 type="date"
@@ -96,7 +96,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
             <!-- Bitiş tarihine göre filtreleme -->
             <div class="form-field">
-              <label for="dateTo">Bitiş Tarihi</label>
+              <label for="dateTo">End Date</label>
               <input
                 id="dateTo"
                 type="date"
@@ -113,7 +113,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                   [checked]="upcomingOnly()"
                   (change)="upcomingOnly.set($any($event.target).checked)"
                 >
-                <span>Sadece yaklaşan aktif etkinlikler</span>
+                <span>Upcoming active events only</span>
               </label>
             </div>
           </div>
@@ -126,7 +126,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               [disabled]="loading()"
               (click)="applyFilters()"
             >
-              Filtrele
+              Apply Filters
             </button>
 
             <button
@@ -135,7 +135,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               [disabled]="loading()"
               (click)="clearFilters()"
             >
-              Filtreleri Temizle
+              Clear Filters
             </button>
           </div>
         </div>
@@ -144,7 +144,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Backend isteği devam ederken gösterilir -->
       @if (loading()) {
         <div class="page-message">
-          Etkinlikler yükleniyor...
+          Events are loading...
         </div>
       }
 
@@ -158,7 +158,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Filtrelere uygun etkinlik bulunamazsa gösterilir -->
       @if (!loading() && events().length === 0 && !errorMessage()) {
         <div class="page-message">
-          Arama kriterlerine uygun etkinlik bulunamadı.
+          No events match the search criteria.
         </div>
       }
 
@@ -169,8 +169,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Listenin başlığı ve toplam etkinlik sayısı -->
           <div class="list-header">
             <div>
-              <h2>Etkinlik Listesi</h2>
-              <p>Toplam {{ totalCount() }} etkinlik bulundu.</p>
+              <h2>Event List</h2>
+              <p>{{ totalCount() }} events found.</p>
             </div>
           </div>
 
@@ -180,15 +180,15 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               <table class="events-table">
                 <thead>
                   <tr>
-                    <th>Etkinlik</th>
-                    <th>Kulüp</th>
-                    <th>Tarih</th>
-                    <th>Konum</th>
-                    <th>Kapasite</th>
-                    <th>Kategori</th>
-                    <th>Katılım Tipi</th>
-                    <th>Durum</th>
-                    <th>İşlem</th>
+                    <th>Event</th>
+                    <th>Club</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Capacity</th>
+                    <th>Category</th>
+                    <th>Participation Type</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
 
@@ -212,9 +212,9 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <!-- Etkinliğin katılım tipini kullanıcıya anlaşılır gösterir -->
                       <td>
                         @if (event.visibility === 'Public') {
-                          <span>Herkese Açık</span>
+                          <span>Open to Everyone</span>
                         } @else {
-                          <span>Onay Gerekli</span>
+                          <span>Approval Required</span>
                         }
                       </td>
 
@@ -222,7 +222,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <td>
                         @if (event.status === 'Active') {
                           <span class="status-badge status-active">
-                            Aktif
+                            Active
                           </span>
                         } @else {
                           <span class="status-badge status-passive">
@@ -240,7 +240,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                             class="detail-link"
                             [routerLink]="['/events', event.id]"
                           >
-                            Detay
+                            Details
                           </a>
 
                           <!-- ClubManager sadece kendi etkinliğini yönetebilir -->
@@ -249,14 +249,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                               class="edit-link"
                               [routerLink]="['/event-manage', event.id]"
                             >
-                              Güncelle
+                              Update
                             </a>
 
                             <a
                               class="registration-link"
                               [routerLink]="['/events', event.id, 'registrations']"
                             >
-                              Kayıtlar
+                              Registrations
                             </a>
                           }
                         </div>
@@ -276,11 +276,11 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               [disabled]="page() <= 1 || loading()"
               (click)="previousPage()"
             >
-              Önceki
+              Previous
             </button>
 
             <span class="page-number">
-              Sayfa <strong>{{ page() }}</strong> / <strong>{{ totalPages() }}</strong>
+              Page <strong>{{ page() }}</strong> / <strong>{{ totalPages() }}</strong>
             </span>
 
             <button
@@ -289,7 +289,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               [disabled]="page() >= totalPages() || loading()"
               (click)="nextPage()"
             >
-              Sonraki
+              Next
             </button>
           </div>
         </section>
@@ -356,9 +356,9 @@ export class Events implements OnInit {
     this.loading.set(true); // Yükleme işlemini başlatır
     this.errorMessage.set(''); // Önceki hata mesajını temizler
 
-    const clubId = this.selectedClubId() // Kulüp seçilmiş mi kontrol eder
-      ? Number(this.selectedClubId()) // Seçilen kulüp ID'sini number tipine çevirir
-      : undefined; // Kulüp seçilmediyse filtre göndermez
+    const clubId = this.selectedClubId() ? Number(this.selectedClubId()): undefined; // Kulüp seçilmiş mi kontrol eder
+      // Seçilen kulüp ID'sini number tipine çevirir
+       // Kulüp seçilmediyse filtre göndermez
 
     this.eventService.getPaged({ // EventService üzerinden filtreli etkinlik isteği gönderir
       search: this.searchText().trim() || undefined, // Arama metni boşsa undefined gönderir
@@ -382,7 +382,7 @@ export class Events implements OnInit {
         this.totalCount.set(0); // Toplam etkinlik sayısını sıfırlar
         this.totalPages.set(0); // Toplam sayfa sayısını sıfırlar
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlikler alınamadı.') // Hata mesajını kullanıcıya uygun hale getirir
+          getApiErrorMessage(error, 'Could not load events.') // Hata mesajını kullanıcıya uygun hale getirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }

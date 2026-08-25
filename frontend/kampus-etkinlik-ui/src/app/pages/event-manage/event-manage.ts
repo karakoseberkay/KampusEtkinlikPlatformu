@@ -18,14 +18,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
       <!-- Sayfa başlığı -->
       <div class="page-header">
-        <h1>{{ isEditMode() ? 'Etkinlik Güncelle' : 'Etkinlik Oluştur' }}</h1> <!-- Moda göre başlığı değiştirir -->
-        <p>{{ isEditMode() ? 'Etkinlik bilgilerini düzenleyebilirsiniz.' : 'Kulübünüz için yeni bir etkinlik oluşturabilirsiniz.' }}</p> <!-- Moda göre açıklamayı değiştirir -->
+        <h1>{{ isEditMode() ? 'Update Event' : 'Create Event' }}</h1> <!-- Moda göre başlığı değiştirir -->
+        <p>{{ isEditMode() ? 'You can edit the event information.' : 'You can create a new event for your club.' }}</p> <!-- Moda göre açıklamayı değiştirir -->
       </div>
 
       <!-- Etkinlik bilgileri yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
-          Etkinlik bilgileri yükleniyor...
+          Event information is loading...
         </div>
       }
 
@@ -48,8 +48,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
         <!-- Form başlığı -->
         <div class="form-header">
-          <h2>Etkinlik Bilgileri</h2>
-          <p>Zorunlu alanları doldurarak işlemi tamamlayabilirsiniz.</p>
+          <h2>Event Information</h2>
+          <p>Complete the required fields to finish the process.</p>
         </div>
 
         <!-- Form alanları -->
@@ -58,9 +58,9 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Sadece oluşturma modunda kulüp seçimi gösterilir -->
           @if (!isEditMode()) {
             <div class="form-field full-width">
-              <label for="clubId">Kulüp</label>
+              <label for="clubId">Club</label>
               <select id="clubId" formControlName="clubId"> <!-- Seçilen kulübü clubId alanına bağlar -->
-                <option value="">Kulüp seçin</option>
+                <option value="">Select a club</option>
                 @for (club of myClubs(); track club.id) {
                   <option [value]="club.id">{{ club.name }}</option> <!-- Managerın yönettiği kulüpleri listeler -->
                 }
@@ -70,46 +70,46 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
           <!-- Etkinlik başlığı -->
           <div class="form-field full-width">
-            <label for="title">Başlık</label>
-            <input id="title" type="text" formControlName="title" placeholder="Etkinlik başlığını girin"> <!-- Başlığı forma bağlar -->
+            <label for="title">Title</label>
+            <input id="title" type="text" formControlName="title" placeholder="Enter the event title"> <!-- Başlığı forma bağlar -->
           </div>
 
           <!-- Etkinlik açıklaması -->
           <div class="form-field full-width">
-            <label for="description">Açıklama</label>
-            <textarea id="description" formControlName="description" rows="6" placeholder="Etkinlik açıklamasını girin"></textarea> <!-- Açıklamayı forma bağlar -->
+            <label for="description">Description</label>
+            <textarea id="description" formControlName="description" rows="6" placeholder="Enter the event description"></textarea> <!-- Açıklamayı forma bağlar -->
           </div>
 
           <!-- Başlangıç tarihi -->
           <div class="form-field">
-            <label for="startDate">Başlangıç Tarihi</label>
+            <label for="startDate">Start Date</label>
             <input id="startDate" type="datetime-local" formControlName="startDate"> <!-- Tarihi forma bağlar -->
           </div>
 
           <!-- Konum -->
           <div class="form-field">
-            <label for="location">Konum</label>
-            <input id="location" type="text" formControlName="location" placeholder="Örn: Konferans Salonu"> <!-- Konumu forma bağlar -->
+            <label for="location">Location</label>
+            <input id="location" type="text" formControlName="location" placeholder="e.g. Conference Hall"> <!-- Konumu forma bağlar -->
           </div>
 
           <!-- Kapasite -->
           <div class="form-field">
-            <label for="capacity">Kapasite</label>
-            <input id="capacity" type="number" min="1" formControlName="capacity" placeholder="Örn: 100"> <!-- Kapasiteyi forma bağlar -->
+            <label for="capacity">Capacity</label>
+            <input id="capacity" type="number" min="1" formControlName="capacity" placeholder="e.g. 100"> <!-- Kapasiteyi forma bağlar -->
           </div>
 
           <!-- Kategori -->
           <div class="form-field">
-            <label for="category">Kategori</label>
-            <input id="category" type="text" formControlName="category" placeholder="Örn: Teknoloji"> <!-- Kategoriyi forma bağlar -->
+            <label for="category">Category</label>
+            <input id="category" type="text" formControlName="category" placeholder="e.g. Technology"> <!-- Kategoriyi forma bağlar -->
           </div>
 
           <!-- Katılım tipi -->
           <div class="form-field full-width">
-            <label for="visibility">Katılım Tipi</label>
+            <label for="visibility">Participation Type</label>
             <select id="visibility" formControlName="visibility"> <!-- Katılım tipini visibility alanına bağlar -->
-              <option value="Public">Herkese Açık</option> <!-- Direkt kayıt olunabilir -->
-              <option value="ApprovalRequired">Onay Gerekli</option> <!-- Manager onayı gerekir -->
+              <option value="Public">Open to Everyone</option> <!-- Direkt kayıt olunabilir -->
+              <option value="ApprovalRequired">Approval Required</option> <!-- Manager onayı gerekir -->
             </select>
           </div>
         </div>
@@ -117,13 +117,13 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         <!-- Form işlem butonları -->
         <div class="form-actions">
           <button class="save-button" type="submit" [disabled]="form.invalid || saving()"> <!-- Form geçersizse veya işlem devam ediyorsa pasif olur -->
-            {{ saving() ? 'İşlem Yapılıyor...' : (isEditMode() ? 'Etkinliği Güncelle' : 'Etkinlik Oluştur') }}
+            {{ saving() ? 'Processing...' : (isEditMode() ? 'Update Event' : 'Create Event') }}
           </button>
 
           <!-- Sadece güncelleme modunda iptal butonu gösterilir -->
           @if (isEditMode()) {
             <button class="cancel-button" type="button" [disabled]="saving()" (click)="cancelEvent()">
-              Etkinliği İptal Et
+              Cancel Event
             </button>
           }
         </div>
@@ -172,7 +172,7 @@ export class EventManage implements OnInit {
     const id = Number(idParam); // URLden gelen IDyi number tipine çevirir
 
     if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Geçersiz etkinlik ID.'); // Hata mesajı gösterir
+      this.errorMessage.set('Invalid event ID.'); // Hata mesajı gösterir
       return; // İşlemi durdurur
     }
 
@@ -198,7 +198,7 @@ export class EventManage implements OnInit {
       error: (error: HttpErrorResponse) => { // Kulüpler alınırken hata oluşursa
         this.myClubs.set([]); // Kulüp listesini boşaltır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüpler alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load clubs.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
       }
     });
@@ -224,7 +224,7 @@ export class EventManage implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Etkinlik bilgileri alınırken hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik bilgileri alınamadı.') // Hatayı anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not load event information.') // Hatayı anlaşılır mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yüklemeyi bitirir
       }
@@ -277,7 +277,7 @@ export class EventManage implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Oluşturma sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik oluşturulamadı.') // Hatayı anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not create the event.') // Hatayı anlaşılır mesaja çevirir
         );
         this.saving.set(false); // Hata olsa bile kaydetme işlemini bitirir
       }
@@ -287,7 +287,7 @@ export class EventManage implements OnInit {
   updateEvent(id: number, request: UpdateEventRequest): void { // Var olan etkinliği günceller
     this.eventService.update(id, request).subscribe({ // EventService üzerinden güncelleme isteği gönderir
       next: event => { // Güncelleme başarılı olduğunda çalışır
-        this.successMessage.set('Etkinlik güncellendi.'); // Başarı mesajını gösterir
+        this.successMessage.set('Event updated.'); // Başarı mesajını gösterir
 
         this.form.patchValue({ // Backendden dönen güncel bilgileri tekrar forma yerleştirir
           title: event.title, // Güncel başlığı forma aktarır
@@ -303,7 +303,7 @@ export class EventManage implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Güncelleme sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik güncellenemedi.') // Hatayı anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not update the event.') // Hatayı anlaşılır mesaja çevirir
         );
         this.saving.set(false); // Hata olsa bile kaydetme işlemini bitirir
       }
@@ -315,7 +315,7 @@ export class EventManage implements OnInit {
       return; // İptal işlemini başlatmaz
     }
 
-    const approved = window.confirm('Etkinliği iptal etmek istediğinize emin misiniz?'); // Kullanıcıdan iptal onayı ister
+    const approved = window.confirm('Are you sure you want to cancel the event?'); // Kullanıcıdan iptal onayı ister
 
     if (!approved) { // Kullanıcı onaylamadıysa
       return; // İşlemi iptal eder
@@ -327,12 +327,12 @@ export class EventManage implements OnInit {
 
     this.eventService.cancel(this.eventId).subscribe({ // EventService üzerinden iptal isteği gönderir
       next: () => { // İptal işlemi başarılı olduğunda çalışır
-        this.successMessage.set('Etkinlik iptal edildi.'); // Başarı mesajını gösterir
+        this.successMessage.set('Event cancelled.'); // Başarı mesajını gösterir
         this.saving.set(false); // İptal işlemini bitirir
       },
       error: (error: HttpErrorResponse) => { // İptal sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik iptal edilemedi.') // Hatayı anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not cancel the event.') // Hatayı anlaşılır mesaja çevirir
         );
         this.saving.set(false); // Hata olsa bile işlemi bitirir
       }

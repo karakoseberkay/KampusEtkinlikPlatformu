@@ -17,26 +17,26 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Etkinlik Kayıtları</h1>
-          <p>Etkinliğe yapılan öğrenci kayıtlarını görüntüleyebilir ve yönetebilirsiniz.</p>
+          <h1>Event Registrations</h1>
+          <p>View and manage student registrations for this event.</p>
         </div>
 
         <!-- Kayıt listesini yeniden yükler -->
         <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadRegistrations()">
-          {{ loading() ? 'Yükleniyor...' : 'Kayıtları Yenile' }}
+          {{ loading() ? 'Loading...' : 'Refresh Registrations' }}
         </button>
       </div>
 
       <!-- Kayıt durumu filtresi -->
       <section class="filter-card">
         <div class="filter-header">
-          <h2>Kayıt Durumu</h2>
-          <p>Kayıtları onay durumlarına göre filtreleyebilirsiniz.</p>
+          <h2>Registration Status</h2>
+          <p>Filter registrations by approval status.</p>
         </div>
 
         <div class="filter-content">
           <div class="form-field">
-            <label for="approvalStatus">Durum</label>
+            <label for="approvalStatus">Status</label>
 
             <!-- Seçilen durumu selectedStatus signalına bağlar -->
             <select
@@ -44,10 +44,10 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               [ngModel]="selectedStatus()"
               (ngModelChange)="changeStatus($event)"//Select'in seçili değeri değiştiği anda çalışır
             >
-              <option value="">Tümü</option>
-              <option value="Pending">Bekleyen</option>
-              <option value="Approved">Onaylanan</option>
-              <option value="Rejected">Reddedilen</option>
+              <option value="">All</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
             </select>
           </div>
         </div>
@@ -56,7 +56,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Kayıtlar yüklenirken gösterilir -->
       @if (loading() && registrations().length === 0) {
         <div class="page-message">
-          Etkinlik kayıtları yükleniyor...
+          Event registrations are loading...
         </div>
       }
 
@@ -77,7 +77,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Kayıt bulunamadığında gösterilir -->
       @if (!loading() && registrations().length === 0 && !errorMessage()) {
         <div class="empty-card">
-          Seçilen duruma uygun kayıt bulunamadı.
+          No registrations found for the selected status.
         </div>
       }
 
@@ -87,8 +87,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
           <!-- Liste başlığı -->
           <div class="section-header">
-            <h2>Kayıt Listesi</h2>
-            <p>Toplam {{ registrations().length }} kayıt görüntüleniyor.</p>
+            <h2>Registration List</h2>
+            <p>Showing {{ registrations().length }} registrations.</p>
           </div>
 
           <!-- Kayıt tablosu -->
@@ -97,12 +97,12 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               <table class="registrations-table">
                 <thead>
                   <tr>
-                    <th>Öğrenci</th>
-                    <th>Etkinlik</th>
-                    <th>Kulüp</th>
-                    <th>Kayıt Tarihi</th>
-                    <th>Durum</th>
-                    <th>İşlem</th>
+                    <th>Student</th>
+                    <th>Event</th>
+                    <th>Club</th>
+                    <th>Registration Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
 
@@ -119,15 +119,15 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <td>
                         @if (registration.approvalStatus === 'Pending') {
                           <span class="status-badge status-pending">
-                            Bekliyor
+                            Pending
                           </span>
                         } @else if (registration.approvalStatus === 'Approved') {
                           <span class="status-badge status-approved">
-                            Onaylandı
+                            Approved
                           </span>
                         } @else if (registration.approvalStatus === 'Rejected') {
                           <span class="status-badge status-rejected">
-                            Reddedildi
+                            Rejected
                           </span>
                         } @else {
                           <span class="status-badge status-default">
@@ -148,7 +148,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                               [disabled]="processingId() !== null"
                               (click)="approve(registration.id)"
                             >
-                              {{ processingId() === registration.id ? 'İşleniyor...' : 'Onayla' }}
+                              {{ processingId() === registration.id ? 'Processing...' : 'Approve' }}
                             </button>
 
                             <!-- Kaydı reddeder -->
@@ -158,12 +158,12 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                               [disabled]="processingId() !== null"
                               (click)="reject(registration.id)"
                             >
-                              Reddet
+                              Reject
                             </button>
                           </div>
                         } @else {
                           <span class="completed-text">
-                            İşlem tamamlandı
+                            Completed
                           </span>
                         }
                       </td>
@@ -196,7 +196,7 @@ export class EventRegistrations implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki etkinlik IDsini alıp numbera çevirir
 
     if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Geçersiz etkinlik ID.'); // Kullanıcıya hata mesajı gösterir
+      this.errorMessage.set('Invalid event ID.'); // Kullanıcıya hata mesajı gösterir
       return; // Backend isteğinin yapılmasını engeller
     }
 
@@ -231,7 +231,7 @@ export class EventRegistrations implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik kayıtları alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load event registrations.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }
@@ -250,12 +250,12 @@ export class EventRegistrations implements OnInit {
     this.registrationService.approve(registrationId).subscribe({ // Kayıt onaylama isteğini backend'e gönderir
       next: () => { // Onaylama işlemi başarılı olduğunda çalışır
         this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
-        this.successMessage.set('Kayıt onaylandı.'); // Başarı mesajını gösterir
+        this.successMessage.set('Registration approved.'); // Başarı mesajını gösterir
         this.loadRegistrations(false); // Listeyi tekrar getirir ve başarı mesajını korur
       },
       error: (error: HttpErrorResponse) => { // Onaylama sırasında hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kayıt onaylanamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not approve the registration.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
       }
@@ -274,12 +274,12 @@ export class EventRegistrations implements OnInit {
     this.registrationService.reject(registrationId).subscribe({ // Kayıt reddetme isteğini backend'e gönderir
       next: () => { // Reddetme işlemi başarılı olduğunda çalışır
         this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
-        this.successMessage.set('Kayıt reddedildi.'); // Başarı mesajını gösterir
+        this.successMessage.set('Registration rejected.'); // Başarı mesajını gösterir
         this.loadRegistrations(false); // Listeyi tekrar getirir ve başarı mesajını korur
       },
       error: (error: HttpErrorResponse) => { // Reddetme sırasında hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kayıt reddedilemedi.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not reject the registration.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
       }

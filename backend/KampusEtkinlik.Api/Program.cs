@@ -84,7 +84,7 @@ builder.Services.AddCors(options => // anguların gelip bağlanmasını sağlaya
 var connectionString =builder.Configuration.GetConnectionString("DefaultConnection")
 // postgre ile bağlantıyı sağlıyor(veri tabanı detayları defaultconnection altında appsettings.jsonda yazıyor)
     //veri tabanı bilgileri user secrets ile gizlendi gösteren terminal kodu: dotnet user-secrets list --project backend/KampusEtkinlik.Api
-    ?? throw new InvalidOperationException( "veri tabanı bağlantı bilgisi bulunamadı.");
+    ?? throw new InvalidOperationException( "Database connection information was not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>//her http isteğinde bir applicationdbcontext nesnesi oluşturur 
 { //bir kullanıcı yeni istek gönderdiğinde yeni bir scope ve yeni DbContext oluşturulur ve işlem sonu silinir
@@ -111,16 +111,16 @@ builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, BcryptPasswordHashe
 //Parola hashleme veya parola doğrulama gerektiğinde BcryptPasswordHasher sınıfı kullanılır
 
 var jwtKey = builder.Configuration["Jwt:Key"] // JWT'yi imzalamak ve doğrulamak için kullanılan gizli anahtarı alır
-    ?? throw new InvalidOperationException("Jwt:Key ayarı bulunamadı.");
+    ?? throw new InvalidOperationException("Jwt:Key setting was not found.");
 
 //dotnet user-secrets list --project backend/KampusEtkinlik.Api
 
 var jwtIssuer = builder.Configuration["Jwt:Issuer"]// JWT'yi üreten sistemin adını alır.
-    ?? throw new InvalidOperationException("Jwt:Issuer ayarı bulunamadı.");
+    ?? throw new InvalidOperationException("Jwt:Issuer setting was not found.");
 
 
 var jwtAudience = builder.Configuration["Jwt:Audience"] // JWT'nin hangi uygulama için üretildiğini belirtir.
-    ?? throw new InvalidOperationException("Jwt:Audience ayarı bulunamadı.");
+    ?? throw new InvalidOperationException("Jwt:Audience setting was not found.");
 
 
 
@@ -196,7 +196,7 @@ if (app.Environment.IsDevelopment()) // sadece development ortamında swagger/op
     {
         options.SwaggerEndpoint(
             "/openapi/v1.json", // swaggerın okuyacağı openapi dokümanının adresi
-            "Kampüs Etkinlik API v1" // swaggerda gösterilecek api adı
+            "Campus Event API v1" // swaggerda gösterilecek api adı
         );
     });
 }
@@ -258,7 +258,7 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
                     Scheme = "bearer", // bearer authentication kullanıldığını belirtir
                     In = ParameterLocation.Header, // tokenın HTTP header içinde gönderileceğini belirtir
                     BearerFormat = "JWT", // bearer tokenın JWT formatında olduğunu belirtir
-                    Description ="Lütfen artık rica ediyorum Login işleminden alınan JWT access token değerini girebilin." // swaggerdaki kullanıcı açıklaması
+                    Description ="Enter the JWT access token received from the login operation." // swaggerdaki kullanıcı açıklaması
                 } //Yani Swaggera anlatıyoruz: Bizim API'de Bearer isimli bir güvenlik yöntemi var. HTTP header üzerinden gönderiliyor ve token JWT formatında
             };
 

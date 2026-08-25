@@ -33,7 +33,7 @@ public sealed class EventRegistrationsController(
             return Unauthorized(
                 new
                 {
-                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="User identity could not be found in the token."
                         
                 }
             ); // 401 Unauthorized döndürür
@@ -101,7 +101,7 @@ public sealed class EventRegistrationsController(
             return Unauthorized(
                 new
                 {
-                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="User identity could not be found in the token."
                         
                 }
             ); // 401 Unauthorized döndürür

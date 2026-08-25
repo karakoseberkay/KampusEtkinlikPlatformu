@@ -65,7 +65,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (club.ManagerUserId != managerUserId) // işlemi yapan kullanıcı bu kulübün yöneticisi mi kontrol eder
         {
             throw new UnauthorizedAccessException(
-                "Yalnızca kendi yönettiğiniz kulübün istatistiklerini görebilirsiniz."
+                "You can only view statistics for clubs you manage."
             ); // başka yöneticinin kulüp istatistiklerine erişmesini engeller
         }
 
@@ -169,7 +169,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (string.IsNullOrWhiteSpace(clubName)) // temizlendikten sonra kulüp adı boş mu kontrol eder
         {
             throw new ArgumentException(
-                "Kulüp adı boş bırakılamaz."
+                "Club name cannot be empty."
             ); // boş isimle kulüp oluşturulmasını engeller
         }
 
@@ -184,7 +184,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (nameExists) // aynı isimde kulüp varsa
         {
             throw new InvalidOperationException(
-                "Bu isimde bir kulüp zaten bulunuyor."
+                "A club with this name already exists."
             ); // aynı isimle ikinci kulüp oluşturulmasını engeller
         }
 
@@ -218,7 +218,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (createdClub is null) // oluşturulan kulüp tekrar okunamazsa
         {
             throw new InvalidOperationException(
-                "Kulüp oluşturuldu ancak tekrar okunamadı."
+                "The club was created but could not be retrieved."
             ); // beklenmeyen veri erişim hatasında işlemi hata ile durdurur
         }
 
@@ -251,7 +251,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (club.ManagerUserId != managerUserId) // işlemi yapan kullanıcı kulübün yöneticisi mi kontrol eder
         {
             throw new UnauthorizedAccessException(
-                "Yalnızca kendi yönettiğiniz kulübü güncelleyebilirsiniz."
+                "You can only update clubs you manage."
             ); // başka yöneticinin kulübünü güncellemeyi engeller
         }
 
@@ -262,7 +262,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (string.IsNullOrWhiteSpace(clubName)) // isim temizlendikten sonra boş mu kontrol eder
         {
             throw new ArgumentException(
-                "Kulüp adı boş bırakılamaz."
+                "Club name cannot be empty."
             ); // boş isimle güncellemeyi engeller
         }
 
@@ -278,7 +278,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (nameExists) // başka kulüp aynı isme sahipse
         {
             throw new InvalidOperationException(
-                "Bu isimde başka bir kulüp zaten bulunuyor."
+                "Another club with this name already exists."
             ); // aynı isimde iki kulüp oluşmasını engeller
         }
 
@@ -320,7 +320,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (club.ManagerUserId != managerUserId) // işlemi yapan kişi bu kulübün yöneticisi mi kontrol eder
         {
             throw new UnauthorizedAccessException(
-                "Yalnızca kendi yönettiğiniz kulübü silebilirsiniz."
+                "You can only delete clubs you manage."
             ); // başka yöneticinin kulübünü silmesini engeller
         }
 
@@ -328,7 +328,7 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
         if (club.Events.Count > 0) // kulübün en az bir etkinliği varsa
         {
             throw new InvalidOperationException(
-                "Etkinliği bulunan bir kulüp silinemez."
+                "A club with existing events cannot be deleted."
             ); // etkinliği bulunan kulübün silinmesini iş kuralı olarak engeller
         }
 

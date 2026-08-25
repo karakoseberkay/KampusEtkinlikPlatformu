@@ -13,20 +13,20 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfanın üst başlık alanıdır -->
       <div class="page-header">
         <div>
-          <h1>Kayıtlarım</h1> <!-- Sayfanın ana başlığını gösterir. -->
-          <p>Katıldığınız ve başvuru yaptığınız etkinlikleri görüntüleyebilirsiniz.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
+          <h1>My Registrations</h1> <!-- Sayfanın ana başlığını gösterir. -->
+          <p>View the events you have joined or applied for.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
         </div>
 
         <!-- Öğrencinin kayıtlarını backendden tekrar çekmek için kullanılır -->
         <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadRegistrations()">
-          {{ loading() ? 'Yükleniyor...' : 'Kayıtları Yenile' }}
+          {{ loading() ? 'Loading...' : 'Refresh Registrations' }}
         </button>
       </div>
 
       <!-- Backend isteği devam ederken ve daha önce veri yoksa gösterilir -->
       @if (loading() && registrations().length === 0) {
         <div class="page-message">
-          Kayıtlarınız yükleniyor...
+          Your registrations are loading...
         </div>
       }
 
@@ -42,33 +42,33 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         <section class="summary-section">
           <!-- Bölüm başlığı -->
           <div class="section-header">
-            <h2>Katılım Bilgileri</h2> <!-- Öğrencinin kayıt durumlarının özetlendiği bölümün başlığıdır. -->
-            <p>Etkinlik kayıtlarınızın güncel durumlarını gösterir.</p> <!-- Bölümün neyi gösterdiğini açıklar. -->
+            <h2>Participation Summary</h2> <!-- Öğrencinin kayıt durumlarının özetlendiği bölümün başlığıdır. -->
+            <p>Shows the current status of your event registrations.</p> <!-- Bölümün neyi gösterdiğini açıklar. -->
           </div>
 
           <!-- Özet kutularını grid şeklinde gösterir -->
           <div class="summary-grid">
             <!-- Öğrencinin toplam kayıt sayısını gösterir -->
             <div class="summary-card">
-              <span class="summary-label">Toplam Kayıt</span>
+              <span class="summary-label">Total Registrations</span>
               <strong class="summary-value">{{ totalRegistrationCount() }}</strong>
             </div>
 
             <!-- Onaylanmış kayıtların sayısını gösterir -->
             <div class="summary-card">
-              <span class="summary-label">Onaylanan</span>
+              <span class="summary-label">Approved</span>
               <strong class="summary-value approved-value">{{ approvedCount() }}</strong>
             </div>
 
             <!-- Onay bekleyen kayıtların sayısını gösterir -->
             <div class="summary-card">
-              <span class="summary-label">Bekleyen</span>
+              <span class="summary-label">Pending</span>
               <strong class="summary-value pending-value">{{ pendingCount() }}</strong>
             </div>
 
             <!-- Reddedilen kayıtların sayısını gösterir -->
             <div class="summary-card">
-              <span class="summary-label">Reddedilen</span>
+              <span class="summary-label">Rejected</span>
               <strong class="summary-value rejected-value">{{ rejectedCount() }}</strong>
             </div>
           </div>
@@ -78,7 +78,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Öğrencinin hiç etkinlik kaydı bulunmuyorsa gösterilir -->
       @if (!loading() && registrations().length === 0 && !errorMessage()) {
         <div class="empty-card">
-          Henüz etkinlik kaydınız bulunmuyor.
+          No event registrations yet.
         </div>
       }
 
@@ -87,8 +87,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         <section class="history-section">
           <!-- Tablo bölümünün başlığıdır -->
           <div class="section-header">
-            <h2>Kayıt Geçmişi</h2> <!-- Kayıt listesinin başlığını gösterir. -->
-            <p>Başvuru yaptığınız etkinlikleri ve kayıt durumlarını gösterir.</p> <!-- Tablo hakkında kısa açıklama -->
+            <h2>Registration History</h2> <!-- Kayıt listesinin başlığını gösterir. -->
+            <p>Shows the events you applied for and their registration status.</p> <!-- Tablo hakkında kısa açıklama -->
           </div>
 
           <!-- Tabloyu kart görünümünde tutar -->
@@ -100,10 +100,10 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                 <!-- Tablo kolon başlıkları -->
                 <thead>
                   <tr>
-                    <th>Etkinlik</th> <!-- Etkinlik başlığının bulunduğu kolondur. -->
-                    <th>Kulüp</th> <!-- Etkinliği oluşturan kulübün bulunduğu kolondur. -->
-                    <th>Kayıt Tarihi</th> <!-- Öğrencinin etkinliğe ne zaman kayıt olduğunu gösterir. -->
-                    <th>Durum</th> <!-- Kaydın onay durumunu gösterir. -->
+                    <th>Event</th> <!-- Etkinlik başlığının bulunduğu kolondur. -->
+                    <th>Club</th> <!-- Etkinliği oluşturan kulübün bulunduğu kolondur. -->
+                    <th>Registration Date</th> <!-- Öğrencinin etkinliğe ne zaman kayıt olduğunu gösterir. -->
+                    <th>Status</th> <!-- Kaydın onay durumunu gösterir. -->
                   </tr>
                 </thead>
 
@@ -130,15 +130,15 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <td>
                         @if (registration.approvalStatus === 'Approved') {
                           <span class="status-badge status-approved">
-                            Onaylandı
+                            Approved
                           </span>
                         } @else if (registration.approvalStatus === 'Pending') {
                           <span class="status-badge status-pending">
-                            Bekliyor
+                            Pending
                           </span>
                         } @else if (registration.approvalStatus === 'Rejected') {
                           <span class="status-badge status-rejected">
-                            Reddedildi
+                            Rejected
                           </span>
                         } @else {
                           <span class="status-badge status-default">
@@ -185,7 +185,7 @@ export class MyRegistrations implements OnInit { // Kayıtlarım sayfasının Ty
       },
       error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kayıtlar alınamadı.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Could not load registrations.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
       }

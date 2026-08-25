@@ -14,15 +14,15 @@ public sealed class TokenService(IConfiguration configuration) : ITokenService
     // token oluşturulacak kullanıcıyı alır
     // kullanıcının rollerini alır
     {
-        var jwtKey = configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key bulunamadı.");
+        var jwtKey = configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key was not found.");
         // JWTyi imzalamak için kullanılan gizli anahtarı alır 
 
 
-        var issuer = configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer bulunamadı.");
+        var issuer = configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer was not found.");
         // tokenı üreten sistem bilgisini alır
 
 
-        var audience = configuration["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience bulunamadı.");
+        var audience = configuration["Jwt:Audience"] ?? throw new InvalidOperationException("Jwt:Audience was not found.");
         // tokenın hangi uygulama için üretileceği bilgisini alır
 
         var durationMinutes =configuration.GetValue<int?>("Jwt:DurationMinutes") ?? 60;

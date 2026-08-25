@@ -55,11 +55,11 @@ export class LoginPage { // Giriş Yap sayfasının TypeScript classıdır.
 
   private getErrorMessage(error: HttpErrorResponse): string { // Backendden gelen login hatasını kullanıcıya gösterilecek mesaja dönüştürür.
     if (error.status === 0) { // Backend sunucusuna hiç bağlantı kurulamadıysa çalışır.
-      return 'Backend bağlantısı kurulamadı. API ve CORS ayarlarını kontrol et.'; // Kullanıcıya bağlantı hatasını gösterir.
+      return 'Could not connect to the backend. Check the API and CORS settings.'; // Kullanıcıya bağlantı hatasını gösterir.
     }
 
     if (error.status === 401) { // Backend 401 Unauthorized hatası döndürdüyse çalışır.
-      return 'E-posta veya şifre hatalı.'; // Kullanıcıya giriş bilgilerinin yanlış olduğunu bildirir.
+      return 'Incorrect email or password.'; // Kullanıcıya giriş bilgilerinin yanlış olduğunu bildirir.
     }
 
     if (typeof error.error?.message === 'string') { // Backend hata cevabını message alanı olan bir object şeklinde gönderdiyse çalışır.
@@ -70,6 +70,6 @@ export class LoginPage { // Giriş Yap sayfasının TypeScript classıdır.
       return error.error; // Backendden gelen string hata mesajını kullanıcıya gösterir.
     }
 
-    return 'Giriş yapılırken beklenmeyen bir hata oluştu.'; // Yukarıdaki durumların hiçbirine girmeyen hatalarda genel mesaj gösterir.
+    return 'An unexpected error occurred while logging in.'; // Yukarıdaki durumların hiçbirine girmeyen hatalarda genel mesaj gösterir.
   }
 }

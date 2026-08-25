@@ -52,7 +52,7 @@ public sealed class ClubsController(
             return NotFound(
                 new
                 {
-                    message = "Kulüp bulunamadı."
+                    message = "No clubs found."
                 }
             ); // 404 Not Found döndürür
         }
@@ -79,7 +79,7 @@ public sealed class ClubsController(
         {
             return Unauthorized(new
                 {
-                    message ="Token içerisinde kullanıcı kimliği yok."
+                    message ="User identity could not be found in the token."
                         
                 }
             ); // 401 Unauthorized döndürür
@@ -100,7 +100,7 @@ public sealed class ClubsController(
             {
                 return NotFound( new
                     {
-                        message = "Kulüp bulunamadı."
+                        message = "No clubs found."
                     }
                 ); // 404 Not Found döndürür
             }
@@ -140,7 +140,7 @@ public sealed class ClubsController(
                 new
                 {
                     message =
-                        "Token içerisinde kullanıcı kimliği bulunamadı."
+                        "User identity could not be found in the token."
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -206,7 +206,7 @@ public sealed class ClubsController(
         {
             return Unauthorized(new
                 {
-                    message = "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message = "User identity could not be found in the token."
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -227,7 +227,7 @@ public sealed class ClubsController(
             {
                 return NotFound(new
                     {
-                        message = "Kulüp bulunamadı."
+                        message = "No clubs found."
                     }
                 ); // 404 Not Found döndürür
             }
@@ -283,7 +283,7 @@ public sealed class ClubsController(
         {
             return Unauthorized(new
                 {
-                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="User identity could not be found in the token."
                 }
             ); // 401 Unauthorized döndürür
         }
@@ -302,7 +302,7 @@ public sealed class ClubsController(
             if (!deleted) // kulüp bulunamadığı için silinemediyse
             {
                 return NotFound(new {
-                        message = "Kulüp bulunamadı."
+                        message = "No clubs found."
                     }
                 ); // 404 Not Found döndürür
             }

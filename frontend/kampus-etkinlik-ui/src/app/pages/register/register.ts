@@ -53,7 +53,7 @@ export class RegisterPage {
 
   private getErrorMessage(error: HttpErrorResponse): string { // Backend hatasını kullanıcıya gösterilecek mesaja dönüştürür
     if (error.status === 0) { // Backend sunucusuna bağlantı kurulamadıysa
-      return 'Backend bağlantısı kurulamadı. API ve CORS ayarlarını kontrol et.'; // Bağlantı hatasını bildirir
+      return 'Could not connect to the backend. Check the API and CORS settings.'; // Bağlantı hatasını bildirir
     }
 
     if (typeof error.error?.message === 'string') { // Backend message alanında hata mesajı gönderdiyse
@@ -64,6 +64,6 @@ export class RegisterPage {
       return error.error; // Gelen string hata mesajını gösterir
     }
 
-    return 'Kayıt oluşturulurken beklenmeyen bir hata oluştu.'; // Diğer durumlarda genel hata mesajı gösterir
+    return 'An unexpected error occurred while creating the account.'; // Diğer durumlarda genel hata mesajı gösterir
   }
 }

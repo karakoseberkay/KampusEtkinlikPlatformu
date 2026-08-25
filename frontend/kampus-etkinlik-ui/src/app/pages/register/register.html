@@ -11,8 +11,8 @@
 
     <!-- Sayfa başlığı -->
     <header class="auth-header">
-      <h1>Yeni Hesap Oluştur</h1> <!-- Kayıt ekranının ana başlığı -->
-      <p>Kampüs etkinliklerine katılmak için hesabınızı oluşturun.</p> <!-- Kısa açıklama -->
+      <h1>Create New Account</h1> <!-- Kayıt ekranının ana başlığı -->
+      <p>Create your account to join campus events.</p> <!-- Kısa açıklama -->
     </header>
 
     <!-- Formu TypeScript tarafındaki form değişkenine bağlar -->
@@ -20,72 +20,72 @@
 
       <!-- Ad Soyad alanı -->
       <div class="form-field">
-        <label for="fullName">Ad Soyad</label> <!-- Alanın başlığı -->
+        <label for="fullName">Full Name</label> <!-- Alanın başlığı -->
         <input
           id="fullName"
           type="text"
           formControlName="fullName"
-          placeholder="Adınız ve soyadınız"
+          placeholder="Your full name"
           autocomplete="name"
         > <!-- Girilen değeri fullName form alanına bağlar -->
 
         @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
           <small class="field-error">
-            Ad soyad alanı zorunludur ve en fazla 150 karakter olabilir.
+            Full name is required and can be up to 150 characters.
           </small>
         }
       </div>
 
       <!-- Bölüm alanı -->
       <div class="form-field">
-        <label for="department">Bölüm</label> <!-- Alanın başlığı -->
+        <label for="department">Department</label> <!-- Alanın başlığı -->
         <input
           id="department"
           type="text"
           formControlName="department"
-          placeholder="Örn: Bilgisayar Mühendisliği"
+          placeholder="e.g. Computer Engineering"
           autocomplete="organization-title"
         > <!-- Girilen değeri department form alanına bağlar -->
 
         @if (form.controls.department.touched && form.controls.department.invalid) {
           <small class="field-error">
-            Bölüm en fazla 150 karakter olabilir.
+            Department can be up to 150 characters.
           </small>
         }
       </div>
 
       <!-- E-posta alanı -->
       <div class="form-field">
-        <label for="email">E-posta</label> <!-- Alanın başlığı -->
+        <label for="email">Email</label> <!-- Alanın başlığı -->
         <input
           id="email"
           type="email"
           formControlName="email"
-          placeholder="E-posta adresiniz"
+          placeholder="Your email address"
           autocomplete="email"
         > <!-- Girilen değeri email form alanına bağlar -->
 
         @if (form.controls.email.touched && form.controls.email.invalid) {
           <small class="field-error">
-            Geçerli bir e-posta adresi girin.
+            Enter a valid email address.
           </small>
         }
       </div>
 
       <!-- Şifre alanı -->
       <div class="form-field">
-        <label for="password">Şifre</label> <!-- Alanın başlığı -->
+        <label for="password">Password</label> <!-- Alanın başlığı -->
         <input
           id="password"
           type="password"
           formControlName="password"
-          placeholder="En az 8 karakter"
+          placeholder="At least 8 characters"
           autocomplete="new-password"
         > <!-- Girilen değeri password form alanına bağlar -->
 
         @if (form.controls.password.touched && form.controls.password.invalid) {
           <small class="field-error">
-            Şifre en az 8 karakter olmalıdır.
+            Password must be at least 8 characters.
           </small>
         }
       </div>
@@ -100,17 +100,17 @@
       <!-- Kayıt işlemini başlatır -->
       <button class="primary-button" type="submit" [disabled]="loading()">
         @if (loading()) {
-          Hesap Oluşturuluyor...
+          Creating Account...
         } @else {
-          Kayıt Ol
+          Sign Up
         }
       </button>
     </form>
 
     <!-- Hesabı olan kullanıcıyı Login sayfasına gönderir -->
     <p class="auth-footer">
-      Zaten hesabınız var mı?
-      <a routerLink="/login">Giriş Yap</a>
+      Already have an account?
+      <a routerLink="/login">Log In</a>
     </p>
   </section>
 </main>

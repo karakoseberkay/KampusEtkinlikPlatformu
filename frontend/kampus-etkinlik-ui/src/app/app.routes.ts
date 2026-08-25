@@ -12,98 +12,98 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    title: 'Giriş Yap',
+    title: 'Log In',
     canActivate: [guestGuard], // giriş yapmış kullanıcı login sayfasına tekrar giremez
     loadComponent: () => import('./pages/login/login').then(module => module.LoginPage)//bütün sayfaları yüklemek yerine sadece logini yükler (lazy loading)
   },
   {
     path: 'register',
-    title: 'Kayıt Ol',
+    title: 'Sign Up',
     canActivate: [guestGuard], // giriş yapmış kullanıcı kayıt sayfasına tekrar giremez
     loadComponent: () => import('./pages/register/register').then(module => module.RegisterPage)//bütün sayfaları yüklemek yerine sadece registerı yükler (lazy loading)
   },
   {
     path: 'popular-events',
-    title: 'Popüler Etkinlikler',
+    title: 'Popular Events',
     loadComponent: () => import('./pages/popular-events/popular-events').then(module => module.PopularEvents)
     //bütün sayfaları yüklemek yerine sadece populereventsi yükler (lazy loading)
   },
   {
     path: 'home',
-    title: 'Ana Sayfa',
+    title: 'Home',
     canActivate: [authGuard], // sadece giriş yapmış kullanıcılar erişebilir
     loadComponent: () => import('./pages/home/home').then(module => module.HomePage)
   },
   {
     path: 'clubs',
-    title: 'Kulüpler',
+    title: 'Clubs',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/clubs/clubs').then(module => module.Clubs)
   },
   {
     path: 'clubs/:id/stats',
-    title: 'Kulüp İstatistikleri',
+    title: 'Club Statistics',
     canActivate: [clubManagerGuard], // sadece ClubManager rolü erişebilir
     loadComponent: () => import('./pages/club-stats/club-stats').then(module => module.ClubStats)
   },
   {
     path: 'clubs/:id',
-    title: 'Kulüp Detayı',
+    title: 'Club Details',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/club-detail/club-detail').then(module => module.ClubDetail)
   },
   {
     path: 'club-manage',//aynı urlyi kullanarak hem kulübü oluşturup hemde int göndererek güncelleme yapılabiliyor
-    title: 'Kulüp Oluştur',
+    title: 'Create Club',
     canActivate: [clubManagerGuard],
     loadComponent: () => import('./pages/club-manage/club-manage').then(module => module.ClubManage)
   },
   {
     path: 'club-manage/:id',
-    title: 'Kulüp Güncelle',
+    title: 'Update Club',
     canActivate: [clubManagerGuard],
     loadComponent: () => import('./pages/club-manage/club-manage').then(module => module.ClubManage)
   },
   {
     path: 'events', //liste
-    title: 'Etkinlikler',
+    title: 'Events',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/events/events').then(module => module.Events)
   },
   {
     path: 'events/:id/registrations',//eventin kaydı
-    title: 'Etkinlik Kayıtları',
+    title: 'Event Registrations',
     canActivate: [clubManagerGuard], // etkinliğin kayıtlarını sadece ClubManager görüntüleyebilir
     loadComponent: () => import('./pages/event-registrations/event-registrations').then(module => module.EventRegistrations)
   },
   {
     path: 'events/:id',//detay
-    title: 'Etkinlik Detayı',
+    title: 'Event Details',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/event-detail/event-detail').then(module => module.EventDetail)
   },
   {
     path: 'event-manage',//oluşturma
-    title: 'Etkinlik Oluştur',
+    title: 'Create Event',
     canActivate: [clubManagerGuard],
     loadComponent: () => import('./pages/event-manage/event-manage').then(module => module.EventManage)
   },
   {
     path: 'event-manage/:id',//güncelleme
-    title: 'Etkinlik Güncelle',
+    title: 'Update Event',
     canActivate: [clubManagerGuard],
     loadComponent: () => import('./pages/event-manage/event-manage').then(module => module.EventManage)
   },
   {
     path: 'my-registrations',
-    title: 'Kayıtlarım',
+    title: 'My Registrations',
     canActivate: [studentGuard], // sadece Student rolü kendi kayıtlarını görüntüleyebilir
     //manager urlye elle yazsa bile guard onu içeri almaz
     loadComponent: () => import('./pages/my-registrations/my-registrations').then(module => module.MyRegistrations)
   },
   {
     path: 'user-management',
-    title: 'Kullanıcı Yönetimi',
+    title: 'User Management',
     canActivate: [adminGuard], // sadece manager@kampus.com admin hesabı erişebilir
     loadComponent: () => import('./pages/user-management/user-management').then(module => module.UserManagement)
   },

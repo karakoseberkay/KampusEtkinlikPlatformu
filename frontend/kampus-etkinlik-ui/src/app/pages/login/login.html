@@ -9,46 +9,46 @@
 
     <!-- Login kartının başlık bölümüdür -->
     <header class="auth-header">
-      <h1>Hesabınıza Giriş Yapın</h1> <!-- Login sayfasının ana başlığını gösterir. -->
-      <p>Kulüpleri ve kampüs etkinliklerini tek merkezden takip edin.</p> <!-- Kullanıcıya kısa açıklama gösterir. -->
+      <h1>Log In to Your Account</h1> <!-- Login sayfasının ana başlığını gösterir. -->
+      <p>Track clubs and campus events in one place.</p> <!-- Kullanıcıya kısa açıklama gösterir. -->
     </header>
 
     <!-- Login formunu TypeScript tarafındaki form değişkenine bağlar ve gönderildiğinde submit metodunu çalıştırır -->
     <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate> <!--tarayıcının kendi hazır validatiom mesajlarını kapatır-->
       <!-- E-posta form alanıdır -->
       <div class="form-field">
-        <label for="email">E-posta</label> <!-- Input alanının e-posta için olduğunu belirtir. -->
+        <label for="email">Email</label> <!-- Input alanının e-posta için olduğunu belirtir. -->
         <input
           id="email"
           type="email"
           formControlName="email"
-          placeholder="E-posta adresiniz"
+          placeholder="Your email address"
           autocomplete="email"
         > <!-- Kullanıcının girdiği e-postayı formdaki email alanına bağlar. -->
 
         <!-- E-posta alanına dokunulduysa ve validation hatası varsa gösterilir -->
         @if (form.controls.email.touched && form.controls.email.invalid) {
           <small class="field-error">
-            Geçerli bir e-posta adresi girin.
+            Enter a valid email address.
           </small>
         }
       </div>
 
       <!-- Şifre form alanıdır -->
       <div class="form-field">
-        <label for="password">Şifre</label> <!-- Input alanının şifre için olduğunu belirtir. -->
+        <label for="password">Password</label> <!-- Input alanının şifre için olduğunu belirtir. -->
         <input
           id="password"
           type="password" //parolanın gizlenmesi için
           formControlName="password"
-          placeholder="Şifreniz"
+          placeholder="Your password"
           autocomplete="current-password"
         > <!-- Kullanıcının girdiği şifreyi formdaki password alanına bağlar. -->
 
         <!-- Şifre alanına dokunulduysa ve validation hatası varsa gösterilir -->
         @if (form.controls.password.touched && form.controls.password.invalid) {
           <small class="field-error">
-            Şifre en az 8 karakter olmalıdır.
+            Password must be at least 8 characters.
           </small>
         }
       </div>
@@ -56,24 +56,24 @@
       <!-- Backend login işleminde hata oluşursa kullanıcıya gösterilir -->
       @if (errorMessage()) {
         <div class="alert-error" role="alert">
-          {{ errorMessage() }}//interpolation: bir değeri html içine yazdırma
+          {{ errorMessage() }}<!--interpolation: bir değeri html içine yazdırma-->
         </div>
       }
 
       <!-- Login formunu gönderir işlem devam ederken tekrar tıklanamaz -->
       <button class="primary-button" type="submit" [disabled]="loading()">
         @if (loading()) {
-          Giriş Yapılıyor...
+          Logging In...
         } @else {
-          Giriş Yap
+          Log In
         }
       </button>
     </form>
 
     <!-- Hesabı olmayan kullanıcıyı kayıt sayfasına yönlendirir -->
     <p class="auth-footer">
-      Henüz hesabınız yok mu?
-      <a routerLink="/register">Kayıt Ol</a>
+      Don't have an account yet?
+      <a routerLink="/register">Sign Up</a>
     </p>
   </section>
 </main>

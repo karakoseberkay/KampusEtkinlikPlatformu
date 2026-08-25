@@ -16,14 +16,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
       <!-- Sayfa başlığı -->
       <div class="page-header">
-        <h1>{{ isEditMode() ? 'Kulüp Güncelle' : 'Kulüp Oluştur' }}</h1> <!-- Moda göre başlığı değiştirir -->
-        <p>{{ isEditMode() ? 'Kulüp bilgilerini düzenleyebilirsiniz.' : 'Yeni bir öğrenci kulübü oluşturabilirsiniz.' }}</p> <!-- Moda göre açıklamayı değiştirir -->
+        <h1>{{ isEditMode() ? 'Update Club' : 'Create Club' }}</h1> <!-- Moda göre başlığı değiştirir -->
+        <p>{{ isEditMode() ? 'You can edit the club information.' : 'You can create a new student club.' }}</p> <!-- Moda göre açıklamayı değiştirir -->
       </div>
 
       <!-- Kulüp bilgileri yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
-          Kulüp bilgileri yükleniyor...
+          Club information is loading...
         </div>
       }
 
@@ -46,8 +46,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
         <!-- Form başlığı -->
         <div class="form-header">
-          <h2>Kulüp Bilgileri</h2>
-          <p>Kulübün temel bilgilerini aşağıdaki alanlara girin.</p>
+          <h2>Club Information</h2>
+          <p>Enter the club's basic information below.</p>
         </div>
 
         <!-- Form alanları -->
@@ -55,14 +55,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
           <!-- Kulüp adı -->
           <div class="form-field">
-            <label for="name">Kulüp Adı</label>
-            <input id="name" type="text" formControlName="name" placeholder="Kulüp adını girin"> <!-- Kulüp adını name alanına bağlar -->
+            <label for="name">Club Name</label>
+            <input id="name" type="text" formControlName="name" placeholder="Enter the club name"> <!-- Kulüp adını name alanına bağlar -->
           </div>
 
           <!-- Kulüp açıklaması -->
           <div class="form-field">
-            <label for="description">Açıklama</label>
-            <textarea id="description" formControlName="description" rows="6" placeholder="Kulüp hakkında kısa bir açıklama girin"></textarea> <!-- Açıklamayı description alanına bağlar -->
+            <label for="description">Description</label>
+            <textarea id="description" formControlName="description" rows="6" placeholder="Enter a short description of the club"></textarea> <!-- Açıklamayı description alanına bağlar -->
           </div>
 
           <!-- Logo URL -->
@@ -75,13 +75,13 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         <!-- Form işlem butonları -->
         <div class="form-actions">
           <button class="save-button" type="submit" [disabled]="form.invalid || saving()"> <!-- Form geçersizse veya işlem devam ediyorsa pasif olur -->
-            {{ saving() ? 'İşlem Yapılıyor...' : (isEditMode() ? 'Kulübü Güncelle' : 'Kulüp Oluştur') }}
+            {{ saving() ? 'Processing...' : (isEditMode() ? 'Update Club' : 'Create Club') }}
           </button>
 
           <!-- Sadece güncelleme modunda silme butonu gösterilir -->
           @if (isEditMode()) {
             <button class="delete-button" type="button" [disabled]="saving()" (click)="deleteClub()">
-              Kulübü Sil
+              Delete Club
             </button>
           }
         </div>
@@ -120,7 +120,7 @@ export class ClubManage implements OnInit {
     const id = Number(idParam); // URLden gelen IDyi number tipine çevirir
 
     if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Geçersiz kulüp ID.'); // Hata mesajı gösterir
+      this.errorMessage.set('Invalid club ID.'); // Hata mesajı gösterir
       return; // Backend isteğini engeller
     }
 
@@ -145,7 +145,7 @@ export class ClubManage implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Kulüp bilgileri alınırken hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüp bilgileri alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load club information.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }
@@ -185,7 +185,7 @@ export class ClubManage implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Oluşturma sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüp oluşturulamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not create the club.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.saving.set(false); // Hata olsa bile kaydetme işlemini bitirir
       }
@@ -195,7 +195,7 @@ export class ClubManage implements OnInit {
   updateClub(id: number, request: UpdateClubRequest): void { // Mevcut kulübü günceller
     this.clubService.update(id, request).subscribe({ // ClubService üzerinden güncelleme isteği gönderir
       next: club => { // Güncelleme başarılı olduğunda çalışır
-        this.successMessage.set('Kulüp güncellendi.'); // Başarı mesajını gösterir
+        this.successMessage.set('Club updated.'); // Başarı mesajını gösterir
 
         this.form.patchValue({ // Backendden dönen güncel bilgileri tekrar forma aktarır
           name: club.name, // Güncel kulüp adını forma aktarır
@@ -207,7 +207,7 @@ export class ClubManage implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Güncelleme sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüp güncellenemedi.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not update the club.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.saving.set(false); // Hata olsa bile güncelleme işlemini bitirir
       }
@@ -219,7 +219,7 @@ export class ClubManage implements OnInit {
       return; // Silme işlemini başlatmaz
     }
 
-    const approved = window.confirm('Kulübü silmek istediğinize emin misiniz?'); // Kullanıcıdan silme onayı ister
+    const approved = window.confirm('Are you sure you want to delete the club?'); // Kullanıcıdan silme onayı ister
 
     if (!approved) { // Kullanıcı onaylamadıysa
       return; // Silme işlemini durdurur
@@ -236,7 +236,7 @@ export class ClubManage implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Silme sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüp silinemedi.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not delete the club.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.saving.set(false); // Hata olsa bile silme işlemini bitirir
       }

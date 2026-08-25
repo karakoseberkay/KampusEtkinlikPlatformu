@@ -44,7 +44,7 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
 
 
                 throw new InvalidOperationException(
-                    $"{roleName} rolü oluşturulamadı: {errors}"
+                    $"{roleName} role could not be created: {errors}"
                 ); // rol oluşturulamadıysa uygulamayı açık bir hata mesajıyla durdurur
             }
         }
@@ -67,7 +67,7 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
                 Email = managerEmail, // test kullanıcısının epostası
                 UserName = "Admin", // Identity kullanıcı adı olarak epostayı kullanır
                 EmailConfirmed = true, // test hesabının epostasını doğrulanmış kabul eder
-                Department = "Yönetim", // test kullanıcısının bölüm bilgisi
+                Department = "Management", // test kullanıcısının bölüm bilgisi
                 CreatedAt = DateTimeOffset.UtcNow // kullanıcının oluşturulma tarihini UTC olarak kaydeder
             };
 
@@ -87,7 +87,7 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
 
 
                 throw new InvalidOperationException(
-                    $"Kulüp yöneticisi oluşturulamadı: {errors}"
+                    $"Club manager could not be created: {errors}"
                 ); // test kullanıcısı oluşturulamazsa uygulamayı hata ile durdurur
             }
         }
@@ -118,7 +118,7 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
 
 
                 throw new InvalidOperationException(
-                    $"Kulüp yöneticisi rolü atanamadı: {errors}"
+                    $"Club manager role could not be assigned: {errors}"
                 ); // rol atanamazsa uygulamayı hata ile durdurur
             }
         }

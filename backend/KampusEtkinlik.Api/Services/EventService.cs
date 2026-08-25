@@ -95,7 +95,7 @@ public sealed class EventService(
         if (club is null) // belirtilen kulüp bulunamazsa
         {
             throw new KeyNotFoundException(
-                "Etkinliğin bağlanacağı kulüp bulunamadı."
+                "The club for this event was not found."
             ); // olmayan kulübe etkinlik eklenmesini engeller(önlem)
         }
 
@@ -103,7 +103,7 @@ public sealed class EventService(
         if (club.ManagerUserId != managerUserId) // giriş yapan kullanıcı bu kulübün yöneticisi mi kontrol eder
         {
             throw new UnauthorizedAccessException(
-                "Yalnızca yönettiğiniz kulübe etkinlik ekleyebilirsiniz."
+                "You can only add events to clubs you manage."
             ); // başka yöneticinin kulübüne etkinlik eklenmesini engeller(önlem)()403
         }
 
@@ -152,7 +152,7 @@ public sealed class EventService(
 
         if (createdEvent is null) // oluşturulan etkinlik tekrar okunamazsa
         {
-            throw new InvalidOperationException("Etkinlik oluşturuldu ancak tekrar okunamadı.");                
+            throw new InvalidOperationException("The event was created but could not be retrieved.");                
              // beklenmeyen veri erişim hatasında işlemi durdurur
         }
 
@@ -194,14 +194,14 @@ public sealed class EventService(
 
         if (eventItem.Club.ManagerUserId != managerUserId) // etkinliğin kulübünü yöneten kişi işlemi yapan kullanıcı mı kontrol eder
         {
-            throw new UnauthorizedAccessException("Yalnızca kendi kulübünüze ait etkinliği güncelleyebilirsiniz.");                
+            throw new UnauthorizedAccessException("You can only update events belonging to your own club.");                
              // başka yöneticinin etkinliğini güncellemeyi engeller(önlem)
         }
 
 
         if (eventItem.Status == EventStatus.Cancelled) // etkinlik daha önce iptal edilmiş mi kontrol eder
         {
-            throw new InvalidOperationException("İptal edilmiş bir etkinlik güncellenemez.");                
+            throw new InvalidOperationException("A cancelled event cannot be updated.");                
              // iptal edilmiş etkinlik üzerinde değişiklik yapılmasını engeller
         }
 
@@ -250,14 +250,14 @@ public sealed class EventService(
 
         if (eventItem.Club.ManagerUserId != managerUserId) // etkinliğin bağlı olduğu kulübün yöneticisini kontrol eder(önlem)
         {
-            throw new UnauthorizedAccessException("Yalnızca kendi kulübünüze ait etkinliği iptal edebilirsiniz.");                
+            throw new UnauthorizedAccessException("You can only cancel events belonging to your own club.");                
              // başka yöneticinin etkinliğini iptal etmesini engeller
         }
 
 
         if (eventItem.Status == EventStatus.Cancelled) // etkinlik zaten iptal edilmiş mi kontrol eder
         {
-            throw new InvalidOperationException( "Etkinlik zaten iptal edilmiş.");               
+            throw new InvalidOperationException( "The event has already been cancelled.");               
              // aynı etkinliğin tekrar iptal edilmesini engeller
         }
 
@@ -287,14 +287,14 @@ public sealed class EventService(
     {
         if (string.IsNullOrWhiteSpace(title)) // başlık boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException("Etkinlik başlığı boş bırakılamaz." );       
+            throw new ArgumentException("Event title cannot be empty." );       
             
         }
 
 
         if (string.IsNullOrWhiteSpace(description)) // açıklama boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException("Etkinlik açıklaması boş bırakılamaz.");
+            throw new ArgumentException("Event description cannot be empty.");
                 
             
         }
@@ -302,7 +302,7 @@ public sealed class EventService(
 
         if (string.IsNullOrWhiteSpace(location)) // konum boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException("Etkinlik konumu boş bırakılamaz.");
+            throw new ArgumentException("Event location cannot be empty.");
                 
             
         }
@@ -310,21 +310,21 @@ public sealed class EventService(
 
         if (string.IsNullOrWhiteSpace(category)) // kategori boş veya sadece boşluk mu kontrol eder
         {
-            throw new ArgumentException("Etkinlik kategorisi boş bırakılamaz.");                
+            throw new ArgumentException("Event category cannot be empty.");                
             
         }
 
 
         if (capacity <= 0) // kapasite sıfır veya negatif mi kontrol eder
         {
-            throw new ArgumentException("Etkinlik kontenjanı sıfırdan büyük olmalıdır.");
+            throw new ArgumentException("Event capacity must be greater than zero.");
                             
         }
 
 
         if (startDate.ToUniversalTime() <= DateTimeOffset.UtcNow) // etkinlik tarihi geçmişte veya şu anda mı kontrol eder
         {
-            throw new ArgumentException("Etkinlik tarihi gelecekte olmalıdır.");
+            throw new ArgumentException("Event date must be in the future.");
                 
              // sadece gelecekteki tarihlerde etkinlik oluşturulmasına veya güncellenmesine izin verir (önlem)
         }
@@ -332,7 +332,7 @@ public sealed class EventService(
 
         if (!Enum.IsDefined(visibility)) // gönderilen visibility değeri EventVisibility enumunda tanımlı mı kontrol eder
         {
-            throw new ArgumentException("Geçersiz etkinlik görünürlüğü.");
+            throw new ArgumentException("Invalid event visibility.");
                 
              // tanımsız enum değerlerinin kullanılmasını engeller(önlem)
         }

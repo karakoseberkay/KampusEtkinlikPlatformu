@@ -50,7 +50,7 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
         return BadRequest(
             new
             {
-                message ="Başlangıç tarihi bitiş tarihinden sonra olamaz."
+                message ="Start date cannot be after end date."
                     
             }
         );
@@ -116,7 +116,7 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
             return NotFound(
                 new
                 {
-                    message = "Etkinlik bulunamadı."
+                    message = "Event not found."
                 }
             ); // 404 Not Found döndürür
         }
@@ -145,7 +145,7 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
             return Unauthorized(
                 new
                 {
-                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="User identity could not be found in the token."
                         
                 }
             ); // 401 Unauthorized döndürür
@@ -217,7 +217,7 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
             return Unauthorized(
                 new
                 {
-                    message ="Token içerisinde kullanıcı kimliği bulunamadı."
+                    message ="User identity could not be found in the token."
                         
                 }
             ); // 401 Unauthorized döndürür
@@ -238,7 +238,7 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
             if (eventItem is null) // güncellenecek etkinlik bulunamazsa
             {
                 return NotFound(
-                    new { message = "Etkinlik bulunamadı." }
+                    new { message = "Event not found." }
                 ); // 404 Not Found döndürür
             }
 
@@ -291,7 +291,7 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
             return Unauthorized(
                 new
                 {
-                    message = "Token içerisinde kullanıcı kimliği bulunamadı."
+                    message = "User identity could not be found in the token."
                        
                 }
             ); // 401 Unauthorized döndürür
@@ -311,7 +311,7 @@ public async Task<ActionResult<PagedResponse<EventResponse>>> GetPaged(
             if (eventItem is null) // etkinlik bulunamazsa
             {
                 return NotFound(
-                    new { message = "Etkinlik bulunamadı." }
+                    new { message = "Event not found." }
                 ); // 404 Not Found döndürür
             }
 

@@ -15,32 +15,32 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Kullanıcı Yönetimi</h1>
-          <p>Kullanıcıları görüntüleyebilir, filtreleyebilir ve rollerini yönetebilirsiniz.</p>
+          <h1>User Management</h1>
+          <p>View, filter, and manage user roles.</p>
         </div>
 
         <!-- Kullanıcı listesini yeniden yükler -->
         <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadUsers()">
-          {{ loading() ? 'Yükleniyor...' : 'Kullanıcıları Yenile' }}
+          {{ loading() ? 'Loading...' : 'Refresh Users' }}
         </button>
       </div>
 
       <!-- Arama ve filtreleme alanı -->
       <section class="filter-card">
         <div class="filter-header">
-          <h2>Arama ve Filtreleme</h2>
-          <p>Kullanıcıları isim veya bölümlerine göre filtreleyebilirsiniz.</p>
+          <h2>Search and Filter</h2>
+          <p>Filter users by name or department.</p>
         </div>
 
         <div class="filter-content">
 
           <!-- Kullanıcı adına göre arama -->
           <div class="form-field">
-            <label for="search">İsim Ara</label>
+            <label for="search">Search by Name</label>
             <input
               id="search"
               type="text"
-              placeholder="Kullanıcı adı..."
+              placeholder="User name..."
               [value]="searchText()"
               (input)="searchText.set($any($event.target).value)"
             >
@@ -48,13 +48,13 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
           <!-- Bölüme göre filtreleme -->
           <div class="form-field">
-            <label for="department">Bölüm</label>
+            <label for="department">Department</label>
             <select
               id="department"
               [value]="selectedDepartment()"
               (change)="selectedDepartment.set($any($event.target).value)"
             >
-              <option value="">Tüm Bölümler</option>
+              <option value="">All Departments</option>
 
               <!-- Benzersiz bölüm listesini select içine ekler -->
               @for (department of departments(); track department) {
@@ -66,7 +66,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Filtreleri temizler -->
           <div class="filter-actions">
             <button class="clear-button" type="button" (click)="clearFilters()">
-              Filtreleri Temizle
+              Clear Filters
             </button>
           </div>
         </div>
@@ -75,7 +75,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Kullanıcılar yüklenirken gösterilir -->
       @if (loading() && users().length === 0) {
         <div class="page-message">
-          Kullanıcılar yükleniyor...
+          Users are loading...
         </div>
       }
 
@@ -96,14 +96,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Backendden hiç kullanıcı gelmediyse gösterilir -->
       @if (!loading() && users().length === 0 && !errorMessage()) {
         <div class="empty-card">
-          Kullanıcı bulunamadı.
+          No users found.
         </div>
       }
 
       <!-- Filtre sonucunda kullanıcı bulunamazsa gösterilir -->
       @if (!loading() && users().length > 0 && filteredUsers().length === 0) {
         <div class="empty-card">
-          Arama kriterlerine uygun kullanıcı bulunamadı.
+          No users match the search criteria.
         </div>
       }
 
@@ -113,8 +113,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
           <!-- Liste başlığı -->
           <div class="section-header">
-            <h2>Kullanıcı Listesi</h2>
-            <p>Toplam {{ filteredUsers().length }} kullanıcı görüntüleniyor.</p>
+            <h2>User List</h2>
+            <p>Showing {{ filteredUsers().length }} users.</p>
           </div>
 
           <!-- Kullanıcı tablosu -->
@@ -123,11 +123,11 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
               <table class="users-table">
                 <thead>
                   <tr>
-                    <th>Ad Soyad</th>
-                    <th>E-posta</th>
-                    <th>Bölüm</th>
-                    <th>Rol</th>
-                    <th>İşlem</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
 
@@ -141,7 +141,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <!-- Admin hesabında bölüm yerine Yönetim gösterilir -->
                       <td>
                         @if (user.email.toLowerCase() === 'manager@kampus.com') {
-                          <span class="department-admin">Yönetim</span>
+                          <span class="department-admin">Management</span>
                         } @else {
                           {{ user.department || '-' }}
                         }
@@ -152,9 +152,9 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                         @if (user.email.toLowerCase() === 'manager@kampus.com') {
                           <span class="role-badge role-admin">Admin</span>
                         } @else if (user.roles.includes('ClubManager')) {
-                          <span class="role-badge role-manager">Kulüp Yöneticisi</span>
+                          <span class="role-badge role-manager">Club Manager</span>
                         } @else {
-                          <span class="role-badge role-student">Öğrenci</span>
+                          <span class="role-badge role-student">Student</span>
                         }
                       </td>
 
@@ -163,7 +163,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
                         <!-- Admin kendi hesabının rolünü değiştiremez -->
                         @if (auth.currentUser()?.userId === user.id) {
-                          <span class="own-account">Kendi hesabınız</span>
+                          <span class="own-account">Your account</span>
                         } @else {
 
                           <!-- ClubManager kullanıcısını Student yapar -->
@@ -174,7 +174,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                               [disabled]="processingUserId() !== null"
                               (click)="changeRole(user, 'Student')"
                             >
-                              {{ processingUserId() === user.id ? 'İşleniyor...' : 'Öğrenci Yap' }}
+                              {{ processingUserId() === user.id ? 'Processing...' : 'Make Student' }}
                             </button>
                           } @else {
 
@@ -185,7 +185,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                               [disabled]="processingUserId() !== null"
                               (click)="changeRole(user, 'ClubManager')"
                             >
-                              {{ processingUserId() === user.id ? 'İşleniyor...' : 'Kulüp Yöneticisi Yap' }}
+                              {{ processingUserId() === user.id ? 'Processing...' : 'Make Club Manager' }}
                             </button>
                           }
                         }
@@ -255,7 +255,7 @@ export class UserManagement implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kullanıcılar alınamadı.') // Backend hatasını kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load users.') // Backend hatasını kullanıcıya uygun mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }
@@ -267,8 +267,8 @@ export class UserManagement implements OnInit {
       return; // Yeni işlem başlatılmasını engeller
     }
 
-    const roleName = role === 'Student' ? 'Öğrenci' : 'Kulüp Yöneticisi'; // Rol adını kullanıcıya Türkçe göstermek için
-    const approved = window.confirm(`${user.fullName} kullanıcısının rolü ${roleName} olarak değiştirilsin mi?`); // Admin kullanıcıdan onay ister
+    const roleName = role === 'Student' ? 'Student' : 'Club Manager'; // Rol adını kullanıcıya Türkçe göstermek için
+    const approved = window.confirm(`Change ${user.fullName}'s role to ${roleName}?`); // Admin kullanıcıdan onay ister
 
     if (!approved) { // Admin işlemi onaylamadıysa
       return; // Rol değiştirmeyi iptal eder
@@ -286,12 +286,12 @@ export class UserManagement implements OnInit {
           )
         );
 
-        this.successMessage.set(`${updatedUser.fullName} kullanıcısının rolü ${roleName} olarak değiştirildi.`); // Başarı mesajını gösterir
+        this.successMessage.set(`${updatedUser.fullName}'s role was changed to ${roleName}.`); // Başarı mesajını gösterir
         this.processingUserId.set(null); // Rol değiştirme işlemini bitirir
       },
       error: (error: HttpErrorResponse) => { // Rol değiştirme isteğinde hata oluşursa çalışır
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kullanıcı rolü değiştirilemedi.') // Backend hatasını anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not change the user role.') // Backend hatasını anlaşılır mesaja çevirir
         );
         this.processingUserId.set(null); // Hata sonrası butonları tekrar aktif eder
       }

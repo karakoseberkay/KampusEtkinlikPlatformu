@@ -14,14 +14,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
       <!-- Sayfa başlığı -->
       <div class="page-header">
-        <h1>Kulüp Detayı</h1>
-        <p>Kulübe ait temel bilgileri buradan görüntüleyebilirsiniz.</p>
+        <h1>Club Details</h1>
+        <p>View the club's basic information here.</p>
       </div>
 
       <!-- Kulüp bilgileri yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
-          Kulüp bilgileri yükleniyor...
+          Club information is loading...
         </div>
       }
 
@@ -47,13 +47,13 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
             <!-- Kulüp yöneticisi -->
             <div class="detail-item">
-              <span class="detail-label">Yönetici</span>
+              <span class="detail-label">Manager</span>
               <span class="detail-value">{{ clubItem.managerFullName }}</span> <!-- Yönetici adını gösterir -->
             </div>
 
             <!-- Etkinlik sayısı -->
             <div class="detail-item">
-              <span class="detail-label">Etkinlik Sayısı</span>
+              <span class="detail-label">Event Count</span>
               <span class="detail-value event-count">{{ clubItem.eventCount }}</span> <!-- Toplam etkinlik sayısını gösterir -->
             </div>
 
@@ -81,7 +81,7 @@ export class ClubDetail implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki id değerini alıp numbera çevirir
 
     if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Geçersiz kulüp ID.'); // Hata mesajı gösterir
+      this.errorMessage.set('Invalid club ID.'); // Hata mesajı gösterir
       return; // Backend isteğinin yapılmasını engeller
     }
 
@@ -99,7 +99,7 @@ export class ClubDetail implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüp alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load the club.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }

@@ -15,20 +15,20 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfanın üst başlık alanıdır -->
       <div class="page-header">
         <div>
-          <h1>Popüler Etkinlikler</h1> <!-- Sayfanın ana başlığını gösterir. -->
-          <p>Kampüste en çok ilgi gören etkinlikleri görüntüleyebilirsiniz.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
+          <h1>Popular Events</h1> <!-- Sayfanın ana başlığını gösterir. -->
+          <p>View the most popular events on campus.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
         </div>
 
         <!-- Popüler etkinlikleri backendden tekrar çekmek için kullanılır -->
         <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadEvents()">
-          {{ loading() ? 'Yükleniyor...' : 'Yenile' }}
+          {{ loading() ? 'Loading...' : 'Refresh' }}
         </button>
       </div>
 
       <!-- Backend isteği devam ederken ve henüz etkinlik yoksa gösterilir -->
       @if (loading() && events().length === 0) {
         <div class="page-message">
-          Popüler etkinlikler yükleniyor...
+          Popular events are loading...
         </div>
       }
 
@@ -42,7 +42,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Yükleme tamamlandıysa ve herhangi bir popüler etkinlik bulunamadıysa gösterilir -->
       @if (!loading() && events().length === 0 && !errorMessage()) {
         <div class="page-message">
-          Gösterilecek popüler etkinlik bulunamadı.
+          No popular events to display.
         </div>
       }
 
@@ -51,8 +51,8 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         <section class="events-section">
           <!-- Tablo bölümünün üst bilgisidir -->
           <div class="section-header">
-            <h2>Etkinlik Listesi</h2> <!-- Popüler etkinlik listesinin başlığını gösterir. -->
-            <p>En çok ilgi gören {{ events().length }} etkinlik görüntüleniyor.</p> <!-- Backendden gelen etkinlik sayısını gösterir. -->
+            <h2>Event List</h2> <!-- Popüler etkinlik listesinin başlığını gösterir. -->
+            <p>Showing {{ events().length }} most popular events.</p> <!-- Backendden gelen etkinlik sayısını gösterir. -->
           </div>
 
           <!-- Tabloyu beyaz kart içerisinde tutar -->
@@ -65,15 +65,15 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                 <thead>
                   <tr>
                     <th>#</th> <!-- Etkinliğin popülerlik listesindeki sırasını gösterir. -->
-                    <th>Etkinlik Adı</th> <!-- Etkinliğin başlığını gösterir. -->
-                    <th>Kulüp</th> <!-- Etkinliği oluşturan kulübü gösterir. -->
-                    <th>Kategori</th> <!-- Etkinliğin kategorisini gösterir. -->
-                    <th>Tarih</th> <!-- Etkinliğin başlangıç tarihini gösterir. -->
-                    <th>Konum</th> <!-- Etkinliğin yapılacağı konumu gösterir. -->
-                    <th>Onaylı Kayıt</th> <!-- Etkinliğe onaylanmış kayıt sayısını gösterir. -->
-                    <th>Kalan Kontenjan</th> <!-- Etkinlikte kalan boş kontenjanı gösterir. -->
-                    <th>Kayıt Oranı</th> <!-- Etkinliğin kapasitesine göre kayıt oranını gösterir. -->
-                    <th>İşlem</th> <!-- Etkinlik detayına gitmek için kullanılan alanı gösterir. -->
+                    <th>Event Name</th> <!-- Etkinliğin başlığını gösterir. -->
+                    <th>Club</th> <!-- Etkinliği oluşturan kulübü gösterir. -->
+                    <th>Category</th> <!-- Etkinliğin kategorisini gösterir. -->
+                    <th>Date</th> <!-- Etkinliğin başlangıç tarihini gösterir. -->
+                    <th>Location</th> <!-- Etkinliğin yapılacağı konumu gösterir. -->
+                    <th>Approved Registrations</th> <!-- Etkinliğe onaylanmış kayıt sayısını gösterir. -->
+                    <th>Remaining Capacity</th> <!-- Etkinlikte kalan boş kontenjanı gösterir. -->
+                    <th>Registration Rate</th> <!-- Etkinliğin kapasitesine göre kayıt oranını gösterir. -->
+                    <th>Action</th> <!-- Etkinlik detayına gitmek için kullanılan alanı gösterir. -->
                   </tr>
                 </thead>
 
@@ -133,7 +133,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <!-- Kullanıcıyı ilgili etkinliğin detay sayfasına yönlendirir -->
                       <td>
                         <a class="detail-link" [routerLink]="['/events', event.id]">
-                          Detay
+                          Details
                         </a>
                       </td>
                     </tr>
@@ -171,7 +171,7 @@ export class PopularEvents implements OnInit { // Popüler Etkinlikler sayfasın
       error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
         this.events.set([]); // Hata durumunda eski etkinlik listesini temizler.
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Popüler etkinlikler alınamadı.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+          getApiErrorMessage(error, 'Could not load popular events.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
       }

@@ -17,15 +17,15 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Etkinlik Detayı</h1>
-          <p>Etkinliğe ait detaylı bilgileri buradan görüntüleyebilirsiniz.</p>
+          <h1>Event Details</h1>
+          <p>View detailed information about the event here.</p>
         </div>
       </div>
 
       <!-- Etkinlik bilgileri yüklenirken gösterilir -->
       @if (loading()) {
         <div class="page-message">
-          Etkinlik bilgileri yükleniyor...
+          Event information is loading...
         </div>
       }
 
@@ -59,7 +59,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
             <!-- Etkinlik durumunu gösterir -->
             @if (eventItem.status === 'Active') {
               <span class="status-badge status-active">
-                Aktif
+                Active
               </span>
             } @else {
               <span class="status-badge status-passive">
@@ -73,46 +73,46 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
             <!-- Kulüp bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">Kulüp</span>
+              <span class="detail-label">Club</span>
               <span class="detail-value">{{ eventItem.clubName }}</span>
             </div>
 
             <!-- Tarih bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">Tarih</span>
+              <span class="detail-label">Date</span>
               <span class="detail-value">{{ eventItem.startDate }}</span>
             </div>
 
             <!-- Konum bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">Konum</span>
+              <span class="detail-label">Location</span>
               <span class="detail-value">{{ eventItem.location }}</span>
             </div>
 
             <!-- Kapasite bilgisi -->
             <div class="detail-item">
-              <span class="detail-label">Kapasite</span>
-              <span class="detail-value">{{ eventItem.capacity }} kişi</span>
+              <span class="detail-label">Capacity</span>
+              <span class="detail-value">{{ eventItem.capacity }} people</span>
             </div>
 
             <!-- Katılım tipi -->
             <div class="detail-item">
-              <span class="detail-label">Katılım Tipi</span>
+              <span class="detail-label">Participation Type</span>
 
               @if (eventItem.visibility === 'Public') {
                 <span class="detail-value">
-                  Herkese Açık
+                  Open to Everyone
                 </span>
               } @else {
                 <span class="detail-value">
-                  Onay Gerekli
+                  Approval Required
                 </span>
               }
             </div>
 
             <!-- Oluşturulma tarihi -->
             <div class="detail-item">
-              <span class="detail-label">Oluşturulma Tarihi</span>
+              <span class="detail-label">Created At</span>
               <span class="detail-value">{{ eventItem.createdAt }}</span>
             </div>
           </div>
@@ -126,7 +126,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                 [disabled]="registering()"
                 (click)="register()"
               >
-                {{ registering() ? 'Kayıt Yapılıyor...' : 'Etkinliğe Kayıt Ol' }}
+                {{ registering() ? 'Registering...' : 'Register for Event' }}
               </button>
             </div>
           }
@@ -159,7 +159,7 @@ export class EventDetail implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki id değerini alıp numbera çevirir
 
     if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Geçersiz etkinlik ID.'); // Hata mesajı gösterir
+      this.errorMessage.set('Invalid event ID.'); // Hata mesajı gösterir
       return; // Backend isteğinin yapılmasını engeller
     }
 
@@ -177,7 +177,7 @@ export class EventDetail implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinlik alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load the event.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }
@@ -198,13 +198,13 @@ export class EventDetail implements OnInit {
     this.registrationService.register(eventItem.id).subscribe({ // Etkinlik IDsini backenddeki kayıt metoduna gönderir
       next: registration => { // Kayıt işlemi başarılı olduğunda çalışır
         this.successMessage.set(
-          `Kayıt oluşturuldu. Durum: ${registration.approvalStatus}` // Backendden gelen kayıt durumunu gösterir
+          `Registration created. Status: ${registration.approvalStatus}` // Backendden gelen kayıt durumunu gösterir
         );
         this.registering.set(false); // Kayıt işlemini bitirir
       },
       error: (error: HttpErrorResponse) => { // Kayıt sırasında hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Etkinliğe kayıt olunamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not register for the event.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.registering.set(false); // Hata olsa bile kayıt işlemini bitirir
       }

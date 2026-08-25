@@ -15,20 +15,20 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
-          <h1>Kulüp İstatistikleri</h1>
-          <p>Kulübün etkinlik ve katılım istatistiklerini görüntüleyebilirsiniz.</p>
+          <h1>Club Statistics</h1>
+          <p>View the club's event and participation statistics.</p>
         </div>
 
         <!-- İstatistikleri yeniden yükler -->
         <button class="refresh-button" type="button" [disabled]="loading()" (click)="loadStats()">
-          {{ loading() ? 'Yükleniyor...' : 'Verileri Yenile' }}
+          {{ loading() ? 'Loading...' : 'Refresh Data' }}
         </button>
       </div>
 
       <!-- İstatistikler yüklenirken gösterilir -->
       @if (loading() && !stats()) {
         <div class="page-message">
-          Kulüp istatistikleri yükleniyor...
+          Club statistics are loading...
         </div>
       }
 
@@ -44,58 +44,58 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
 
         <!-- Kulüp özeti -->
         <section class="club-summary">
-          <span class="summary-label">Kulüp</span> <!-- Bilginin kulüp adı olduğunu belirtir -->
+          <span class="summary-label">Club</span> <!-- Bilginin kulüp adı olduğunu belirtir -->
           <h2>{{ statsItem.clubName }}</h2> <!-- Kulüp adını gösterir -->
-          <p>Kulübün genel etkinlik ve kayıt durumuna ait özet bilgiler.</p>
+          <p>Summary of the club's overall event and registration status.</p>
         </section>
 
         <!-- Genel istatistikler -->
         <section class="stats-section">
           <div class="section-header">
-            <h2>Genel Bilgiler</h2>
-            <p>Kulübün toplam etkinlik ve kayıt sayılarını gösterir.</p>
+            <h2>Overview</h2>
+            <p>Shows the club's total event and registration counts.</p>
           </div>
 
           <div class="stats-grid">
             <!-- Toplam etkinlik -->
             <div class="stat-card">
-              <span class="stat-label">Toplam Etkinlik</span>
+              <span class="stat-label">Total Events</span>
               <strong class="stat-value">{{ statsItem.totalEventCount }}</strong>
             </div>
 
             <!-- Aktif etkinlik -->
             <div class="stat-card">
-              <span class="stat-label">Aktif Etkinlik</span>
+              <span class="stat-label">Active Events</span>
               <strong class="stat-value status-green">{{ statsItem.activeEventCount }}</strong>
             </div>
 
             <!-- İptal edilen etkinlik -->
             <div class="stat-card">
-              <span class="stat-label">İptal Edilen</span>
+              <span class="stat-label">Cancelled</span>
               <strong class="stat-value status-red">{{ statsItem.cancelledEventCount }}</strong>
             </div>
 
             <!-- Onaylı kayıt -->
             <div class="stat-card">
-              <span class="stat-label">Onaylı Kayıt</span>
+              <span class="stat-label">Approved Registrations</span>
               <strong class="stat-value">{{ statsItem.totalApprovedRegistrationCount }}</strong>
             </div>
 
             <!-- Bekleyen kayıt -->
             <div class="stat-card">
-              <span class="stat-label">Bekleyen Kayıt</span>
+              <span class="stat-label">Pending Registrations</span>
               <strong class="stat-value status-orange">{{ statsItem.totalPendingRegistrationCount }}</strong>
             </div>
 
             <!-- Reddedilen kayıt -->
             <div class="stat-card">
-              <span class="stat-label">Reddedilen Kayıt</span>
+              <span class="stat-label">Rejected Registrations</span>
               <strong class="stat-value status-red">{{ statsItem.totalRejectedRegistrationCount }}</strong>
             </div>
 
             <!-- Genel kayıt oranı -->
             <div class="stat-card rate-card">
-              <span class="stat-label">Genel Kayıt Oranı</span>
+              <span class="stat-label">Overall Registration Rate</span>
               <strong class="stat-value status-orange">%{{ statsItem.overallRegistrationRate }}</strong>
             </div>
           </div>
@@ -104,14 +104,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         <!-- Etkinlik kayıt oranları grafiği -->
         <section class="chart-section">
           <div class="section-header">
-            <h2>Etkinlik Kayıt Oranları</h2>
-            <p>Her etkinliğin kapasitesine göre kayıt oranını gösterir.</p>
+            <h2>Event Registration Rates</h2>
+            <p>Shows each event's registration rate based on its capacity.</p>
           </div>
 
           <!-- Etkinlik yoksa grafik yerine mesaj gösterir -->
           @if (statsItem.events.length === 0) {
             <div class="empty-card">
-              Grafik için etkinlik bulunmuyor.
+              No events available for the chart.
             </div>
           } @else {
             <div class="chart-card">
@@ -166,14 +166,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
         <!-- Etkinlik bazlı istatistikler -->
         <section class="events-section">
           <div class="section-header">
-            <h2>Etkinlik İstatistikleri</h2>
-            <p>Her etkinliğin kapasite ve kayıt durumlarını ayrı ayrı gösterir.</p>
+            <h2>Event Statistics</h2>
+            <p>Shows each event's capacity and registration status separately.</p>
           </div>
 
           <!-- Kulübün etkinliği yoksa gösterilir -->
           @if (statsItem.events.length === 0) {
             <div class="empty-card">
-              Bu kulübe ait etkinlik bulunmuyor.
+              No events found for this club.
             </div>
           } @else {
 
@@ -183,14 +183,14 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                 <table class="stats-table">
                   <thead>
                     <tr>
-                      <th>Etkinlik</th>
-                      <th>Tarih</th>
-                      <th>Durum</th>
-                      <th>Kapasite</th>
-                      <th>Onaylı</th>
-                      <th>Bekleyen</th>
-                      <th>Reddedilen</th>
-                      <th>Kayıt Oranı</th>
+                      <th>Event</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Capacity</th>
+                      <th>Approved</th>
+                      <th>Pending</th>
+                      <th>Rejected</th>
+                      <th>Registration Rate</th>
                     </tr>
                   </thead>
 
@@ -209,9 +209,9 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                         <!-- Etkinlik durumunu Türkçe gösterir -->
                         <td>
                           @if (event.status === 'Active') {
-                            <span class="status-badge status-active">Aktif</span>
+                            <span class="status-badge status-active">Active</span>
                           } @else if (event.status === 'Cancelled') {
-                            <span class="status-badge status-cancelled">İptal Edildi</span>
+                            <span class="status-badge status-cancelled">Cancelled</span>
                           } @else {
                             <span class="status-badge status-default">{{ event.status }}</span>
                           }
@@ -263,7 +263,7 @@ export class ClubStats implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki kulüp IDsini alıp numbera çevirir
 
     if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Geçersiz kulüp ID.'); // Hata mesajı gösterir(önlem)
+      this.errorMessage.set('Invalid club ID.'); // Hata mesajı gösterir(önlem)
       return; // Backend isteğinin yapılmasını engeller
     }
 
@@ -286,7 +286,7 @@ export class ClubStats implements OnInit {
       },
       error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Kulüp istatistikleri alınamadı.') // Hatayı kullanıcıya uygun mesaja çevirir
+          getApiErrorMessage(error, 'Could not load club statistics.') // Hatayı kullanıcıya uygun mesaja çevirir
         );
         this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
       }

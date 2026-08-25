@@ -2,11 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export function getApiErrorMessage(
   error: HttpErrorResponse,//backendden gelen hata
-  fallback = 'İşlem sırasında bir hata oluştu.' //hiçbir uygun hata mesajı bulunamazsa gösterilecek varsayılan mesaj
+  fallback = 'An error occurred during the operation.' //hiçbir uygun hata mesajı bulunamazsa gösterilecek varsayılan mesaj
 ): string { // backendden gelen hata cevaplarını kullanıcıya gösterilecek mesaja çevirir
 
   if (error.status === 0) {
-    return 'Backend bağlantısı kurulamadı.'; // backend ulaşılamıyorsa bağlantı hatası döndürür
+    return 'Could not connect to the backend.'; // backend ulaşılamıyorsa bağlantı hatası döndürür
   }
 
   if (typeof error.error?.message === 'string') {

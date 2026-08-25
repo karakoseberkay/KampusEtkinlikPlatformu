@@ -66,7 +66,7 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) //
         
             return Conflict(new{
             
-                message = "Admin kendi rolünü değiştiremez."
+                message = "Admin cannot change their own role."
             });
         }
 
@@ -76,7 +76,7 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) //
         {
             return NotFound(new
             {
-                message = "Kullanıcı bulunamadı."
+                message = "No users found."
             });
         }
 
@@ -89,7 +89,7 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) //
         {
             return BadRequest(new
             {
-                message = "Geçersiz rol."
+                message = "Invalid role."
             });
         }
 

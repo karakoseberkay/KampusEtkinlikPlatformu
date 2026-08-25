@@ -24,7 +24,7 @@ public sealed class RegistrationService(
 
         if (eventItem is null) // etkinlik bulunamazsa
         {
-            throw new KeyNotFoundException("Kayıt olunacak etkinlik bulunamadı.");
+            throw new KeyNotFoundException("The event to register for was not found.");
                 
             
         }
@@ -32,7 +32,7 @@ public sealed class RegistrationService(
 
         if (eventItem.Status == EventStatus.Cancelled) // etkinlik iptal edilmiş mi kontrol eder
         {
-            throw new InvalidOperationException("İptal edilmiş bir etkinliğe kayıt olunamaz.");
+            throw new InvalidOperationException("You cannot register for a cancelled event.");
                 
             
         }
@@ -40,7 +40,7 @@ public sealed class RegistrationService(
 
         if (eventItem.StartDate <= DateTimeOffset.UtcNow) // etkinlik başlamış veya geçmiş mi kontrol eder
         {
-            throw new InvalidOperationException("Başlamış veya geçmiş bir etkinliğe kayıt olunamaz.");
+            throw new InvalidOperationException("You cannot register for an event that has already started or passed.");
                 
             
         }
@@ -57,7 +57,7 @@ public sealed class RegistrationService(
 
         if (existingRegistration is not null) // daha önce kayıt varsa
         {
-            throw new InvalidOperationException("Bu etkinliğe daha önce kayıt oldunuz." );
+            throw new InvalidOperationException("You have already registered for this event." );
                 
            
         }
@@ -73,7 +73,7 @@ public sealed class RegistrationService(
 
         if (approvedCount >= eventItem.Capacity) // onaylı kayıt sayısı kapasiteye ulaşmış mı kontrol eder
         {
-            throw new InvalidOperationException("Etkinlik kontenjanı doldu.");
+            throw new InvalidOperationException("The event has reached capacity.");
                 
             
         }
@@ -115,7 +115,7 @@ public sealed class RegistrationService(
 
         if (createdRegistration is null)
         {
-            throw new InvalidOperationException("Kayıt oluşturuldu ancak tekrar okunamadı.");
+            throw new InvalidOperationException("The registration was created but could not be retrieved.");
                 
             
         }
@@ -159,7 +159,7 @@ public sealed class RegistrationService(
 
         if (eventItem is null)
         {
-            throw new KeyNotFoundException("Etkinlik bulunamadı.");
+            throw new KeyNotFoundException("Event not found.");
                 
             
         }
@@ -167,7 +167,7 @@ public sealed class RegistrationService(
 
         if (eventItem.Club.ManagerUserId != managerUserId) // etkinlik bu managerın kulübüne mi ait kontrol eder
         {
-            throw new UnauthorizedAccessException( "Yalnızca kendi kulübünüze ait kayıtları görüntüleyebilirsiniz.");
+            throw new UnauthorizedAccessException( "You can only view registrations for your own club.");
                
             
         }
@@ -201,7 +201,7 @@ public sealed class RegistrationService(
 
         if (registration is null)
         {
-            throw new KeyNotFoundException("Kayıt talebi bulunamadı." );
+            throw new KeyNotFoundException("Registration request not found." );
                 
            
         }
@@ -214,7 +214,7 @@ public sealed class RegistrationService(
         if (registration.ApprovalStatus != RegistrationApprovalStatus.Pending){
            
         
-            throw new InvalidOperationException("Yalnızca bekleyen kayıt talepleri onaylanabilir.");
+            throw new InvalidOperationException("Only pending registration requests can be approved.");
                 
             
         }
@@ -224,7 +224,7 @@ public sealed class RegistrationService(
             //etkinlik iptal edilmişse o etkinliğin bekleyen kaydı onaylanamaz
            
         
-            throw new InvalidOperationException("İptal edilmiş etkinliğin kayıt talebi onaylanamaz.");
+            throw new InvalidOperationException("Registration requests for cancelled events cannot be approved.");
                 
             
         }
@@ -239,7 +239,7 @@ public sealed class RegistrationService(
 
         if (approvedCount >= registration.Event.Capacity)
         {
-            throw new InvalidOperationException("Etkinlik kontenjanı dolmuştur.");
+            throw new InvalidOperationException("The event has reached capacity.");
                 
             
         }
@@ -272,7 +272,7 @@ public sealed class RegistrationService(
 
         if (registration is null)
         {
-            throw new KeyNotFoundException("Kayıt talebi bulunamadı.");
+            throw new KeyNotFoundException("Registration request not found.");
                 
             
         }
@@ -284,7 +284,7 @@ public sealed class RegistrationService(
 
         if (registration.ApprovalStatus != RegistrationApprovalStatus.Pending)
             
-        { throw new InvalidOperationException("Yalnızca bekleyen kayıt talepleri reddedilebilir.");}
+        { throw new InvalidOperationException("Only pending registration requests can be rejected.");}
            
                 
             
@@ -313,7 +313,7 @@ public sealed class RegistrationService(
         if (registration.Event.Club.ManagerUserId != managerUserId)
            
         {
-            throw new UnauthorizedAccessException("Yalnızca kendi kulübünüze ait kayıt taleplerini yönetebilirsiniz.");
+            throw new UnauthorizedAccessException("You can only manage registration requests for your own club.");
         }
         // manager başka kulübün etkinlik kayıtlarını yönetmeye çalışırsa işlemi engeller
     }
