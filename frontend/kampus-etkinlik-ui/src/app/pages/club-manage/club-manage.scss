@@ -173,7 +173,7 @@
   cursor: not-allowed; // Butonların kullanılamadığını gösterir.
 }
 
-/* Responsive düzen */
+/* Responsive düzen 
 @media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
   .page-header h1 {
     font-size: 25px; // Mobilde ana başlığı biraz küçültür.
@@ -187,4 +187,4 @@
   .delete-button {
     width: 100%; // Mobilde butonların tam genişlik kullanmasını sağlar.
   }
-}
+}*/

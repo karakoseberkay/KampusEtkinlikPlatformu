@@ -105,7 +105,7 @@ export class ClubManage implements OnInit {
   readonly successMessage = signal(''); // Başarı mesajını tutar
 
   readonly form = this.fb.nonNullable.group({ // Kulüp formunu ve validation kurallarını oluşturur
-    name: ['', [Validators.required, Validators.maxLength(150)]], // Kulüp adı zorunlu ve maksimum 150 karakter
+    name: ['', [Validators.required, Validators.maxLength(150)]], // Kulüp adı zorunlu ve maksimum 150 karakter(başlangıç değeri boş olacak)
     description: ['', [Validators.maxLength(1000)]], // Açıklama maksimum 1000 karakter
     logoUrl: ['', [Validators.maxLength(500)]] // Logo URL maksimum 500 karakter
   });

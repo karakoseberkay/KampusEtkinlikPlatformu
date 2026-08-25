@@ -263,7 +263,7 @@ export class ClubStats implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki kulüp IDsini alıp numbera çevirir
 
     if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Geçersiz kulüp ID.'); // Hata mesajı gösterir
+      this.errorMessage.set('Geçersiz kulüp ID.'); // Hata mesajı gösterir(önlem)
       return; // Backend isteğinin yapılmasını engeller
     }
 
