@@ -1,35 +1,35 @@
-:root {
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+:root { // uygulamanın genelinde kullanılacak temel stilleri tanımlar
+  font-family: // uygulamanın genel yazı tipini belirler
+    Inter, // ilk olarak inter fontunu kullanmaya çalışır
+    ui-sans-serif, // inter bulunamazsa sistemdeki sans serif fontlardan birini kullanır
+    system-ui, // işletim sisteminin varsayılan arayüz fontunu kullanır
+    -apple-system, // apple cihazlarda sistem fontunu kullanır
+    BlinkMacSystemFont, // mac ve chrome tarafında sistem fontuyla uyum sağlar
+    "Segoe UI", // windows tarafında segoe ui fontunu kullanır
+    sans-serif; // yukarıdakiler bulunamazsa herhangi bir sans serif font kullanır
 
-  color: #0f172a;
+  color: #0f172a; // uygulamanın varsayılan yazı rengini belirler
 
-  background: #f8fafc;
+  background: #f8fafc; // uygulamanın varsayılan arka plan rengini belirler
 
-  font-synthesis: none;
+  font-synthesis: none; // tarayıcının olmayan bold veya italic fontları yapay olarak üretmesini engeller
 
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility; // yazıların okunabilirliğini iyileştirmeye çalışır
 }
 
 
 html,
 body {
-  min-height: 100%;
+  min-height: 100%; // html ve body alanlarının en az ekran yüksekliği kadar olmasını sağlar
 
-  margin: 0;
+  margin: 0; // tarayıcının bodye otomatik verdiği dış boşluğu kaldırır
 }
 
 
 body {
-  min-width: 320px;
+  min-width: 320px; // sayfanın 320 pikselden daha dar hale gelmesini engeller
 
-  background-color: #f8fafc;
+  background-color: #f8fafc; // sayfanın genel arka plan rengini belirler
 }
 
 
@@ -37,10 +37,10 @@ button,
 input,
 select,
 textarea {
-  font: inherit;
+  font: inherit; // form elemanlarının da üst elementten gelen yazı tipini kullanmasını sağlar
 }
 
 
 * {
-  box-sizing: border-box;
+  box-sizing: border-box; // width ve height hesabına padding ve border değerlerini de dahil eder
 }
