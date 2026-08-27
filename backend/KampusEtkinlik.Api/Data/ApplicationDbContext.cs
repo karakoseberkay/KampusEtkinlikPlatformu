@@ -69,12 +69,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> // uygula
             //cascade=otomatik sil
 
         builder.Entity<Registration>()
-            .HasIndex(registration => new{ // UserId ve EventId alanlarını birlikte indexliyoruz
+            .HasIndex(registration => new{registration.UserId, registration.EventId}).IsUnique(); // UserId ve EventId alanlarını birlikte indexliyoruz
             //HasIndex= DB'nin hızlı ve düzenli takip etmesi için index oluşturur
-
-                registration.UserId,
-                registration.EventId
-            }).IsUnique(); // aynı kullanıcının aynı etkinliğe ikinci kez kayıt olmasını veritabanı seviyesinde engeller
+               
+             // aynı kullanıcının aynı etkinliğe ikinci kez kayıt olmasını veritabanı seviyesinde engeller
            
 
 

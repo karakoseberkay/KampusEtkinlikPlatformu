@@ -33,9 +33,9 @@ var builder = WebApplication.CreateBuilder(args); // uygulamayı hazırlayacağ�
 builder.Services.AddControllers().AddJsonOptions(options =>{ 
 //Controller’ların çalışması için gerekli altyapıyı ekliyor ve API’de enum değerlerinin daha anlaşılır JSON metinleri olarak gönderilmesini sağlıyor
     
-        options.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter());
-    });
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());});
+            
+    
 
 builder.Services.AddOpenApi(options =>{ //Swagger’a bu API’nin JWT Bearer kullandığını tanıtır
 
@@ -53,17 +53,17 @@ Bu binada kartlı geçiş sistemi var.
 
 İkinci transformer ise kapıları tek tek inceler:
 
-Giriş kapısı → Kart gerekiyor
-Kafeterya → Kart gerekmiyor
-Sunucu odası → Kart gerekiyor
+Giriş kapısı  Kart gerekiyor
+Kafeterya  Kart gerekmiyor
+Sunucu odası  Kart gerekiyor
 
 Yani:
 
 Security scheme
-→ Sistemde hangi güvenlik yöntemi var?
+ Sistemde hangi güvenlik yöntemi var?
 
 Security requirement
-→ Bu endpoint o güvenlik yöntemini istiyor mu?
+ Bu endpoint o güvenlik yöntemini istiyor mu?
 
 */
 
@@ -161,10 +161,10 @@ yapmak zorunda kalmaz.
 
 /*
 ITokenService
-→ ne yapılacağını söyler
+ ne yapılacağını söyler
 
 TokenService
-→ nasıl yapılacağını gerçekleştirir
+ nasıl yapılacağını gerçekleştirir
 */
 
 builder.Services.AddScoped<IClubRepository, ClubRepository>(); // IClubRepository istendiğinde ClubRepository kullanır, kulüp veritabanı işlemlerini buraya bağlar
@@ -194,18 +194,18 @@ if (app.Environment.IsDevelopment()) // sadece development ortamında swagger/op
 
     app.UseSwaggerUI(options => // swagger test arayüzünü açar
     {
-        options.SwaggerEndpoint(
-            "/openapi/v1.json", // swaggerın okuyacağı openapi dokümanının adresi
-            "Campus Event API v1" // swaggerda gösterilecek api adı
-        );
+        options.SwaggerEndpoint("/openapi/v1.json", "Campus Event API v1");
+             // swaggerın okuyacağı openapi dokümanının adresi
+            // swaggerda gösterilecek api adı
+        
     });
 }
 /*
 MapOpenApi
-→ API açıklamasını JSON olarak hazırlar
+ API açıklamasını JSON olarak hazırlar
 
 UseSwaggerUI
-→ o açıklamayı okunabilir web ekranına çevirir(sweager)
+ o açıklamayı okunabilir web ekranına çevirir(sweager)
 */
 
 app.UseHttpsRedirection(); // http isteklerini https kullanmaya yönlendirir
@@ -238,8 +238,8 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
         // sistemde kayıtlı tüm authentication yöntemlerini getirir
             ////await: bu iş tamamlanınca sonucu ver, sonra aşağı devam et
 
-        var hasBearerScheme = authenticationSchemes.Any(
-                scheme => //listedeki her elemanı sırayla temsil eder
+        var hasBearerScheme = authenticationSchemes.Any(scheme => //listedeki her elemanı sırayla temsil eder
+                
                     scheme.Name == JwtBearerDefaults.AuthenticationScheme); // sistemde Bearer authentication kayıtlı mı kontrol eder
 
 
@@ -304,12 +304,12 @@ internal sealed class BearerSecurityRequirementTransformer : IOpenApiOperationTr
         operation.Security.Add(new OpenApiSecurityRequirement{[
              // bu endpointin Bearer JWT gerektirdiğini swaggera ekler
             
-                    new OpenApiSecuritySchemeReference("Bearer", context.Document) // yukarıda tanımladığımız Bearer güvenlik şemasını kullanır 
+                    new OpenApiSecuritySchemeReference("Bearer", context.Document)] = [] // yukarıda tanımladığımız Bearer güvenlik şemasını kullanır 
                     // // mevcut yukarıda tanımladığımız openapi (bearer) dokümanındaki Bearer tanımına referans verir
                     
-                ] = [] //buradaki boş liste, bu güvenlik şeması için ayrıca scope gibi ekstra bilgiler istemediğimizi belirtiyor
-            }
-        );
+                 //buradaki boş liste, bu güvenlik şeması için ayrıca scope gibi ekstra bilgiler istemediğimizi belirtiyor
+            });
+        
 
 
         return Task.CompletedTask; // yapılacak işlem tamamlandı bilgisini döndürür

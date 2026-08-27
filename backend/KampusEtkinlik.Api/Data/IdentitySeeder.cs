@@ -78,12 +78,8 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
 
             if (!createUserResult.Succeeded) // kullanıcı oluşturma başarısızsa hata bilgilerini toplar
             {
-                var errors = string.Join(
-                    ", ",
-                    createUserResult.Errors.Select(
-                        error => error.Description
-                    )
-                ); // kullanıcı oluşturma hatalarını tek metinde birleştirir
+                var errors = string.Join(", ", createUserResult.Errors.Select(error => error.Description));
+                 // kullanıcı oluşturma hatalarını tek metinde birleştirir
 
 
                 throw new InvalidOperationException(
@@ -99,22 +95,15 @@ public static class IdentitySeeder // uygulama başlarken gerekli rol ve test ku
 
         if (!isClubManager) // kullanıcı ClubManager değilse rolü ekler
         {
-            var addRoleResult =
-                await userManager.AddToRoleAsync( // addRoleResult=Bu kullanıcıyla bu rolü birbirine bağla
-                    managerUser,
-                    RoleNames.ClubManager
-                );
+            var addRoleResult = await userManager.AddToRoleAsync( managerUser, RoleNames.ClubManager);
+                // addRoleResult=Bu kullanıcıyla bu rolü birbirine bağla
             // kullanıcıyı ClubManager rolüne ekler
 
 
             if (!addRoleResult.Succeeded) // rol atama başarısız olduysa hata bilgilerini toplar
             {
-                var errors = string.Join(
-                    ", ",
-                    addRoleResult.Errors.Select(
-                        error => error.Description
-                    )
-                ); // rol atama hatalarını tek metinde birleştirir
+                var errors = string.Join(", ", addRoleResult.Errors.Select(error => error.Description));
+                 // rol atama hatalarını tek metinde birleştirir
 
 
                 throw new InvalidOperationException(
