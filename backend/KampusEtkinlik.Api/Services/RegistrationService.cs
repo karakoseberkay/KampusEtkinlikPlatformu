@@ -77,10 +77,7 @@ public sealed class RegistrationService(
         }
 
 
-        var approvalStatus = eventItem.Visibility == EventVisibility.Public
-            
-                ? RegistrationApprovalStatus.Approved
-                : RegistrationApprovalStatus.Pending;
+        var approvalStatus = eventItem.Visibility == EventVisibility.Public ? RegistrationApprovalStatus.Approved : RegistrationApprovalStatus.Pending;
         // Public etkinlikte direkt Approved, ApprovalRequired etkinlikte Pending oluşturur
 
 
@@ -191,10 +188,8 @@ public sealed class RegistrationService(
         CancellationToken cancellationToken = default
     )
     {
-        var registration = await registrationRepository.GetByIdAsync(
-                registrationId,
-                cancellationToken
-            ); // onaylanacak kaydı ilişkili bilgilerle beraber getirir
+        var registration = await registrationRepository.GetByIdAsync(registrationId, cancellationToken);
+             // onaylanacak kaydı ilişkili bilgilerle beraber getirir
 
 
         if (registration is null)
@@ -262,10 +257,8 @@ public sealed class RegistrationService(
         CancellationToken cancellationToken = default
     )
     {
-        var registration = await registrationRepository.GetByIdAsync(
-                registrationId,
-                cancellationToken
-            ); // reddedilecek kaydı getirir
+        var registration = await registrationRepository.GetByIdAsync(registrationId, cancellationToken);
+             // reddedilecek kaydı getirir
 
 
         if (registration is null)
