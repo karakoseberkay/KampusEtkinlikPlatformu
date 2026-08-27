@@ -12,16 +12,16 @@ namespace KampusEtkinlik.Api.Controllers; // bu dosyanın Controllers katmanına
 [Route("api/[controller]")] // ana routeu /api/Clubs olarak oluşturur
 [Authorize] // bu controllerdaki endpointlere erişmek için giriş yapmış ve geçerli JWTye sahip olmak gerekir
 
-public sealed class ClubsController(
-    IClubService clubService // kulüp iş kurallarını çalıştırmak için IClubService'i DI üzerinden alır
-) : ControllerBase
-{
+public sealed class ClubsController(IClubService clubService) : ControllerBase{
+     // kulüp iş kurallarını çalıştırmak için IClubService'i DI üzerinden alır
+
+
 
 
     [HttpGet] // GET /api/Clubs endpointini oluşturur
-    public async Task<
-        ActionResult<IReadOnlyList<ClubResponse>>
-    > GetAll(
+    public async Task<ActionResult<IReadOnlyList<ClubResponse>>> GetAll(
+        
+    
         CancellationToken cancellationToken
     )
     {
@@ -41,9 +41,9 @@ public sealed class ClubsController(
         CancellationToken cancellationToken
     )
     {
-        var club = await clubService.GetByIdAsync(
-            id,
-            cancellationToken
+        var club = await clubService.GetByIdAsync(id, cancellationToken
+            
+           
         ); // verilen idye sahip kulübü service üzerinden getirir
 
 
@@ -88,11 +88,7 @@ public sealed class ClubsController(
 
         try
         {
-            var stats = await clubService.GetStatsAsync(
-                id,
-                managerUserId,
-                cancellationToken
-            );
+            var stats = await clubService.GetStatsAsync(id, managerUserId, cancellationToken);
             // kulüp idsini ve giriş yapan yöneticinin idsini service göndererek istatistikleri ister
 
 

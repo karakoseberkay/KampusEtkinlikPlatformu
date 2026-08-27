@@ -114,9 +114,9 @@ public sealed class AuthController(
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
      // frontendden gelen eposta ve parola bilgilerini alır
     {
-        var email = request.Email
-            .Trim() // epostanın gereksiz boşluklarını temizler
-            .ToLowerInvariant(); // epostayı standart olması için küçük harfe çevirir
+        var email = request.Email.Trim().ToLowerInvariant(); 
+             // epostanın gereksiz boşluklarını temizler
+            // epostayı standart olması için küçük harfe çevirir
 
 
         var user = await userManager.FindByEmailAsync(email);
@@ -132,11 +132,8 @@ public sealed class AuthController(
         }
 
 
-        var isPasswordValid =
-            await userManager.CheckPasswordAsync(
-                user,
-                request.Password
-            );
+        var isPasswordValid = await userManager.CheckPasswordAsync(user,request.Password);
+            
         // girilen parolayı kullanıcının veritabanındaki BCrypt hash değeri ile doğrular
 
         if (!isPasswordValid) // parola yanlışsa

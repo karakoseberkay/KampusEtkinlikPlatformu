@@ -16,10 +16,8 @@ public sealed class RegistrationService(
         CancellationToken cancellationToken = default
     )
     {
-        var eventItem = await eventRepository.GetByIdAsync(
-            eventId,
-            cancellationToken
-        ); // kayıt olunmak istenen etkinliği veritabanından getirir
+        var eventItem = await eventRepository.GetByIdAsync(eventId, cancellationToken);
+         // kayıt olunmak istenen etkinliği veritabanından getirir
 
 
         if (eventItem is null) // etkinlik bulunamazsa

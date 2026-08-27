@@ -37,11 +37,7 @@ public sealed class EventRegistrationsController(IRegistrationService registrati
 
         try
         {
-            var registration = await registrationService.RegisterAsync(
-                userId,
-                eventId,
-                cancellationToken
-            );
+            var registration = await registrationService.RegisterAsync(userId, eventId, cancellationToken);
             // kullanıcı idsini ve etkinlik idsini service göndererek kayıt işlemini gerçekleştirir
 
             return Ok(registration);
