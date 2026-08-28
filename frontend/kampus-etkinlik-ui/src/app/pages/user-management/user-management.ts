@@ -4,10 +4,12 @@ import { AuthService } from '../../core/services/auth.service'; // Giriş yapan 
 import { UserService } from '../../core/services/user.service'; // Kullanıcıları almak ve rollerini değiştirmek için
 import { UserResponse } from '../../core/models/api.models'; // Backendden gelen kullanıcı modelini kullanmak için
 import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
+import { TableModule } from 'primeng/table'; // primeng tablo componentini kullanmak için
 
 @Component({ // Bu classın Angular componenti olduğunu belirtir
   selector: 'app-user-management', // Componentin selector adı
   standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
+  imports: [TableModule], // p-table kullanabilmek için tablemoduleü componente tanıtır
   template: `
     <!-- Kullanıcı Yönetimi sayfası -->
     <section class="user-management-page">
@@ -120,80 +122,111 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Kullanıcı tablosu -->
           <div class="table-card">
             <div class="table-wrapper">
-              <table class="users-table">
-                <thead>
+
+              <!-- filteredUsers listesini primeng tablosuna veri olarak verir -->
+              <!-- filteredUsers listesini primeng tablosuna veri olarak verir -->
+<!-- filteredUsers listesini primeng tablosuna veri olarak verir -->
+<p-table
+  [value]="filteredUsers()"//filtrelenmiş kullanıcı listesini tabloya gönderir
+  [tableStyle]="{ 'min-width': '850px' }"// tablonun çok daralmasını engeller
+  [paginator]="true" // primeng paginator özelliğini aktif eder
+  [rows]="5" // başlangıçta her sayfada 5 kullanıcı gösterir
+  [rowsPerPageOptions]="[5, 10, 20]" // kullanıcının sayfa başına 5 10 veya 20 kayıt seçmesini sağlar
+  [showCurrentPageReport]="true"// tablonun altında kaç kaydın gösterildiğini yazar
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"// gösterilen ilk son ve toplam kayıt sayılarını ekranda gösterir
+>
+
+                <!-- primeng tablosunun kolon başlıklarını oluşturur -->
+                <ng-template #header>
                   <tr>
-                    <th>Full Name</th>
-                    <th>Email</th>
-                    <th>Department</th>
-                    <th>Role</th>
-                    <th>Action</th>
+
+                   <!-- pSortableColumn hangi alana göre sıralama yapılacağını belirtir -->
+<th pSortableColumn="fullName">
+  Full Name
+  <p-sort-icon field="fullName" /> <!-- sıralama yönünü gösteren primeng ikonunu oluşturur -->
+</th>
+
+<!-- email alanına göre alfabetik sıralama yapılmasını sağlar -->
+<th pSortableColumn="email">
+  Email
+  <p-sort-icon field="email" /> <!-- email sıralamasının yönünü gösterir -->
+</th>
+
+<!-- department alanına göre sıralama yapılmasını sağlar -->
+<th pSortableColumn="department">
+  Department
+  <p-sort-icon field="department" /> <!-- bölüm sıralamasının yönünü gösterir -->
+</th>
+
+<th>Role</th>
+<th>Action</th>
                   </tr>
-                </thead>
+                </ng-template>
 
-                <tbody>
-                  <!-- Filtrelenmiş kullanıcıları tek tek tabloya ekler -->
-                  @for (user of filteredUsers(); track user.id) {
-                    <tr>
-                      <td class="user-name">{{ user.fullName }}</td> <!-- Kullanıcının adı ve soyadı -->
-                      <td>{{ user.email }}</td> <!-- Kullanıcının e-posta adresi -->
+                <!-- filteredUsers içindeki her kullanıcı için bir tablo satırı oluşturur -->
+                <!-- let-user ile primeng tarafından o an işlenen kullanıcıya erişiriz -->
+                <ng-template #body let-user>
+                  <tr>
 
-                      <!-- Admin hesabında bölüm yerine Yönetim gösterilir -->
-                      <td>
-                        @if (user.email.toLowerCase() === 'manager@kampus.com') {
-                          <span class="department-admin">Management</span>
+                    <td class="user-name">{{ user.fullName }}</td> <!-- Kullanıcının adı ve soyadı -->
+                    <td>{{ user.email }}</td> <!-- Kullanıcının e-posta adresi -->
+
+                    <!-- Admin hesabında bölüm yerine Yönetim gösterilir -->
+                    <td>
+                      @if (user.email.toLowerCase() === 'manager@kampus.com') {
+                        <span class="department-admin">Management</span>
+                      } @else {
+                        {{ user.department || '-' }}
+                      }
+                    </td>
+
+                    <!-- Kullanıcının rolünü Türkçe gösterir -->
+                    <td>
+                      @if (user.email.toLowerCase() === 'manager@kampus.com') {
+                        <span class="role-badge role-admin">Admin</span>
+                      } @else if (user.roles.includes('ClubManager')) {
+                        <span class="role-badge role-manager">Club Manager</span>
+                      } @else {
+                        <span class="role-badge role-student">Student</span>
+                      }
+                    </td>
+
+                    <!-- Rol değiştirme işlemleri -->
+                    <td>
+
+                      <!-- Admin kendi hesabının rolünü değiştiremez -->
+                      @if (auth.currentUser()?.userId === user.id) {
+                        <span class="own-account">Your account</span>
+                      } @else {
+
+                        <!-- ClubManager kullanıcısını Student yapar -->
+                        @if (user.roles.includes('ClubManager')) {
+                          <button
+                            class="role-button student-button"
+                            type="button"
+                            [disabled]="processingUserId() !== null"
+                            (click)="changeRole(user, 'Student')"
+                          >
+                            {{ processingUserId() === user.id ? 'Processing...' : 'Make Student' }}
+                          </button>
                         } @else {
-                          {{ user.department || '-' }}
+
+                          <!-- Student kullanıcısını ClubManager yapar -->
+                          <button
+                            class="role-button manager-button"
+                            type="button"
+                            [disabled]="processingUserId() !== null"
+                            (click)="changeRole(user, 'ClubManager')"
+                          >
+                            {{ processingUserId() === user.id ? 'Processing...' : 'Make Club Manager' }}
+                          </button>
                         }
-                      </td>
+                      }
+                    </td>
+                  </tr>
+                </ng-template>
 
-                      <!-- Kullanıcının rolünü Türkçe gösterir -->
-                      <td>
-                        @if (user.email.toLowerCase() === 'manager@kampus.com') {
-                          <span class="role-badge role-admin">Admin</span>
-                        } @else if (user.roles.includes('ClubManager')) {
-                          <span class="role-badge role-manager">Club Manager</span>
-                        } @else {
-                          <span class="role-badge role-student">Student</span>
-                        }
-                      </td>
-
-                      <!-- Rol değiştirme işlemleri -->
-                      <td>
-
-                        <!-- Admin kendi hesabının rolünü değiştiremez -->
-                        @if (auth.currentUser()?.userId === user.id) {
-                          <span class="own-account">Your account</span>
-                        } @else {
-
-                          <!-- ClubManager kullanıcısını Student yapar -->
-                          @if (user.roles.includes('ClubManager')) {
-                            <button
-                              class="role-button student-button"
-                              type="button"
-                              [disabled]="processingUserId() !== null"
-                              (click)="changeRole(user, 'Student')"
-                            >
-                              {{ processingUserId() === user.id ? 'Processing...' : 'Make Student' }}
-                            </button>
-                          } @else {
-
-                            <!-- Student kullanıcısını ClubManager yapar -->
-                            <button
-                              class="role-button manager-button"
-                              type="button"
-                              [disabled]="processingUserId() !== null"
-                              (click)="changeRole(user, 'ClubManager')"
-                            >
-                              {{ processingUserId() === user.id ? 'Processing...' : 'Make Club Manager' }}
-                            </button>
-                          }
-                        }
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+              </p-table>
             </div>
           </div>
         </section>
@@ -268,7 +301,7 @@ export class UserManagement implements OnInit {
     }
 
     const roleName = role === 'Student' ? 'Student' : 'Club Manager'; // Rol adını kullanıcıya Türkçe göstermek için
-    const approved = window.confirm(`Change ${user.fullName}'s role to ${roleName}?`); // Admin kullanıcıdan onay ister
+   const approved = window.confirm(`Change ${user.fullName}'s role to ${roleName}?`); // Admin kullanıcıdan onay ister
 
     if (!approved) { // Admin işlemi onaylamadıysa
       return; // Rol değiştirmeyi iptal eder
@@ -286,7 +319,7 @@ export class UserManagement implements OnInit {
           )
         );
 
-        this.successMessage.set(`${updatedUser.fullName}'s role was changed to ${roleName}.`); // Başarı mesajını gösterir
+      this.successMessage.set(`${updatedUser.fullName}'s role was changed to ${roleName}.`); // Başarı mesajını gösterir
         this.processingUserId.set(null); // Rol değiştirme işlemini bitirir
       },
       error: (error: HttpErrorResponse) => { // Rol değiştirme isteğinde hata oluşursa çalışır

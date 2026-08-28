@@ -42,3 +42,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+#primeNG key
+/src/app/core/config/primeui-licence.local.ts
