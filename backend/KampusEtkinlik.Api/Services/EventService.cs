@@ -1,4 +1,3 @@
- 
 using KampusEtkinlik.Api.DTOs.Events; // Event request response ve popular event DTOlarına erişmemizi sağlar
 using KampusEtkinlik.Api.Enums; // EventStatus EventVisibility ve RegistrationApprovalStatus enumlarına erişmemizi sağlar
 using KampusEtkinlik.Api.Models; // Event modeline erişmemizi sağlar
@@ -426,63 +425,71 @@ public sealed class EventService(
         };
     }
 
+
+
     public async Task<PagedResponse<EventResponse>> GetPagedAsync(
-    string? search, // Etkinliklerde yapılacak arama değerini alır, filtre gönderilmezse null olabilir
-    string? category, // Etkinlikleri kategoriye göre filtrelemek için kullanılır
-    int? clubId, // Sadece belirli bir kulübe ait etkinlikleri getirmek için kulüp idsini alır
-    DateTimeOffset? dateFrom, // Bu tarihten sonraki etkinlikleri filtrelemek için kullanılır
-    DateTimeOffset? dateTo, // Bu tarihe kadar olan etkinlikleri filtrelemek için kullanılır
-    bool upcomingOnly, // True ise sadece yaklaşan etkinliklerin getirilmesini sağlar
-    int page, // Frontendin istediği sayfa numarasını alır
-    int pageSize, // Bir sayfada kaç etkinlik gösterileceğini alır
-    CancellationToken cancellationToken = default // İstek iptal edilirse devam eden async işlemin durdurulabilmesini sağlar
-)
-{
-    var safePage = Math.Max(page, 1);
-    // Math.Max verilen iki değerden büyük olanı döndürür
-    // Böylece frontend 0 veya negatif sayfa gönderse bile minimum 1. sayfanın kullanılmasını sağlar
+        string? search, // Etkinliklerde yapılacak arama değerini alır, filtre gönderilmezse null olabilir
+        string? category, // Etkinlikleri kategoriye göre filtrelemek için kullanılır
+        int? clubId, // Sadece belirli bir kulübe ait etkinlikleri getirmek için kulüp idsini alır
+        DateTimeOffset? dateFrom, // Bu tarihten sonraki etkinlikleri filtrelemek için kullanılır
+        DateTimeOffset? dateTo, // Bu tarihe kadar olan etkinlikleri filtrelemek için kullanılır
+        bool upcomingOnly, // True ise sadece yaklaşan etkinliklerin getirilmesini sağlar
+        string? sortField, // hangi etkinlik alanına göre sıralama yapılacağını alır
+        string? sortDirection, // sıralamanın artan asc veya azalan desc olacağını alır
+        int page, // Frontendin istediği sayfa numarasını alır
+        int pageSize, // Bir sayfada kaç etkinlik gösterileceğini alır
+        CancellationToken cancellationToken = default // İstek iptal edilirse devam eden async işlemin durdurulabilmesini sağlar
+    )
+    {
+        var safePage = Math.Max(page, 1);
+        // Math.Max verilen iki değerden büyük olanı döndürür
+        // Böylece frontend 0 veya negatif sayfa gönderse bile minimum 1. sayfanın kullanılmasını sağlar
 
-    var safePageSize = Math.Clamp(pageSize, 1, 50);   
-    // Math.Clamp pageSize değerini belirlediğimiz alt ve üst sınır arasında tutar
-    // Örneğin 0 gönderilirse 1, 100 gönderilirse 50 olarak kullanılır
-    // Böylece tek istekte gereğinden fazla kayıt çekilmesini engeller
+        var safePageSize = Math.Clamp(pageSize, 1, 50);   
+        // Math.Clamp pageSize değerini belirlediğimiz alt ve üst sınır arasında tutar
+        // Örneğin 0 gönderilirse 1, 100 gönderilirse 50 olarak kullanılır
+        // Böylece tek istekte gereğinden fazla kayıt çekilmesini engeller
 
-    var result = await eventRepository.GetPagedAsync(
-       
+        var result = await eventRepository.GetPagedAsync(
             search,
             category,
             clubId,
             dateFrom,
             dateTo,
             upcomingOnly,
+            sortField,
+            sortDirection,
             safePage,
             safePageSize,
             cancellationToken
         );
-    // Filtreleri ve güvenli hale getirilen sayfalama bilgilerini repository katmanına gönderir
-    // Repository veritabanı sorgusunu yaparak o sayfadaki kayıtları ve toplam kayıt sayısını döndürür
 
-    var totalPages = result.TotalCount == 0 ? 0 : (int)Math.Ceiling(result.TotalCount / (double)safePageSize);
+        // filtreleri sıralama bilgilerini ve güvenli hale getirilen sayfalama bilgilerini repository katmanına gönderir
+        // repository veritabanı sorgusunu yaparak o sayfadaki kayıtları ve toplam kayıt sayısını döndürür
+
+        var totalPages = result.TotalCount == 0
+            ? 0
+            : (int)Math.Ceiling(result.TotalCount / (double)safePageSize);
        
-    // Hiç kayıt yoksa toplam sayfa sayısını 0 yapar
-    // Kayıt varsa toplam kayıt sayısını sayfa boyutuna bölerek kaç sayfa gerektiğini hesaplar
-    // (double) dönüşümü bölme işleminin ondalıklı yapılmasını sağlar
-    // Math.Ceiling sonucu yukarı yuvarlar, örneğin 21 kayıt ve 10 pageSize varsa 3 sayfa oluşturur
-    // Sonuç double döndüğü için (int) ile tam sayıya çevirir
+        // Hiç kayıt yoksa toplam sayfa sayısını 0 yapar
+        // Kayıt varsa toplam kayıt sayısını sayfa boyutuna bölerek kaç sayfa gerektiğini hesaplar
+        // (double) dönüşümü bölme işleminin ondalıklı yapılmasını sağlar
+        // Math.Ceiling sonucu yukarı yuvarlar, örneğin 21 kayıt ve 10 pageSize varsa 3 sayfa oluşturur
+        // Sonuç double döndüğü için (int) ile tam sayıya çevirir
 
-    return new PagedResponse<EventResponse>
-    {
-        Items = result.Items.Select(MapToResponse).ToList(),
-        // Repositoryden gelen Event modellerini MapToResponse ile EventResponse DTOlarına çevirir
-        // Select her kayıt üzerinde MapToResponse metodunu çalıştırır ve ToList ile liste haline getirir
+        return new PagedResponse<EventResponse>
+        {
+            Items = result.Items.Select(MapToResponse).ToList(),
+            // Repositoryden gelen Event modellerini MapToResponse ile EventResponse DTOlarına çevirir
+            // Select her kayıt üzerinde MapToResponse metodunu çalıştırır ve ToList ile liste haline getirir
 
-        Page = safePage, // Frontend'e kullanılan güncel sayfa numarasını döndürür
+            Page = safePage, // Frontend'e kullanılan güncel sayfa numarasını döndürür
 
-        PageSize = safePageSize, // Bir sayfada kullanılan kayıt sayısını döndürür
+            PageSize = safePageSize, // Bir sayfada kullanılan kayıt sayısını döndürür
 
-        TotalCount = result.TotalCount, // Filtrelere uygun toplam etkinlik sayısını döndürür
+            TotalCount = result.TotalCount, // Filtrelere uygun toplam etkinlik sayısını döndürür
 
-        TotalPages = totalPages // Hesaplanan toplam sayfa sayısını frontend'e döndürür
-    };
-}}
- 
+            TotalPages = totalPages // Hesaplanan toplam sayfa sayısını frontend'e döndürür
+        };
+    }
+}

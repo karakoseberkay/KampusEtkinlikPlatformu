@@ -34,6 +34,8 @@ public interface IEventRepository // etkinlik veritabanı işlemlerinin hangi me
         DateTimeOffset? dateFrom, // bu tarihten itibaren başlayan etkinlikleri filtrelemek için kullanılır
         DateTimeOffset? dateTo, // bu tarihe kadar başlayan etkinlikleri filtrelemek için kullanılır
         bool upcomingOnly, // true ise sadece yaklaşan etkinliklerin getirilmesini sağlar
+        string? sortField, // hangi etkinlik alanına göre sıralama yapılacağını belirtir
+        string? sortDirection, // sıralamanın artan asc veya azalan desc olacağını belirtir
         int page, // veritabanından hangi sayfanın getirileceğini belirtir
         int pageSize, // bir sayfada kaç etkinlik bulunacağını belirtir
         CancellationToken cancellationToken = default

@@ -58,6 +58,8 @@ public sealed class EventRepository(ApplicationDbContext dbContext) : IEventRepo
         DateTimeOffset? dateFrom, // başlangıç tarihi filtresini alır
         DateTimeOffset? dateTo, // bitiş tarihi filtresini alır
         bool upcomingOnly, // sadece yaklaşan etkinliklerin istenip istenmediğini belirtir
+        string? sortField, // hangi alana göre sıralama yapılacağını frontend tarafından alır
+        string? sortDirection, // sıralamanın artan mı azalan mı olacağını frontend tarafından alır
         int page, // getirilecek sayfa numarasını belirtir
         int pageSize, // bir sayfada kaç etkinlik getirileceğini belirtir
         CancellationToken cancellationToken = default)
@@ -163,8 +165,59 @@ public sealed class EventRepository(ApplicationDbContext dbContext) : IEventRepo
         // sayfalama uygulanmadan önce filtrelere uyan toplam etkinlik sayısını veritabanından hesaplar
         // bu değer frontend tarafında toplam kayıt ve toplam sayfa bilgisini oluşturmak için kullanılır
 
-        var items = await query.OrderBy(eventItem => eventItem.StartDate)
-                 // etkinlikleri başlangıç tarihine göre sıralar
+        var descending = string.Equals(
+            sortDirection,
+            "desc",
+            StringComparison.OrdinalIgnoreCase
+        );
+        // frontend sortDirection olarak desc gönderirse azalan sıralama yapılacağını belirler
+        // ordinalignorecase sayesinde desc DESC veya Desc gibi yazımlar aynı kabul edilir
+
+        var normalizedSortField = sortField?.Trim().ToLowerInvariant();
+        // frontendden gelen sıralama alanındaki boşlukları temizler ve küçük harfe çevirir
+        // böylece startDate gibi alanları karşılaştırırken büyük küçük harf farkından etkilenmeyiz
+
+        query = normalizedSortField switch
+        {
+            "title" => descending
+                ? query.OrderByDescending(eventItem => eventItem.Title)
+                : query.OrderBy(eventItem => eventItem.Title),
+
+            "clubname" => descending
+                ? query.OrderByDescending(eventItem => eventItem.Club.Name)
+                : query.OrderBy(eventItem => eventItem.Club.Name),
+
+            "startdate" => descending
+                ? query.OrderByDescending(eventItem => eventItem.StartDate)
+                : query.OrderBy(eventItem => eventItem.StartDate),
+
+            "location" => descending
+                ? query.OrderByDescending(eventItem => eventItem.Location)
+                : query.OrderBy(eventItem => eventItem.Location),
+
+            "capacity" => descending
+                ? query.OrderByDescending(eventItem => eventItem.Capacity)
+                : query.OrderBy(eventItem => eventItem.Capacity),
+
+            "category" => descending
+                ? query.OrderByDescending(eventItem => eventItem.Category)
+                : query.OrderBy(eventItem => eventItem.Category),
+
+            "visibility" => descending
+                ? query.OrderByDescending(eventItem => eventItem.Visibility)
+                : query.OrderBy(eventItem => eventItem.Visibility),
+
+            "status" => descending
+                ? query.OrderByDescending(eventItem => eventItem.Status)
+                : query.OrderBy(eventItem => eventItem.Status),
+
+            _ => query.OrderBy(eventItem => eventItem.StartDate)
+        };
+        // switch frontendden gelen sortField değerine göre hangi kolonda sıralama yapılacağını seçer
+        // descending true ise orderbydescending false ise orderby kullanılır
+        // geçersiz veya boş bir sortField gelirse eski davranış korunur ve başlangıç tarihine göre sıralanır
+
+        var items = await query
                 .Skip((page - 1) * pageSize)
                     
                  // önceki sayfalara ait kayıtları atlar

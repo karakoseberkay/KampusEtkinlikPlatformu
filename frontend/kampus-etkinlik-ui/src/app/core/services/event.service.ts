@@ -49,11 +49,19 @@ export class EventService {
       params = params.set('upcomingOnly', query.upcomingOnly.toString()); // Boolean değeri stringe çevirip URL parametresine ekler
     }
 
+    if (query.sortField) { // sıralama yapılacak alan gönderilmişse
+      params = params.set('sortField', query.sortField); // sıralama yapılacak alanı URL parametresine ekler
+    }
+
+    if (query.sortDirection) { // sıralama yönü gönderilmişse
+      params = params.set('sortDirection', query.sortDirection); // asc veya desc değerini URL parametresine ekler
+    }
+
     params = params.set('page', (query.page ?? 1).toString()); // Sayfa verilmezse ilk sayfayı kullanır
     params = params.set('pageSize', (query.pageSize ?? 10).toString()); // Sayfa boyutu verilmezse 10 kullanır
 
     return this.http.get<PagedResponse<EventResponse>>(`${API_BASE_URL}/Events/paged`, { params });
-     // Oluşturulan filtre ve sayfalama parametreleriyle backend'e GET isteği gönderir
+     // Oluşturulan filtre sıralama ve sayfalama parametreleriyle backend'e GET isteği gönderir
   }
 
   getPopular(limit = 10): Observable<PopularEventResponse[]> { // En popüler etkinlikleri backendden getirir

@@ -33,6 +33,8 @@ public sealed class EventsController(IEventService eventService) : ControllerBas
         [FromQuery] DateTimeOffset? dateFrom, // Başlangıç tarihi filtresini alır, ? sayesinde boş bırakılabilir
         [FromQuery] DateTimeOffset? dateTo, // Bitiş tarihi filtresini alır, gönderilmezse null olabilir
         [FromQuery] bool upcomingOnly = false, // Sadece yaklaşan etkinliklerin istenip istenmediğini belirtir
+        [FromQuery] string? sortField = null, // hangi etkinlik alanına göre sıralama yapılacağını URLden alır
+        [FromQuery] string? sortDirection = null, // sıralamanın asc veya desc olacağını URLden alır
         [FromQuery] int page = 1, // İstenen sayfa numarasını alır, gönderilmezse ilk sayfa kullanılır
         [FromQuery] int pageSize = 10, // Bir sayfada kaç etkinlik olacağını alır, varsayılan olarak 10 kullanılır
         CancellationToken cancellationToken = default // İstek iptal edilirse devam eden async işlemlerin durdurulabilmesini sağlar
@@ -54,11 +56,13 @@ public sealed class EventsController(IEventService eventService) : ControllerBas
             dateFrom,
             dateTo,
             upcomingOnly,
+            sortField,
+            sortDirection,
             page,
             pageSize,
             cancellationToken
         );
-        // Frontendden gelen filtre ve sayfalama bilgilerini service katmanına gönderir
+        // Frontendden gelen filtre sıralama ve sayfalama bilgilerini service katmanına gönderir
         // Service sonucunda etkinlik listesiyle birlikte toplam kayıt ve sayfa bilgileri gelir
 
         return Ok(result); // Sayfalı etkinlik sonucunu 200 OK ile frontend'e döndürür

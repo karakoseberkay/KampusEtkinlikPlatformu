@@ -103,7 +103,7 @@ export interface CreateEventRequest { // etkinlik oluştururken backende gönder
 
 export interface UpdateEventRequest { // etkinlik güncellerken backende gönderilecek verileri tutar
   title: string; // etkinliğin güncel başlığını gönderir
-  description: string; // etkinliğin güncel açıklamasını gönderir
+  description: string; // güncel başlangıç tarihini gönderir
   startDate: string; // güncel başlangıç tarihini gönderir
   location: string; // güncel konumu gönderir
   capacity: number; // güncel kapasiteyi gönderir
@@ -147,13 +147,15 @@ export interface PagedResponse<T> { // sayfalama kullanılan endpointlerden dön
 }
 
 
-export interface EventPageQuery { // etkinlikleri ararken filtreleme ve sayfalama parametrelerini tutar
+export interface EventPageQuery { // etkinlikleri ararken filtreleme sıralama ve sayfalama parametrelerini tutar
   search?: string; // arama metnini tutar gönderilmek zorunda olmadığı için optionaldır
   category?: string; // kategori filtresini tutar gönderilmeyebilir
   clubId?: number; // kulüp filtresini tutar gönderilmeyebilir
   dateFrom?: string; // hangi tarihten itibaren etkinlik aranacağını tutar
   dateTo?: string; // hangi tarihe kadar etkinlik aranacağını tutar
   upcomingOnly?: boolean; // sadece yaklaşan etkinliklerin getirileceğini belirtir
+  sortField?: string; // etkinliklerin hangi alana göre sıralanacağını tutar
+  sortDirection?: 'asc' | 'desc'; // sıralamanın artan veya azalan olacağını tutar
   page?: number; // istenen sayfa numarasını tutar
   pageSize?: number; // bir sayfada kaç etkinlik isteneceğini tutar
 }

@@ -6,11 +6,13 @@ import { ClubService } from '../../core/services/club.service'; // Kulüp verile
 import { EventService } from '../../core/services/event.service'; // Etkinlik verilerini backendden almak için
 import { ClubResponse, EventResponse } from '../../core/models/api.models'; // Kulüp ve etkinlik modelleri
 import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını okunabilir mesaja çevirmek için
+import { PaginatorModule } from 'primeng/paginator'; // primeng sayfalama componentini kullanmak için
+import { TableModule } from 'primeng/table'; // primeng tablo ve sorting özelliklerini kullanmak için
 
 @Component({ // Bu classın Angular componenti olduğunu belirtir
   selector: 'app-events', // Componentin selector adı
   standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
-  imports: [RouterLink], // Template içinde routerLink kullanılmasını sağlar
+  imports: [RouterLink, PaginatorModule, TableModule], // Template içinde routerLink ve primeng paginator kullanılmasını sağlar
   template: `
     <!-- Etkinlikler sayfasının ana alanı -->
     <section class="events-page">
@@ -177,121 +179,167 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Etkinlik tablosu -->
           <div class="table-card">
             <div class="table-wrapper">
-              <table class="events-table">
-                <thead>
+
+              <!-- backendden gelen etkinlikleri primeng tabloya verir -->
+              <!-- customSort true olduğu için sıralamayı frontend yerine bizim onSort metodumuz yönetir -->
+              <p-table
+                [value]="events()"
+                [customSort]="true"
+                [sortField]="sortField() ?? undefined"
+                [sortOrder]="sortDirection() === 'desc' ? -1 : sortDirection() === 'asc' ? 1 : 0"
+                (sortFunction)="onSort($event)"
+                styleClass="events-table"
+                [tableStyle]="{ 'min-width': '1100px' }"
+              >
+
+                <!-- primeng tablosunun kolon başlıklarını oluşturur -->
+                <ng-template #header>
                   <tr>
-                    <th>Event</th>
-                    <th>Club</th>
-                    <th>Date</th>
-                    <th>Location</th>
-                    <th>Capacity</th>
-                    <th>Category</th>
-                    <th>Participation Type</th>
-                    <th>Status</th>
+
+                    <!-- etkinlik adına göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="title">
+                      Event
+                      <p-sort-icon field="title" />
+                    </th>
+
+                    <!-- kulüp adına göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="clubName">
+                      Club
+                      <p-sort-icon field="clubName" />
+                    </th>
+
+                    <!-- etkinlik tarihine göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="startDate">
+                      Date
+                      <p-sort-icon field="startDate" />
+                    </th>
+
+                    <!-- etkinlik konumuna göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="location">
+                      Location
+                      <p-sort-icon field="location" />
+                    </th>
+
+                    <!-- etkinlik kapasitesine göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="capacity">
+                      Capacity
+                      <p-sort-icon field="capacity" />
+                    </th>
+
+                    <!-- etkinlik kategorisine göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="category">
+                      Category
+                      <p-sort-icon field="category" />
+                    </th>
+
+                    <!-- etkinliğin katılım tipine göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="visibility">
+                      Participation Type
+                      <p-sort-icon field="visibility" />
+                    </th>
+
+                    <!-- etkinlik durumuna göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="status">
+                      Status
+                      <p-sort-icon field="status" />
+                    </th>
+
                     <th>Action</th>
                   </tr>
-                </thead>
+                </ng-template>
 
-                <tbody>
-                  <!-- Backendden gelen etkinlikleri tek tek tabloya ekler -->
-                  @for (event of events(); track event.id) {
-                    <tr>
-                      <td class="event-title">{{ event.title }}</td> <!-- Etkinlik adı -->
-                      <td>{{ event.clubName }}</td> <!-- Etkinliği oluşturan kulüp -->
-                      <td>{{ event.startDate }}</td> <!-- Etkinlik tarihi -->
-                      <td>{{ event.location }}</td> <!-- Etkinlik konumu -->
-                      <td>{{ event.capacity }}</td> <!-- Etkinlik kapasitesi -->
+                <!-- Backendden gelen etkinlikleri tek tek tabloya ekler -->
+                <!-- let-event ile primengin o an işlediği etkinliğe erişiriz -->
+                <ng-template #body let-event>
+                  <tr>
+                    <td class="event-title">{{ event.title }}</td> <!-- Etkinlik adı -->
+                    <td>{{ event.clubName }}</td> <!-- Etkinliği oluşturan kulüp -->
+                    <td>{{ event.startDate }}</td> <!-- Etkinlik tarihi -->
+                    <td>{{ event.location }}</td> <!-- Etkinlik konumu -->
+                    <td>{{ event.capacity }}</td> <!-- Etkinlik kapasitesi -->
 
-                      <!-- Etkinlik kategorisi -->
-                      <td>
-                        <span class="category-badge">
-                          {{ event.category }}
+                    <!-- Etkinlik kategorisi -->
+                    <td>
+                      <span class="category-badge">
+                        {{ event.category }}
+                      </span>
+                    </td>
+
+                    <!-- Etkinliğin katılım tipini kullanıcıya anlaşılır gösterir -->
+                    <td>
+                      @if (event.visibility === 'Public') {
+                        <span>Open to Everyone</span>
+                      } @else {
+                        <span>Approval Required</span>
+                      }
+                    </td>
+
+                    <!-- Etkinliğin aktif veya pasif durumunu gösterir -->
+                    <td>
+                      @if (event.status === 'Active') {
+                        <span class="status-badge status-active">
+                          Active
                         </span>
-                      </td>
+                      } @else {
+                        <span class="status-badge status-passive">
+                          {{ event.status }}
+                        </span>
+                      }
+                    </td>
 
-                      <!-- Etkinliğin katılım tipini kullanıcıya anlaşılır gösterir -->
-                      <td>
-                        @if (event.visibility === 'Public') {
-                          <span>Open to Everyone</span>
-                        } @else {
-                          <span>Approval Required</span>
-                        }
-                      </td>
+                    <!-- Etkinlik işlem butonları -->
+                    <td>
+                      <div class="table-actions">
 
-                      <!-- Etkinliğin aktif veya pasif durumunu gösterir -->
-                      <td>
-                        @if (event.status === 'Active') {
-                          <span class="status-badge status-active">
-                            Active
-                          </span>
-                        } @else {
-                          <span class="status-badge status-passive">
-                            {{ event.status }}
-                          </span>
-                        }
-                      </td>
+                        <!-- Etkinlik detay sayfasına gider -->
+                        <a
+                          class="detail-link"
+                          [routerLink]="['/events', event.id]"
+                        >
+                          Details
+                        </a>
 
-                      <!-- Etkinlik işlem butonları -->
-                      <td>
-                        <div class="table-actions">
-
-                          <!-- Etkinlik detay sayfasına gider -->
+                        <!-- ClubManager sadece kendi etkinliğini yönetebilir -->
+                        @if (ownsEvent(event)) {
                           <a
-                            class="detail-link"
-                            [routerLink]="['/events', event.id]"
+                            class="edit-link"
+                            [routerLink]="['/event-manage', event.id]"
                           >
-                            Details
+                            Update
                           </a>
 
-                          <!-- ClubManager sadece kendi etkinliğini yönetebilir -->
-                          @if (ownsEvent(event)) {
-                            <a
-                              class="edit-link"
-                              [routerLink]="['/event-manage', event.id]"
-                            >
-                              Update
-                            </a>
+                          <a
+                            class="registration-link"
+                            [routerLink]="['/events', event.id, 'registrations']"
+                          >
+                            Registrations
+                          </a>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
 
-                            <a
-                              class="registration-link"
-                              [routerLink]="['/events', event.id, 'registrations']"
-                            >
-                              Registrations
-                            </a>
-                          }
-                        </div>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+              </p-table>
             </div>
           </div>
 
-          <!-- Sayfalama işlemleri -->
-          <div class="pagination">
-            <button
-              class="pagination-button"
-              type="button"
-              [disabled]="page() <= 1 || loading()"
-              (click)="previousPage()"
-            >
-              Previous
-            </button>
+          <!-- primeng paginator mevcut backend sayfalama sistemini kontrol eder -->
+          <!-- first primengte ilk kaydın indexini belirtir -->
+          <!-- rows bir sayfada kaç etkinlik gösterileceğini belirtir -->
+          <!-- totalRecords backenddeki toplam etkinlik sayısını primenge verir -->
+          <!-- onPageChange sayfa veya sayfa boyutu değiştiğinde çalışır -->
+          <p-paginator
+            [first]="(page() - 1) * pageSize()"
+            [rows]="pageSize()"
+            [totalRecords]="totalCount()"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} events"
+            (onPageChange)="onPageChange($event)"
+          >
+          </p-paginator>
 
-            <span class="page-number">
-              Page <strong>{{ page() }}</strong> / <strong>{{ totalPages() }}</strong>
-            </span>
-
-            <button
-              class="pagination-button pagination-button-primary"
-              type="button"
-              [disabled]="page() >= totalPages() || loading()"
-              (click)="nextPage()"
-            >
-              Next
-            </button>
-          </div>
         </section>
       }
     </section>
@@ -311,6 +359,8 @@ export class Events implements OnInit {
   readonly dateFrom = signal(''); // Başlangıç tarihi filtresini tutar
   readonly dateTo = signal(''); // Bitiş tarihi filtresini tutar
   readonly upcomingOnly = signal(false); // Sadece yaklaşan etkinlikleri gösterme bilgisini tutar
+  readonly sortField = signal<string | null>(null); // seçilen sıralama alanını tutar
+  readonly sortDirection = signal<'asc' | 'desc' | null>(null); // seçilen sıralama yönünü tutar
   readonly page = signal(1); // Bulunulan sayfa numarasını tutar
   readonly pageSize = signal(10); // Bir sayfada gösterilecek etkinlik sayısını tutar
   readonly totalCount = signal(0); // Filtreye uygun toplam etkinlik sayısını tutar
@@ -367,6 +417,8 @@ export class Events implements OnInit {
       dateFrom: this.getDateFrom(), // Başlangıç tarihini backend formatında gönderir
       dateTo: this.getDateTo(), // Bitiş tarihini backend formatında gönderir
       upcomingOnly: this.upcomingOnly(), // Yaklaşan etkinlik filtresini gönderir
+      sortField: this.sortField() ?? undefined, // seçilen sıralama alanını backende gönderir
+      sortDirection: this.sortDirection() ?? undefined, // seçilen sıralama yönünü backende gönderir
       page: this.page(), // İstenen sayfa numarasını gönderir
       pageSize: this.pageSize() // Sayfa başına etkinlik sayısını gönderir
     }).subscribe({
@@ -405,22 +457,42 @@ export class Events implements OnInit {
     this.loadEvents(); // Temiz filtrelerle etkinlikleri yeniden getirir
   }
 
-  previousPage(): void { // Bir önceki sayfaya geçer
-    if (this.page() <= 1 || this.loading()) { // İlk sayfadaysa veya yükleme devam ediyorsa
-      return; // Sayfa değişimini engeller
+  onSort(event: { field?: string; order?: number }): void { // primeng tablosunda bir kolonun sıralamasına basıldığında çalışır
+    if (!event.field || !event.order) { // sıralama kaldırıldıysa kontrol eder
+      this.sortField.set(null); // seçili sıralama alanını temizler
+      this.sortDirection.set(null); // seçili sıralama yönünü temizler
+      this.page.set(1); // sıralama değiştiğinde ilk sayfaya döner
+      this.loadEvents(); // backendin varsayılan sıralamasıyla etkinlikleri tekrar getirir
+      return;
     }
 
-    this.page.update(page => page - 1); // Sayfa numarasını bir azaltır
-    this.loadEvents(); // Önceki sayfanın etkinliklerini getirir
+    this.sortField.set(event.field); // primengden gelen sıralama alanını kaydeder
+
+    this.sortDirection.set(
+      event.order === -1 ? 'desc' : 'asc'
+    ); // primeng -1 gönderirse desc diğer durumda asc olarak kaydeder
+
+    this.page.set(1); // sıralama değiştiğinde ilk sayfaya döner
+    this.loadEvents(); // yeni sıralama bilgileriyle backendden etkinlikleri tekrar getirir
   }
 
-  nextPage(): void { // Bir sonraki sayfaya geçer
-    if (this.page() >= this.totalPages() || this.loading()) { // Son sayfadaysa veya yükleme devam ediyorsa
-      return; // Sayfa değişimini engeller
+  onPageChange(event: { page?: number; first?: number; rows?: number }): void { // primeng paginator değiştiğinde çalışır
+    if (this.loading()) { // backend isteği devam ediyorsa yeni sayfa isteği göndermesini engeller
+      return;
     }
 
-    this.page.update(page => page + 1); // Sayfa numarasını bir artırır
-    this.loadEvents(); // Sonraki sayfanın etkinliklerini getirir
+    const newPageSize = event.rows ?? this.pageSize(); // primengden gelen yeni sayfa boyutunu alır
+
+    const newPage =
+      event.page !== undefined
+        ? event.page + 1
+        : Math.floor((event.first ?? 0) / newPageSize) + 1;
+    // primeng sayfaları 0dan başlattığı için backendin kullandığı 1 tabanlı sayfa numarasına çevirir
+
+    this.pageSize.set(newPageSize); // seçilen yeni sayfa boyutunu kaydeder
+    this.page.set(newPage); // kullanıcının geçtiği sayfa numarasını kaydeder
+
+    this.loadEvents(); // yeni page ve pagesize değerleriyle backendden sadece gerekli etkinlikleri getirir
   }
 
   private getDateFrom(): string | undefined { // Başlangıç tarihini backendin beklediği ISO formatına çevirir
