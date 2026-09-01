@@ -76,7 +76,7 @@ builder.Services.AddCors(options => // anguların gelip bağlanmasını sağlaya
         // bu policy ismi ile anguların bağlanmasını sağlıyoruz, farklı porta farklı isim varilir
         policy => //koşulların yazıldığı yer
         {
-            policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod(); //header: bearer gibi ek bilgiler, method: post get put delete
+            policy.WithOrigins("http://localhost:4200", "https://campusbody-azure.vercel.app").AllowAnyHeader().AllowAnyMethod(); //header: bearer gibi ek bilgiler, method: post get put delete
         }
     ); // .allowanyorigins yazılabilir ama bu bütün web adreslerine izin verir
 });
