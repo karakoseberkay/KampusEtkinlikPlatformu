@@ -5,11 +5,12 @@ import { ClubService } from '../../core/services/club.service'; // Kulüp verile
 import { AuthService } from '../../core/services/auth.service'; // Kullanıcının rol ve bilgilerine erişmek için
 import { ClubResponse } from '../../core/models/api.models'; // Backendden gelen kulüp modelini kullanmak için
 import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
+import { TableModule } from 'primeng/table'; // primeng tablo sorting ve pagination özelliklerini kullanmak için
 
 @Component({ // Bu classın Angular componenti olduğunu belirtir
   selector: 'app-clubs', // Componentin selector adı
   standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
-  imports: [RouterLink], // Template içinde routerLink kullanılmasını sağlar
+  imports: [RouterLink, TableModule], // Template içinde routerLink ve primeng tablo kullanılmasını sağlar
   template: `
     <!-- Kulüpler sayfası -->
     <section class="clubs-page">
@@ -63,69 +64,101 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Kulüp tablosu -->
           <div class="table-card">
             <div class="table-wrapper">
-              <table class="clubs-table">
-                <thead>
+
+              <!-- backendden gelen bütün kulüpleri primeng tabloya verir -->
+              <!-- paginator true olduğu için gelen kulüpleri frontend tarafında sayfalara böler -->
+              <p-table
+                [value]="clubs()"
+                [paginator]="true"
+                [rows]="5"
+                [rowsPerPageOptions]="[5, 10, 20]"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} clubs"
+                [tableStyle]="{ 'min-width': '900px' }"
+                styleClass="clubs-table"
+              >
+
+                <!-- primeng tablosunun kolon başlıklarını oluşturur -->
+                <ng-template #header>
                   <tr>
-                    <th>Club Name</th>
+
+                    <!-- kulüp adına göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="name">
+                      Club Name
+                      <p-sort-icon field="name" />
+                    </th>
+
                     <th>Description</th>
+
                     <th>Logo URL</th>
-                    <th>Manager</th>
-                    <th>Event Count</th>
+
+                    <!-- kulüp yöneticisinin adına göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="managerFullName">
+                      Manager
+                      <p-sort-icon field="managerFullName" />
+                    </th>
+
+                    <!-- kulübün etkinlik sayısına göre sıralama yapılmasını sağlar -->
+                    <th pSortableColumn="eventCount">
+                      Event Count
+                      <p-sort-icon field="eventCount" />
+                    </th>
+
                     <th>Action</th>
                   </tr>
-                </thead>
+                </ng-template>
 
-                <tbody>
-                  <!-- Backendden gelen kulüpleri tabloya ekler -->
-                  @for (club of clubs(); track club.id) {
-                    <tr>
-                      <td class="club-name">
-                        {{ club.name }}
-                      </td> <!-- Kulüp adını gösterir -->
+                <!-- Backendden gelen kulüpleri tabloya ekler -->
+                <!-- let-club ile primengin o an işlediği kulübe erişiriz -->
+                <ng-template #body let-club>
+                  <tr>
+                    <td class="club-name">
+                      {{ club.name }}
+                    </td> <!-- Kulüp adını gösterir -->
 
-                      <td class="description-cell">
-                        {{ club.description }}
-                      </td> <!-- Kulüp açıklamasını gösterir -->
+                    <td class="description-cell">
+                      {{ club.description }}
+                    </td> <!-- Kulüp açıklamasını gösterir -->
 
-                      <td class="logo-url">
-                        {{ club.logoUrl || '-' }}
-                      </td> <!-- Logo URL bilgisini metin olarak gösterir -->
+                    <td class="logo-url">
+                      {{ club.logoUrl || '-' }}
+                    </td> <!-- Logo URL bilgisini metin olarak gösterir -->
 
-                      <td>
-                        {{ club.managerFullName }}
-                      </td> <!-- Kulüp yöneticisinin adını gösterir -->
+                    <td>
+                      {{ club.managerFullName }}
+                    </td> <!-- Kulüp yöneticisinin adını gösterir -->
 
-                      <td>
-                        <span class="event-count">
-                          {{ club.eventCount }}
-                        </span>
-                      </td> <!-- Kulübün etkinlik sayısını gösterir -->
+                    <td>
+                      <span class="event-count">
+                        {{ club.eventCount }}
+                      </span>
+                    </td> <!-- Kulübün etkinlik sayısını gösterir -->
 
-                      <!-- Kulüp işlem butonları -->
-                      <td>
-                        <div class="table-actions">
+                    <!-- Kulüp işlem butonları -->
+                    <td>
+                      <div class="table-actions">
 
-                          <!-- Kulüp detay sayfasına gider -->
-                          <a class="detail-link" [routerLink]="['/clubs', club.id]">
-                            Details
+                        <!-- Kulüp detay sayfasına gider -->
+                        <a class="detail-link" [routerLink]="['/clubs', club.id]">
+                          Details
+                        </a>
+
+                        <!-- ClubManager sadece kendi kulübünü yönetebilir -->
+                        @if (ownsClub(club)) {
+                          <a class="edit-link" [routerLink]="['/club-manage', club.id]">
+                            Update
                           </a>
 
-                          <!-- ClubManager sadece kendi kulübünü yönetebilir -->
-                          @if (ownsClub(club)) {
-                            <a class="edit-link" [routerLink]="['/club-manage', club.id]">
-                              Update
-                            </a>
+                          <a class="stats-link" [routerLink]="['/clubs', club.id, 'stats']">
+                            Statistics
+                          </a>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
 
-                            <a class="stats-link" [routerLink]="['/clubs', club.id, 'stats']">
-                              Statistics
-                            </a>
-                          }
-                        </div>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+              </p-table>
             </div>
           </div>
         </section>

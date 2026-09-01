@@ -7,11 +7,15 @@ import { ClubService } from '../../core/services/club.service'; // Kulüp verile
 import { EventService } from '../../core/services/event.service'; // Etkinlik oluşturma, güncelleme, getirme ve iptal işlemleri için
 import { ClubResponse, CreateEventRequest, EventVisibility, UpdateEventRequest } from '../../core/models/api.models'; // Kullanılan etkinlik ve kulüp modelleri
 import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
+import { DatePickerModule } from 'primeng/datepicker'; // primeng datepicker componentini kullanmak için
 
 @Component({ // Bu classın Angular componenti olduğunu belirtir
   selector: 'app-event-manage', // Componentin selector adı
   standalone: true, // Componentin NgModule olmadan bağımsız çalışmasını sağlar
-  imports: [ReactiveFormsModule], // Template içinde Reactive Form kullanılmasını sağlar
+  imports: [
+    ReactiveFormsModule, // Template içinde Reactive Form kullanılmasını sağlar
+    DatePickerModule // primeng datepicker componentini template içinde kullanmamızı sağlar
+  ],
   template: `
     <!-- Etkinlik yönetim sayfası -->
     <section class="event-manage-page">
@@ -83,7 +87,20 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <!-- Başlangıç tarihi -->
           <div class="form-field">
             <label for="startDate">Start Date</label>
-            <input id="startDate" type="datetime-local" formControlName="startDate"> <!-- Tarihi forma bağlar -->
+
+            <!-- tarihi ve saati primeng datepicker üzerinden seçmemizi sağlar -->
+            <p-datepicker
+              inputId="startDate"
+              formControlName="startDate"
+              dateFormat="dd/mm/yy"
+              [showTime]="true"
+              hourFormat="24"
+              [showIcon]="true"
+              [fluid]="true"
+              [minDate]="minimumDate"
+            >
+            </p-datepicker>
+            <!-- Tarihi forma bağlar -->
           </div>
 
           <!-- Konum -->
@@ -142,6 +159,8 @@ export class EventManage implements OnInit {
 
   private eventId: number | null = null; // Güncellenen veya iptal edilen etkinliğin IDsini tutar
 
+  readonly minimumDate = new Date(); // datepickerda geçmiş bir tarih seçilmesini engellemek için şu anki tarihi tutar
+
   readonly isEditMode = signal(false); // Sayfanın oluşturma mı güncelleme mi olduğunu tutar
   readonly myClubs = signal<ClubResponse[]>([]); // Managerın yönettiği kulüpleri tutar
   readonly loading = signal(false); // Etkinlik bilgileri yüklenme durumunu tutar
@@ -153,7 +172,10 @@ export class EventManage implements OnInit {
     clubId: ['', [Validators.required]], // Kulüp seçimini zorunlu yapar
     title: ['', [Validators.required, Validators.maxLength(200)]], // Başlık zorunlu ve maksimum 200 karakter
     description: ['', [Validators.required, Validators.maxLength(3000)]], // Açıklama zorunlu ve maksimum 3000 karakter
-    startDate: ['', [Validators.required]], // Başlangıç tarihini zorunlu yapar
+
+    // primeng datepicker date nesnesi kullandığı için tarih alanını date veya null olarak tutar
+    startDate: this.fb.control<Date | null>(null, [Validators.required]), // Başlangıç tarihini zorunlu yapar
+
     location: ['', [Validators.required, Validators.maxLength(250)]], // Konum zorunlu ve maksimum 250 karakter
     capacity: [1, [Validators.required, Validators.min(1)]], // Kapasite zorunlu ve minimum 1
     category: ['', [Validators.required, Validators.maxLength(100)]], // Kategori zorunlu ve maksimum 100 karakter
@@ -214,7 +236,9 @@ export class EventManage implements OnInit {
           clubId: String(event.clubId), // Kulüp IDsini string olarak forma aktarır
           title: event.title, // Başlığı forma aktarır
           description: event.description, // Açıklamayı forma aktarır
-          startDate: this.toDateTimeLocal(event.startDate), // Tarihi datetime-local formatına çevirir
+
+          startDate: new Date(event.startDate), // backendden gelen tarihi date nesnesine çevirip datepickera aktarır
+
           location: event.location, // Konumu forma aktarır
           capacity: event.capacity, // Kapasiteyi forma aktarır
           category: event.category, // Kategoriyi forma aktarır
@@ -242,10 +266,18 @@ export class EventManage implements OnInit {
 
     const value = this.form.getRawValue(); // Formdaki bütün değerleri alır
 
+    if (!value.startDate) { // herhangi bir nedenle tarih seçilmemişse kontrol eder
+      this.errorMessage.set('Please select a start date.'); // kullanıcıya tarih seçmesi gerektiğini söyler
+      this.saving.set(false); // kaydetme işlemini durdurur
+      return;
+    }
+
     const commonRequest = { // Oluşturma ve güncellemede ortak kullanılacak alanları toplar
       title: value.title.trim(), // Başlığın gereksiz boşluklarını temizler
       description: value.description.trim(), // Açıklamanın gereksiz boşluklarını temizler
-      startDate: new Date(value.startDate).toISOString(), // Tarihi backend için ISO formatına çevirir
+
+      startDate: value.startDate.toISOString(), // datepickerın date nesnesini backend için ISO formatına çevirir
+
       location: value.location.trim(), // Konumun gereksiz boşluklarını temizler
       capacity: Number(value.capacity), // Kapasiteyi number tipine çevirir
       category: value.category.trim(), // Kategorinin gereksiz boşluklarını temizler
@@ -292,7 +324,9 @@ export class EventManage implements OnInit {
         this.form.patchValue({ // Backendden dönen güncel bilgileri tekrar forma yerleştirir
           title: event.title, // Güncel başlığı forma aktarır
           description: event.description, // Güncel açıklamayı forma aktarır
-          startDate: this.toDateTimeLocal(event.startDate), // Tarihi datetime-local formatına çevirir
+
+          startDate: new Date(event.startDate), // backendden dönen güncel tarihi date nesnesine çevirip datepickera aktarır
+
           location: event.location, // Güncel konumu forma aktarır
           capacity: event.capacity, // Güncel kapasiteyi forma aktarır
           category: event.category, // Güncel kategoriyi forma aktarır
@@ -337,22 +371,5 @@ export class EventManage implements OnInit {
         this.saving.set(false); // Hata olsa bile işlemi bitirir
       }
     });
-  }
-
-  private toDateTimeLocal(value: string): string { // Backend tarihini datetime-local input formatına çevirir
-    const date = new Date(value); // Tarih stringini Date nesnesine çevirir
-    const pad = (number: number) => number.toString().padStart(2, '0'); // Tek haneli değerlerin başına 0 ekler
-
-    return (
-      date.getFullYear() + // Yılı ekler
-      '-' +
-      pad(date.getMonth() + 1) + // Ayı ekler, JavaScript ayları 0dan başlattığı için 1 eklenir
-      '-' +
-      pad(date.getDate()) + // Günü ekler
-      'T' +
-      pad(date.getHours()) + // Saati ekler
-      ':' +
-      pad(date.getMinutes()) // Dakikayı ekler
-    );
   }
 }
