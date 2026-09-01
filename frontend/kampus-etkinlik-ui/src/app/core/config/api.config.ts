@@ -1,2 +1,4 @@
-export const API_BASE_URL = 'https://localhost:7047/api'; // backend api adresini tutar
-// tek yerden değiştirebilmek için base url yazdım bu sayede backend adresi değişirse sadece burayı değiştirmek yeterli olur
+export const API_BASE_URL =
+  window.location.hostname === 'localhost'
+    ? 'https://localhost:7047/api'
+    : 'https://campusbody-api.onrender.com/api'; // backend api adresini tutar
