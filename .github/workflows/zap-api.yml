@@ -1,0 +1,58 @@
+name: CampusBody Backend Security Scan
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  zap-api-baseline:
+    name: OWASP ZAP Backend Baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Wake up backend
+        run: |
+          curl \
+            --retry 8 \
+            --retry-delay 10 \
+            --retry-all-errors \
+            --max-time 120 \
+            --fail \
+            --silent \
+            --show-error \
+            "https://campusbody-api.onrender.com/api/Events/popular?limit=1" > /dev/null
+
+      - name: Verify anonymous endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://campusbody-api.onrender.com/api/Events/popular?limit=1")
+
+          echo "Popular Events status: $status"
+
+          test "$status" = "200"
+
+      - name: Verify protected endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://campusbody-api.onrender.com/api/Events")
+
+          echo "Protected Events status: $status"
+
+          test "$status" = "401"
+
+      - name: OWASP ZAP Backend Baseline Scan
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: 'https://campusbody-api.onrender.com/api/Events/popular?limit=1'
+          issue_title: 'CampusBody Backend ZAP Scan'
+          artifact_name: 'campusbody-api-zap-report'
+          cmd_options: '-a'
