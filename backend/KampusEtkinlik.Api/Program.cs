@@ -187,6 +187,22 @@ builder.Services.AddScoped<IRegistrationService, RegistrationService>(); // IReg
 
 var app = builder.Build(); // yukarıda tanımladığımız servis ve ayarlardan gerçek web uygulamasını oluşturur
 
+// production ortamında api response güvenlik headerlarını ekler
+if (!app.Environment.IsDevelopment())
+{
+    app.Use(async (context, next) =>
+    {
+        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+
+        context.Response.Headers["Strict-Transport-Security"] =
+            "max-age=31536000";
+
+        context.Response.Headers["Cross-Origin-Resource-Policy"] =
+            "cross-origin";
+
+        await next();
+    });
+}
 
 if (app.Environment.IsDevelopment()) // sadece development ortamında swagger/openapiyi açar
 {
