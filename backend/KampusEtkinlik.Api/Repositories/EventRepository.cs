@@ -217,13 +217,21 @@ public sealed class EventRepository(ApplicationDbContext dbContext) : IEventRepo
         // descending true ise orderbydescending false ise orderby kullanılır
         // geçersiz veya boş bir sortField gelirse eski davranış korunur ve başlangıç tarihine göre sıralanır
 
-        var items = await query
-                .Skip((page - 1) * pageSize)
-                    
-                 // önceki sayfalara ait kayıtları atlar
-                .Take(pageSize) // sadece mevcut sayfada gösterilecek kayıt sayısı kadar veri alır
-                .ToListAsync(cancellationToken);
-                    
+       var skipCount = ((long)page - 1) * pageSize;
+// page değeri çok büyük geldiğinde int taşması olmaması için skip hesabını long ile yapar
+
+if (skipCount >= totalCount)
+{
+    return (new List<Event>(), totalCount);
+    // istenen sayfa toplam kayıtların dışındaysa boş liste döndürür
+}
+
+var items = await query
+        .Skip((int)skipCount)
+            
+         // önceki sayfalara ait kayıtları atlar
+        .Take(pageSize) // sadece mevcut sayfada gösterilecek kayıt sayısı kadar veri alır
+        .ToListAsync(cancellationToken);                    
                 
         // sorguyu burada gerçekten veritabanında çalıştırır ve o sayfadaki etkinlikleri liste olarak getirir
 
