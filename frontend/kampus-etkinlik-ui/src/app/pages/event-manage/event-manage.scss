@@ -179,7 +179,7 @@
   cursor: not-allowed; // Butonların kullanılamadığını gösterir.
 }
 
-/* Responsive düzen 
+// Responsive düzen 
 @media (max-width: 700px) { // Ekran genişliği 700px veya altına düştüğünde çalışır.
   .page-header h1 {
     font-size: 25px; // Mobilde ana başlığı biraz küçültür.
@@ -201,4 +201,4 @@
   .cancel-button {
     width: 100%; // Mobilde butonları tam genişlik yapar.
   }
-}*/
+}

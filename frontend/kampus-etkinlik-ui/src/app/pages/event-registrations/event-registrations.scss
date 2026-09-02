@@ -293,7 +293,7 @@
   font-weight: 600; // Yazıyı hafif kalın gösterir.
 }
 
-/* Responsive düzen 
+// Responsive düzen 
 @media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
   .page-header {
     align-items: flex-start; // Başlık ve butonu sola hizalar.
@@ -311,4 +311,4 @@
   .filter-card {
     max-width: none; // Mobilde filtre kartının kullanılabilir alanın tamamını kaplamasını sağlar.
   }
-}*/
+}

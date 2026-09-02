@@ -172,7 +172,7 @@
   font-size: 13px; // Mesaj yazı boyutunu belirler.
 }
 
-/* Responsive düzen 
+// Responsive düzen 
 @media (max-width: 900px) { // Ekran genişliği 900px veya altına düştüğünde çalışır.
   .detail-grid {
     grid-template-columns: repeat(2, 1fr); // Detay bilgilerini üç kolondan iki kolona düşürür.
@@ -217,4 +217,4 @@
   .register-button {
     width: 100%; // Mobilde kayıt butonunu tam genişlik yapar.
   }
-}*/
+}

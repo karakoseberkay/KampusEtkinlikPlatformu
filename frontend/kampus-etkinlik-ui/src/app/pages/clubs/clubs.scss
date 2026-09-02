@@ -220,7 +220,7 @@
   background-color: #f8fafc; // Mouse üzerine geldiğinde açık gri arka plan gösterir.
 }
 
-/* Responsive düzen 
+// Responsive düzen 
 @media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
   .page-header {
     align-items: flex-start; // Başlık ve butonu sola hizalar.
@@ -234,4 +234,4 @@
   .create-button {
     width: 100%; // Mobilde yeni kulüp butonunu tam genişlik yapar.
   }
-}*/
+}

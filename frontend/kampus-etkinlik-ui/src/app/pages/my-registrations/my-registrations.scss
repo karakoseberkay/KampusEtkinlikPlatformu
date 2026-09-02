@@ -224,7 +224,7 @@
   color: #64748b; // Bilinmeyen durum yazısını gri yapar.
 }
 
-/* Responsive
+// Responsive
 @media (max-width: 900px) { // Tablet boyutundaki ekranlarda çalışır.
   .summary-grid {
     grid-template-columns: repeat(2, 1fr); // Özet kartlarını dört kolondan iki kolona düşürür.
@@ -248,4 +248,4 @@
   .summary-grid {
     grid-template-columns: 1fr; // Mobilde özet kartlarını tek kolon halinde gösterir.
   }
-}*/
+}
