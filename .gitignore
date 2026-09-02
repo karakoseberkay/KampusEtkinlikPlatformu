@@ -486,3 +486,8 @@ campusbody_local_backup.dump
 
 # local publish test
 publish-test/
+
+# playwright test outputs
+frontend/kampus-etkinlik-ui/playwright-report/
+frontend/kampus-etkinlik-ui/test-results/
+frontend/kampus-etkinlik-ui/blob-report/
