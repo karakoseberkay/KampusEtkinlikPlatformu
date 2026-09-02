@@ -204,16 +204,17 @@ if (!app.Environment.IsDevelopment())
     });
 }
 
-if (app.Environment.IsDevelopment()) // sadece development ortamında swagger/openapiyi açar
-{
-    app.MapOpenApi(); // openapi json dokümanını endpoint olarak yayınlar
+app.MapOpenApi();
+// openapi json dokümanını yayınlar schemathesis gibi otomatik api test araçları bunu kullanır
 
-    app.UseSwaggerUI(options => // swagger test arayüzünü açar
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "Campus Event API v1");
-             // swaggerın okuyacağı openapi dokümanının adresi
-            // swaggerda gösterilecek api adı
-        
+        options.SwaggerEndpoint(
+            "/openapi/v1.json",
+            "Campus Event API v1"
+        );
     });
 }
 /*
