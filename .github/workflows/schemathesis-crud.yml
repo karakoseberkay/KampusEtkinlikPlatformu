@@ -76,14 +76,15 @@ jobs:
             --no-restore
 
       - name: Start backend
-        run: |
-          dotnet run \
-            --project backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj \
-            --configuration Release \
-            --no-build \
-            > campusbody-api-ci.log 2>&1 &
+  run: |
+    dotnet run \
+      --project backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj \
+      --configuration Release \
+      --no-build \
+      --no-launch-profile \
+      > campusbody-api-ci.log 2>&1 &
 
-          echo $! > campusbody-api-ci.pid
+    echo $! > campusbody-api-ci.pid
 
       - name: Wait for backend
         run: |
