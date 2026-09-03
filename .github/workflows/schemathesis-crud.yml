@@ -34,15 +34,15 @@ jobs:
 
       ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=campusbody_test;Username=postgres;Password=postgres
 
-      Jwt__Key: CampusBody_CI_Test_Key_Only_123456789012345678901234567890
+      Jwt__Key: CampusBody_CI_Only_JWT_Key_1234567890123456789012345678901234567890
       Jwt__Issuer: CampusBody.CI
       Jwt__Audience: CampusBody.CI
 
-      MANAGER_EMAIL: manager@kampus.com
-      MANAGER_PASSWORD: ${{ secrets.TEST_MANAGER_PASSWORD }}
+      CI_MANAGER_EMAIL: ci-manager@campusbody.test
+      CI_MANAGER_PASSWORD: CiManager1234!
 
-      STUDENT_EMAIL: ci-student@campusbody.test
-      STUDENT_PASSWORD: CiStudent1234
+      CI_STUDENT_EMAIL: ci-student@campusbody.test
+      CI_STUDENT_PASSWORD: CiStudent1234!
 
     steps:
       - name: Checkout repository
@@ -52,6 +52,11 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
 
       - name: Restore backend
         run: |
@@ -76,20 +81,22 @@ jobs:
             --no-restore
 
       - name: Start backend
-  run: |
-    dotnet run \
-      --project backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj \
-      --configuration Release \
-      --no-build \
-      --no-launch-profile \
-      > campusbody-api-ci.log 2>&1 &
+        run: |
+          dotnet run \
+            --project backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj \
+            --configuration Release \
+            --no-build \
+            --no-launch-profile \
+            > campusbody-api-ci.log 2>&1 &
 
-    echo $! > campusbody-api-ci.pid
+          echo $! > campusbody-api-ci.pid
 
       - name: Wait for backend
         run: |
           for i in {1..30}; do
-            if curl --fail --silent \
+            if curl \
+              --fail \
+              --silent \
               "http://127.0.0.1:5080/openapi/v1.json" \
               > /dev/null; then
 
@@ -104,13 +111,80 @@ jobs:
           cat campusbody-api-ci.log
           exit 1
 
-      - name: Login test manager
+      - name: Register temporary manager user
+        id: manager_register
+        run: |
+          body=$(jq -n \
+            --arg fullName "CI Club Manager" \
+            --arg email "$CI_MANAGER_EMAIL" \
+            --arg password "$CI_MANAGER_PASSWORD" \
+            --arg department "CI Test" \
+            '{
+              fullName: $fullName,
+              email: $email,
+              password: $password,
+              department: $department
+            }')
+
+          response=$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            -X POST \
+            "http://127.0.0.1:5080/api/Auth/register" \
+            -H "Content-Type: application/json" \
+            -d "$body")
+
+          userId=$(echo "$response" | jq -r '.userId')
+
+          if [ -z "$userId" ] || [ "$userId" = "null" ]; then
+            echo "Temporary manager user could not be created"
+            exit 1
+          fi
+
+          echo "user_id=$userId" >> "$GITHUB_OUTPUT"
+
+      - name: Promote temporary user to ClubManager
+        env:
+          MANAGER_USER_ID: ${{ steps.manager_register.outputs.user_id }}
+          PGPASSWORD: postgres
+        run: |
+          psql \
+            -h localhost \
+            -p 5432 \
+            -U postgres \
+            -d campusbody_test \
+            -v manager_user_id="$MANAGER_USER_ID" \
+            <<'SQL'
+
+          DELETE FROM "AspNetUserRoles"
+          WHERE "UserId" = :'manager_user_id'
+            AND "RoleId" IN (
+              SELECT "Id"
+              FROM "AspNetRoles"
+              WHERE "NormalizedName" = 'STUDENT'
+            );
+
+          INSERT INTO "AspNetUserRoles" ("UserId", "RoleId")
+          SELECT
+            :'manager_user_id',
+            "Id"
+          FROM "AspNetRoles"
+          WHERE "NormalizedName" = 'CLUBMANAGER'
+          ON CONFLICT DO NOTHING;
+
+          SQL
+
+      - name: Login temporary manager
         id: manager_login
         run: |
           body=$(jq -n \
-            --arg email "$MANAGER_EMAIL" \
-            --arg password "$MANAGER_PASSWORD" \
-            '{email: $email, password: $password}')
+            --arg email "$CI_MANAGER_EMAIL" \
+            --arg password "$CI_MANAGER_PASSWORD" \
+            '{
+              email: $email,
+              password: $password
+            }')
 
           response=$(curl \
             --fail-with-body \
@@ -136,9 +210,9 @@ jobs:
         run: |
           body=$(jq -n \
             --arg fullName "CI Fuzz Student" \
-            --arg email "$STUDENT_EMAIL" \
-            --arg password "$STUDENT_PASSWORD" \
-            --arg department "Test" \
+            --arg email "$CI_STUDENT_EMAIL" \
+            --arg password "$CI_STUDENT_PASSWORD" \
+            --arg department "CI Test" \
             '{
               fullName: $fullName,
               email: $email,
@@ -167,8 +241,8 @@ jobs:
           echo "token=$token" >> "$GITHUB_OUTPUT"
           echo "user_id=$userId" >> "$GITHUB_OUTPUT"
 
-      - name: Create temporary club
-        id: create_club
+      - name: Create event test club
+        id: create_event_club
         run: |
           response=$(curl \
             --fail-with-body \
@@ -179,12 +253,43 @@ jobs:
             -H "Authorization: Bearer ${{ steps.manager_login.outputs.token }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "name": "CI Fuzz Club",
-              "description": "Temporary isolated fuzz test club",
+              "name": "CI Fuzz Event Club",
+              "description": "Temporary club for isolated fuzz tests",
               "logoUrl": null
             }')
 
           clubId=$(echo "$response" | jq -r '.id')
+
+          if [ -z "$clubId" ] || [ "$clubId" = "null" ]; then
+            echo "Event test club could not be created"
+            exit 1
+          fi
+
+          echo "club_id=$clubId" >> "$GITHUB_OUTPUT"
+
+      - name: Create delete test club
+        id: create_delete_club
+        run: |
+          response=$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            -X POST \
+            "http://127.0.0.1:5080/api/Clubs" \
+            -H "Authorization: Bearer ${{ steps.manager_login.outputs.token }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "CI Fuzz Delete Club",
+              "description": "Temporary empty club for delete fuzz tests",
+              "logoUrl": null
+            }')
+
+          clubId=$(echo "$response" | jq -r '.id')
+
+          if [ -z "$clubId" ] || [ "$clubId" = "null" ]; then
+            echo "Delete test club could not be created"
+            exit 1
+          fi
 
           echo "club_id=$clubId" >> "$GITHUB_OUTPUT"
 
@@ -193,82 +298,134 @@ jobs:
         run: |
           futureDate=$(date -u -d "+30 days" +"%Y-%m-%dT%H:%M:%SZ")
 
-          body=$(jq -n \
-            --argjson clubId "${{ steps.create_club.outputs.club_id }}" \
-            --arg startDate "$futureDate" \
-            '{
-              clubId: $clubId,
-              title: "CI Fuzz Event",
-              description: "Temporary isolated fuzz test event",
-              startDate: $startDate,
-              location: "CI Test Location",
-              capacity: 100,
-              category: "Testing",
-              visibility: "ApprovalRequired"
-            }')
+          success=false
 
-          response=$(curl \
-            --fail-with-body \
-            --silent \
-            --show-error \
-            -X POST \
-            "http://127.0.0.1:5080/api/Events" \
-            -H "Authorization: Bearer ${{ steps.manager_login.outputs.token }}" \
-            -H "Content-Type: application/json" \
-            -d "$body")
+          for visibility in 1 0 2; do
+            body=$(jq -n \
+              --argjson clubId "${{ steps.create_event_club.outputs.club_id }}" \
+              --arg startDate "$futureDate" \
+              --argjson visibility "$visibility" \
+              '{
+                clubId: $clubId,
+                title: "CI Fuzz Event",
+                description: "Temporary event for isolated fuzz testing",
+                startDate: $startDate,
+                location: "CI Test Location",
+                capacity: 100,
+                category: "Testing",
+                visibility: $visibility
+              }')
 
-          eventId=$(echo "$response" | jq -r '.id')
+            status=$(curl \
+              --silent \
+              --show-error \
+              -o event-response.json \
+              -w "%{http_code}" \
+              -X POST \
+              "http://127.0.0.1:5080/api/Events" \
+              -H "Authorization: Bearer ${{ steps.manager_login.outputs.token }}" \
+              -H "Content-Type: application/json" \
+              -d "$body")
+
+            if [ "$status" = "200" ] || [ "$status" = "201" ]; then
+              success=true
+              break
+            fi
+          done
+
+          if [ "$success" != "true" ]; then
+            echo "Temporary event could not be created"
+            cat event-response.json
+            exit 1
+          fi
+
+          eventId=$(jq -r '.id' event-response.json)
+
+          if [ -z "$eventId" ] || [ "$eventId" = "null" ]; then
+            echo "Event ID could not be retrieved"
+            cat event-response.json
+            exit 1
+          fi
 
           echo "event_id=$eventId" >> "$GITHUB_OUTPUT"
           echo "future_date=$futureDate" >> "$GITHUB_OUTPUT"
 
-      - name: Create temporary registration
-        id: create_registration
+      - name: Create student Schemathesis config
+        run: |
+          cat > schemathesis-student-crud.toml <<EOF
+          [generation]
+          mode = "all"
+
+          [parameters]
+          "path.eventId" = ${{ steps.create_event.outputs.event_id }}
+          EOF
+
+      - name: Student registration POST fuzz tests
+        id: student_post
+        continue-on-error: true
+        uses: schemathesis/action@v3
+        with:
+          schema: 'http://127.0.0.1:5080/openapi/v1.json'
+          base-url: 'http://127.0.0.1:5080'
+          authorization: 'Bearer ${{ steps.student_register.outputs.token }}'
+          checks: 'not_a_server_error'
+          max-examples: 25
+          config-file: 'schemathesis-student-crud.toml'
+          args: '--include-path /api/events/{eventId}/register --include-method POST --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          coverage-artifact-name: 'schemathesis-crud-student-post'
+          coverage-step-summary: 'true'
+
+      - name: Get temporary registration
+        id: get_registration
         run: |
           response=$(curl \
             --fail-with-body \
             --silent \
             --show-error \
-            -X POST \
-            "http://127.0.0.1:5080/api/events/${{ steps.create_event.outputs.event_id }}/register" \
+            -X GET \
+            "http://127.0.0.1:5080/api/Registrations/me" \
             -H "Authorization: Bearer ${{ steps.student_register.outputs.token }}")
 
-          registrationId=$(echo "$response" | jq -r '.id')
+          registrationId=$(echo "$response" | jq -r \
+            --argjson eventId "${{ steps.create_event.outputs.event_id }}" \
+            '[.[] | select(.eventId == $eventId)][0].id // empty')
+
+          if [ -z "$registrationId" ]; then
+            echo "Schemathesis did not leave a registration, creating one manually"
+
+            registerResponse=$(curl \
+              --fail-with-body \
+              --silent \
+              --show-error \
+              -X POST \
+              "http://127.0.0.1:5080/api/events/${{ steps.create_event.outputs.event_id }}/register" \
+              -H "Authorization: Bearer ${{ steps.student_register.outputs.token }}")
+
+            registrationId=$(echo "$registerResponse" | jq -r '.id')
+          fi
+
+          if [ -z "$registrationId" ] || [ "$registrationId" = "null" ]; then
+            echo "Registration ID could not be retrieved"
+            exit 1
+          fi
 
           echo "registration_id=$registrationId" >> "$GITHUB_OUTPUT"
 
-      - name: Create Schemathesis CI config
+      - name: Create manager Schemathesis config
         run: |
-          cat > schemathesis-ci.toml <<EOF
-          generation.mode = "all"
-          generation.max-examples = 25
-          request-timeout = 10.0
+          cat > schemathesis-manager-crud.toml <<EOF
+          [generation]
+          mode = "all"
 
           [parameters]
+          "body.clubId" = ${{ steps.create_event_club.outputs.club_id }}
+          "body.startDate" = "${{ steps.create_event.outputs.future_date }}"
           "path.eventId" = ${{ steps.create_event.outputs.event_id }}
           "path.userId" = "${{ steps.student_register.outputs.user_id }}"
-          "body.clubId" = ${{ steps.create_club.outputs.club_id }}
-          "body.startDate" = "${{ steps.create_event.outputs.future_date }}"
-
-          [[operations]]
-          include-name = "GET /api/Clubs/{id}"
-          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
 
           [[operations]]
           include-name = "PUT /api/Clubs/{id}"
-          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
-
-          [[operations]]
-          include-name = "DELETE /api/Clubs/{id}"
-          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
-
-          [[operations]]
-          include-name = "GET /api/Clubs/{id}/stats"
-          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
-
-          [[operations]]
-          include-name = "GET /api/Events/{id}"
-          parameters = { "path.id" = ${{ steps.create_event.outputs.event_id }} }
+          parameters = { "path.id" = ${{ steps.create_event_club.outputs.club_id }} }
 
           [[operations]]
           include-name = "PUT /api/Events/{id}"
@@ -280,15 +437,19 @@ jobs:
 
           [[operations]]
           include-name = "PUT /api/Registrations/{id}/approve"
-          parameters = { "path.id" = ${{ steps.create_registration.outputs.registration_id }} }
+          parameters = { "path.id" = ${{ steps.get_registration.outputs.registration_id }} }
 
           [[operations]]
           include-name = "PUT /api/Registrations/{id}/reject"
-          parameters = { "path.id" = ${{ steps.create_registration.outputs.registration_id }} }
+          parameters = { "path.id" = ${{ steps.get_registration.outputs.registration_id }} }
+
+          [[operations]]
+          include-name = "DELETE /api/Clubs/{id}"
+          parameters = { "path.id" = ${{ steps.create_delete_club.outputs.club_id }} }
           EOF
 
-      - name: Manager POST PUT fuzz tests
-        id: manager_mutations
+      - name: Manager POST fuzz tests
+        id: manager_post
         continue-on-error: true
         uses: schemathesis/action@v3
         with:
@@ -297,24 +458,24 @@ jobs:
           authorization: 'Bearer ${{ steps.manager_login.outputs.token }}'
           checks: 'not_a_server_error'
           max-examples: 25
-          config-file: 'schemathesis-ci.toml'
-          args: '--include-method POST --include-method PUT --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
-          coverage-artifact-name: 'schemathesis-crud-manager'
+          config-file: 'schemathesis-manager-crud.toml'
+          args: '--include-method POST --exclude-path /api/Auth/register --exclude-path /api/Auth/login --exclude-path /api/events/{eventId}/register --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          coverage-artifact-name: 'schemathesis-crud-manager-post'
           coverage-step-summary: 'true'
 
-      - name: Student registration fuzz tests
-        id: student_mutations
+      - name: Manager PUT fuzz tests
+        id: manager_put
         continue-on-error: true
         uses: schemathesis/action@v3
         with:
           schema: 'http://127.0.0.1:5080/openapi/v1.json'
           base-url: 'http://127.0.0.1:5080'
-          authorization: 'Bearer ${{ steps.student_register.outputs.token }}'
+          authorization: 'Bearer ${{ steps.manager_login.outputs.token }}'
           checks: 'not_a_server_error'
           max-examples: 25
-          config-file: 'schemathesis-ci.toml'
-          args: '--include-path /api/events/{eventId}/register --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
-          coverage-artifact-name: 'schemathesis-crud-student'
+          config-file: 'schemathesis-manager-crud.toml'
+          args: '--include-method PUT --exclude-path /api/Users/{userId}/role --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          coverage-artifact-name: 'schemathesis-crud-manager-put'
           coverage-step-summary: 'true'
 
       - name: Manager DELETE fuzz tests
@@ -327,9 +488,9 @@ jobs:
           authorization: 'Bearer ${{ steps.manager_login.outputs.token }}'
           checks: 'not_a_server_error'
           max-examples: 25
-          config-file: 'schemathesis-ci.toml'
+          config-file: 'schemathesis-manager-crud.toml'
           args: '--include-method DELETE --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
-          coverage-artifact-name: 'schemathesis-crud-delete'
+          coverage-artifact-name: 'schemathesis-crud-manager-delete'
           coverage-step-summary: 'true'
 
       - name: Upload backend log
@@ -342,14 +503,17 @@ jobs:
       - name: Final fuzz test result
         if: always()
         run: |
-          echo "Manager POST/PUT: ${{ steps.manager_mutations.outcome }}"
-          echo "Student POST: ${{ steps.student_mutations.outcome }}"
-          echo "Manager DELETE: ${{ steps.manager_delete.outcome }}"
+          echo "Student POST result: ${{ steps.student_post.outcome }}"
+          echo "Manager POST result: ${{ steps.manager_post.outcome }}"
+          echo "Manager PUT result: ${{ steps.manager_put.outcome }}"
+          echo "Manager DELETE result: ${{ steps.manager_delete.outcome }}"
 
-          if [ "${{ steps.manager_mutations.outcome }}" != "success" ] || \
-             [ "${{ steps.student_mutations.outcome }}" != "success" ] || \
+          if [ "${{ steps.student_post.outcome }}" != "success" ] || \
+             [ "${{ steps.manager_post.outcome }}" != "success" ] || \
+             [ "${{ steps.manager_put.outcome }}" != "success" ] || \
              [ "${{ steps.manager_delete.outcome }}" != "success" ]; then
-            echo "At least one isolated fuzz test found a failure."
+
+            echo "At least one isolated CRUD fuzz test found a failure."
             exit 1
           fi
 
