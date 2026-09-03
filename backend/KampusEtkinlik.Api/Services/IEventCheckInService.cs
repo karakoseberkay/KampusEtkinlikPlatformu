@@ -17,7 +17,8 @@ public interface IEventCheckInService
     Task<CheckInResponse> CheckInAsync(
         string userId,
         string token,
+        bool isClubManager,
         CancellationToken cancellationToken = default
     );
-    // studentın qr tokenını kullanarak etkinliğe katılımını kaydeder
+    // student veya clubmanagerın qr tokenını kullanarak etkinliğe katılımını kaydeder
 }

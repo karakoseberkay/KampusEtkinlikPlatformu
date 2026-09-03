@@ -118,6 +118,7 @@ public sealed class EventCheckInService(
     public async Task<CheckInResponse> CheckInAsync(
         string userId,
         string token,
+        bool isClubManager,
         CancellationToken cancellationToken = default
     )
     {
@@ -178,20 +179,48 @@ public sealed class EventCheckInService(
             );
 
 
+        var now = DateTimeOffset.UtcNow;
+
+
         if (registration is null)
         {
-            throw new InvalidOperationException(
-                "You are not registered for this event."
-            );
-        }
+            if (!isClubManager)
+            {
+                throw new InvalidOperationException(
+                    "You are not registered for this event."
+                );
+            }
 
 
-        if (registration.ApprovalStatus !=
-            RegistrationApprovalStatus.Approved)
-        {
-            throw new InvalidOperationException(
-                "Your registration is not approved."
+            registration = new Registration
+            {
+                UserId = userId,
+                EventId = session.EventId,
+                RegisteredAt = now,
+                ApprovalStatus = RegistrationApprovalStatus.Approved,
+                CheckedInAt = now
+            };
+            // clubmanagerın kaydı yoksa qr okutunca otomatik onaylı kayıt oluşturur
+
+
+            await registrationRepository.AddAsync(
+                registration,
+                cancellationToken
             );
+
+
+            await registrationRepository.SaveChangesAsync(
+                cancellationToken
+            );
+
+
+            return new CheckInResponse
+            {
+                RegistrationId = registration.Id,
+                EventId = registration.EventId,
+                CheckedInAt = registration.CheckedInAt.Value,
+                Message = "Check-in completed successfully."
+            };
         }
 
 
@@ -203,8 +232,25 @@ public sealed class EventCheckInService(
         }
 
 
-        registration.CheckedInAt = DateTimeOffset.UtcNow;
-        // başarılı qr kontrolünden sonra öğrencinin katılım zamanını kaydeder
+        if (!isClubManager &&
+            registration.ApprovalStatus != RegistrationApprovalStatus.Approved)
+        {
+            throw new InvalidOperationException(
+                "Your registration is not approved."
+            );
+        }
+
+
+        if (isClubManager &&
+            registration.ApprovalStatus != RegistrationApprovalStatus.Approved)
+        {
+            registration.ApprovalStatus = RegistrationApprovalStatus.Approved;
+            // clubmanagerın mevcut kaydı varsa qr ile check-in sırasında onaylı duruma getirir
+        }
+
+
+        registration.CheckedInAt = now;
+        // başarılı qr kontrolünden sonra kullanıcının katılım zamanını kaydeder
 
 
         await registrationRepository.SaveChangesAsync(

@@ -70,7 +70,7 @@ public sealed class CheckInController(
 
 
 
-    [Authorize(Roles = "Student")]
+    [Authorize(Roles = "Student,ClubManager")]
     [HttpPost("check-in")]
     public async Task<ActionResult<CheckInResponse>> CheckIn(
         [FromBody] CheckInRequest request,
@@ -86,11 +86,16 @@ public sealed class CheckInController(
         }
 
 
+        var isClubManager = User.IsInRole("ClubManager");
+        // qr okutan kullanıcının clubmanager olup olmadığını servise gönderir
+
+
         try
         {
             var result = await eventCheckInService.CheckInAsync(
                 userId,
                 request.Token,
+                isClubManager,
                 cancellationToken
             );
 
