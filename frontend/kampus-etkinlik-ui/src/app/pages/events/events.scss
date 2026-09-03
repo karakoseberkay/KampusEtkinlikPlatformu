@@ -397,55 +397,6 @@
   cursor: not-allowed;
 }
 
-/* Sayfalama */
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 22px;
-}
-
-.pagination-button {
-  min-height: 36px;
-  padding: 0 15px;
-  background-color: #ffffff;
-  color: #003267;
-  border: 1px solid #003267;
-  border-radius: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.pagination-button:hover:not(:disabled) {
-  background-color: #f8fafc;
-}
-
-.pagination-button-primary {
-  background-color: #003267;
-  color: #ffffff;
-}
-
-.pagination-button-primary:hover:not(:disabled) {
-  background-color: #00234b;
-}
-
-.pagination-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.page-number {
-  color: #64748b;
-  font-size: 12px;
-}
-
-.page-number strong {
-  color: #003267;
-}
-
 /* Check In QR penceresi */
 
 .check-in-backdrop {
@@ -681,10 +632,6 @@
   .filter-button,
   .clear-button {
     width: 100%;
-  }
-
-  .pagination {
-    gap: 10px;
   }
 
   .check-in-modal {
