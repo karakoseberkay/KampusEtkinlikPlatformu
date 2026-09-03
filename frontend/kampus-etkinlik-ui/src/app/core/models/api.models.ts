@@ -159,3 +159,32 @@ export interface EventPageQuery { // etkinlikleri ararken filtreleme sıralama v
   page?: number; // istenen sayfa numarasını tutar
   pageSize?: number; // bir sayfada kaç etkinlik isteneceğini tutar
 }
+
+
+// qr kod oluştururken backende gönderilecek süre bilgisini tutar
+export interface CreateCheckInSessionRequest {
+  expiresInMinutes: number; // qr kodun kaç dakika geçerli olacağını gönderir
+}
+
+
+// backendden oluşturulan qr oturum bilgisini tutar
+export interface CheckInSessionResponse {
+  eventId: number; // qr kodun ait olduğu etkinliğin idsini tutar
+  token: string; // qr kodun içine yerleştirilecek geçici güvenli tokenı tutar
+  expiresAt: string; // qr kodun geçerliliğinin biteceği zamanı tutar
+}
+
+
+// öğrenci qr kod üzerinden check-in yaparken gönderilecek veriyi tutar
+export interface CheckInRequest {
+  token: string; // qr koddan alınan geçici tokenı gönderir
+}
+
+
+// başarılı check-in işleminden dönen bilgileri tutar
+export interface CheckInResponse {
+  registrationId: number; // check-in yapılan kayıt idsini tutar
+  eventId: number; // katılım sağlanan etkinliğin idsini tutar
+  checkedInAt: string; // öğrencinin check-in yaptığı zamanı tutar
+  message: string; // backendden gelen başarı mesajını tutar
+}

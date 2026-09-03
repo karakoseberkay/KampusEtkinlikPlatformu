@@ -1,0 +1,124 @@
+/* qr kod ile etkinlik giriş sayfası */
+
+.check-in-page {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 40px 20px;
+}
+
+.check-in-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 34px;
+  background-color: #ffffff;
+  border: 1px solid #dbe3ec;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.check-in-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  background-color: #003267;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.check-in-card h1 {
+  margin: 0 0 10px;
+  color: #003267;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.check-in-description {
+  margin: 0 0 22px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.loading-message {
+  padding: 16px;
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.result-message {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 7px;
+}
+
+.result-message strong {
+  font-size: 16px;
+}
+
+.result-message span {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.result-message small {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.success-result {
+  background-color: #ecfdf3;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.error-result {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.home-button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 22px;
+  padding: 0 18px;
+  background-color: #f68929;
+  color: #ffffff;
+  border: 1px solid #f68929;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.home-button:hover {
+  background-color: #df7115;
+  border-color: #df7115;
+}
+
+@media (max-width: 600px) {
+
+  .check-in-page {
+    padding: 24px 14px;
+  }
+
+  .check-in-card {
+    padding: 26px 20px;
+  }
+
+  .check-in-card h1 {
+    font-size: 24px;
+  }
+
+}

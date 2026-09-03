@@ -23,6 +23,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> // uygula
     public DbSet<Registration> Registrations => Set<Registration>(); 
     //Registration entitysi üzerinden Registrations tablosunda işlem yapmamızı sağlar
 
+    public DbSet<EventCheckInSession> EventCheckInSessions => Set<EventCheckInSession>();
+    // qr kod oturumlarını veritabanında yönetmemizi sağlar
+
 
     protected override void OnModelCreating(ModelBuilder builder) 
     //override:üst sınıfta zaten bulunan OnModelCreating metodunun davranışına kendi ayarlarımızı ekliyoruz (IdentityDbContextin kendi onModelCreating metodu var)
@@ -101,5 +104,32 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser> // uygula
 
         builder.Entity<Event>()
             .HasIndex(eventItem => eventItem.ClubId); // kulübe göre etkinlik sorgularını hızlandırmak için ClubIdye index oluşturur
+
+
+        builder.Entity<EventCheckInSession>()
+            .HasOne(session => session.Event)
+            .WithMany()
+            .HasForeignKey(session => session.EventId)
+            .OnDelete(DeleteBehavior.Cascade);
+            // etkinlik silinirse ona ait qr oturumları da silinir
+
+        builder.Entity<EventCheckInSession>()
+            .Property(session => session.TokenHash)
+            .HasMaxLength(64);
+            // sha256 ile oluşturulan token hash değeri 64 karakter olarak tutulur
+
+        builder.Entity<EventCheckInSession>()
+            .HasIndex(session => session.TokenHash)
+            .IsUnique();
+            // aynı qr token hash değerinin ikinci kez oluşmasını engeller
+
+        builder.Entity<EventCheckInSession>()
+            .HasIndex(session => session.EventId);
+            // etkinliğe ait qr oturumunun daha hızlı bulunmasını sağlar
+
+        builder.Entity<EventCheckInSession>()
+            .HasIndex(session => session.ExpiresAt);
+            // süresi dolan qr oturumlarını daha hızlı kontrol etmek için index oluşturur
+
     }         //aynı şekilde klüplerin etkinliklerini daha hızlı bulmak için uyguladım
 }

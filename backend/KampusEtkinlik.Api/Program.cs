@@ -30,10 +30,11 @@ using System.Text.Json.Serialization; //Bu satır .NET’in JSON dönüştürme 
 
 var builder = WebApplication.CreateBuilder(args); // uygulamayı hazırlayacağımız bir builder nesnesi oluşturuyor
 
-builder.Services.AddControllers().AddJsonOptions(options =>{ 
-//Controller’ların çalışması için gerekli altyapıyı ekliyor ve API’de enum değerlerinin daha anlaşılır JSON metinleri olarak gönderilmesini sağlıyor
+builder.Services.AddControllers().AddJsonOptions(options =>{
+    //Controller’ların çalışması için gerekli altyapıyı ekliyor ve API’de enum değerlerinin daha anlaşılır JSON metinleri olarak gönderilmesini sağlıyor
     
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());});
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
             
     
 
@@ -72,7 +73,7 @@ builder.Services.AddDataProtection(); // Bu satır, uygulamanın veri koruma hiz
 
 builder.Services.AddCors(options => // anguların gelip bağlanmasını sağlayan cors ayarlarını yapıyor, anguların localhost:4200 portundan gelen istekleri kabul etmesini sağlıyor
 {
-    options.AddPolicy("AngularClient", 
+    options.AddPolicy("AngularClient",
         // bu policy ismi ile anguların bağlanmasını sağlıyoruz, farklı porta farklı isim varilir
         policy => //koşulların yazıldığı yer
         {
@@ -185,6 +186,14 @@ builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>(); /
 builder.Services.AddScoped<IRegistrationService, RegistrationService>(); // IRegistrationService istendiğinde RegistrationService kullanır, kayıt iş kurallarını buraya bağlar
 
 
+builder.Services.AddScoped<IEventCheckInSessionRepository, EventCheckInSessionRepository>();
+// qr oturumu veritabanı işlemlerini repositorye bağlar
+
+
+builder.Services.AddScoped<IEventCheckInService, EventCheckInService>();
+// qr oluşturma ve öğrenci check-in iş kurallarını servise bağlar
+
+
 var app = builder.Build(); // yukarıda tanımladığımız servis ve ayarlardan gerçek web uygulamasını oluşturur
 
 // production ortamında api response güvenlik headerlarını ekler
@@ -242,7 +251,7 @@ app.Run(); // web uygulamasını çalıştırır ve gelen http isteklerini dinle
 
 
 //internal: sadece bu proje için kullanılsın dışarıdan erişim olmasın demek sealed ise bu sınıf başka sınıflar tarafından kalıtılamaz demek
-internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider ) : IOpenApiDocumentTransformer{ 
+internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider ) : IOpenApiDocumentTransformer{
     // sistemde kayıtlı authentication yöntemlerini okumamızı sağlar bu sınıfın openapi dokümanının genelini düzenleyeceğini belirtir
 
     public async Task /*task: işlem değişken döndürmeden tamamlandı*/ TransformAsync( // openapi dokümanı oluşturulurken çalışır
@@ -251,7 +260,7 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
         CancellationToken cancellationToken // işlem iptal edilmek istenirse kullanılabilecek token
     )
     {
-        var authenticationSchemes =await authenticationSchemeProvider.GetAllSchemesAsync(); 
+        var authenticationSchemes =await authenticationSchemeProvider.GetAllSchemesAsync();
         // sistemde kayıtlı tüm authentication yöntemlerini getirir
             ////await: bu iş tamamlanınca sonucu ver, sonra aşağı devam et
 
@@ -299,12 +308,12 @@ internal sealed class BearerSecurityRequirementTransformer : IOpenApiOperationTr
         var endpointMetadata = context.Description.ActionDescriptor.EndpointMetadata; //endpointMetadata endpoint üzerindeki authorize gibi attributeları taşır
 
 
-        var requiresAuthorization = endpointMetadata.OfType<IAuthorizeData>().Any(); 
+        var requiresAuthorization = endpointMetadata.OfType<IAuthorizeData>().Any();
         // authorize bilgilerini seçer
                  // en az bir authorize varsa true olur
 
 
-        var allowsAnonymous =endpointMetadata.OfType<IAllowAnonymous>().Any(); 
+        var allowsAnonymous =endpointMetadata.OfType<IAllowAnonymous>().Any();
         // allowanonymous bilgilerini seçer
                  // allowanonymous varsa true olur
 

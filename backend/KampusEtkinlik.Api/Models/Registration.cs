@@ -29,4 +29,8 @@ public class Registration // kullanıcının bir etkinliğe yaptığı kayıt bi
 
     public RegistrationApprovalStatus ApprovalStatus { get; set; }
     // kaydın Pending Approved veya Rejected durumunu tutar
+
+
+    public DateTimeOffset? CheckedInAt { get; set; }
+    // kullanıcının qr kod ile etkinliğe giriş yaptığı zamanı tutar
 }

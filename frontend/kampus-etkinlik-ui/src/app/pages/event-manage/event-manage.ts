@@ -8,6 +8,7 @@ import { EventService } from '../../core/services/event.service'; // Etkinlik ol
 import { ClubResponse, CreateEventRequest, EventVisibility, UpdateEventRequest } from '../../core/models/api.models'; // Kullanılan etkinlik ve kulüp modelleri
 import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
 import { DatePickerModule } from 'primeng/datepicker'; // primeng datepicker componentini kullanmak için
+import * as QRCode from 'qrcode'; // backendden gelen güvenli check-in adresini qr koda çevirmek için
 
 @Component({ // Bu classın Angular componenti olduğunu belirtir
   selector: 'app-event-manage', // Componentin selector adı
@@ -22,8 +23,8 @@ import { DatePickerModule } from 'primeng/datepicker'; // primeng datepicker com
 
       <!-- Sayfa başlığı -->
       <div class="page-header">
-        <h1>{{ isEditMode() ? 'Update Event' : 'Create Event' }}</h1> <!-- Moda göre başlığı değiştirir -->
-        <p>{{ isEditMode() ? 'You can edit the event information.' : 'You can create a new event for your club.' }}</p> <!-- Moda göre açıklamayı değiştirir -->
+        <h1>{{ isEditMode() ? 'Update Event' : 'Create Event' }}</h1>
+        <p>{{ isEditMode() ? 'You can edit the event information.' : 'You can create a new event for your club.' }}</p>
       </div>
 
       <!-- Etkinlik bilgileri yüklenirken gösterilir -->
@@ -63,10 +64,12 @@ import { DatePickerModule } from 'primeng/datepicker'; // primeng datepicker com
           @if (!isEditMode()) {
             <div class="form-field full-width">
               <label for="clubId">Club</label>
-              <select id="clubId" formControlName="clubId"> <!-- Seçilen kulübü clubId alanına bağlar -->
+
+              <select id="clubId" formControlName="clubId">
                 <option value="">Select a club</option>
+
                 @for (club of myClubs(); track club.id) {
-                  <option [value]="club.id">{{ club.name }}</option> <!-- Managerın yönettiği kulüpleri listeler -->
+                  <option [value]="club.id">{{ club.name }}</option>
                 }
               </select>
             </div>
@@ -75,13 +78,25 @@ import { DatePickerModule } from 'primeng/datepicker'; // primeng datepicker com
           <!-- Etkinlik başlığı -->
           <div class="form-field full-width">
             <label for="title">Title</label>
-            <input id="title" type="text" formControlName="title" placeholder="Enter the event title"> <!-- Başlığı forma bağlar -->
+
+            <input
+              id="title"
+              type="text"
+              formControlName="title"
+              placeholder="Enter the event title"
+            >
           </div>
 
           <!-- Etkinlik açıklaması -->
           <div class="form-field full-width">
             <label for="description">Description</label>
-            <textarea id="description" formControlName="description" rows="6" placeholder="Enter the event description"></textarea> <!-- Açıklamayı forma bağlar -->
+
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="6"
+              placeholder="Enter the event description"
+            ></textarea>
           </div>
 
           <!-- Başlangıç tarihi -->
@@ -100,51 +115,171 @@ import { DatePickerModule } from 'primeng/datepicker'; // primeng datepicker com
               [minDate]="minimumDate"
             >
             </p-datepicker>
-            <!-- Tarihi forma bağlar -->
           </div>
 
           <!-- Konum -->
           <div class="form-field">
             <label for="location">Location</label>
-            <input id="location" type="text" formControlName="location" placeholder="e.g. Conference Hall"> <!-- Konumu forma bağlar -->
+
+            <input
+              id="location"
+              type="text"
+              formControlName="location"
+              placeholder="e.g. Conference Hall"
+            >
           </div>
 
           <!-- Kapasite -->
           <div class="form-field">
             <label for="capacity">Capacity</label>
-            <input id="capacity" type="number" min="1" formControlName="capacity" placeholder="e.g. 100"> <!-- Kapasiteyi forma bağlar -->
+
+            <input
+              id="capacity"
+              type="number"
+              min="1"
+              formControlName="capacity"
+              placeholder="e.g. 100"
+            >
           </div>
 
           <!-- Kategori -->
           <div class="form-field">
             <label for="category">Category</label>
-            <input id="category" type="text" formControlName="category" placeholder="e.g. Technology"> <!-- Kategoriyi forma bağlar -->
+
+            <input
+              id="category"
+              type="text"
+              formControlName="category"
+              placeholder="e.g. Technology"
+            >
           </div>
 
           <!-- Katılım tipi -->
           <div class="form-field full-width">
             <label for="visibility">Participation Type</label>
-            <select id="visibility" formControlName="visibility"> <!-- Katılım tipini visibility alanına bağlar -->
-              <option value="Public">Open to Everyone</option> <!-- Direkt kayıt olunabilir -->
-              <option value="ApprovalRequired">Approval Required</option> <!-- Manager onayı gerekir -->
+
+            <select
+              id="visibility"
+              formControlName="visibility"
+            >
+              <option value="Public">Open to Everyone</option>
+              <option value="ApprovalRequired">Approval Required</option>
             </select>
           </div>
+
         </div>
 
         <!-- Form işlem butonları -->
         <div class="form-actions">
-          <button class="save-button" type="submit" [disabled]="form.invalid || saving()"> <!-- Form geçersizse veya işlem devam ediyorsa pasif olur -->
+
+          <button
+            class="save-button"
+            type="submit"
+            [disabled]="form.invalid || saving()"
+          >
             {{ saving() ? 'Processing...' : (isEditMode() ? 'Update Event' : 'Create Event') }}
           </button>
 
           <!-- Sadece güncelleme modunda iptal butonu gösterilir -->
           @if (isEditMode()) {
-            <button class="cancel-button" type="button" [disabled]="saving()" (click)="cancelEvent()">
+            <button
+              class="cancel-button"
+              type="button"
+              [disabled]="saving()"
+              (click)="cancelEvent()"
+            >
               Cancel Event
             </button>
           }
+
         </div>
+
       </form>
+
+      <!-- qr kod sadece mevcut bir etkinlik düzenlenirken oluşturulabilir -->
+      @if (isEditMode()) {
+        <section class="qr-card">
+
+          <div class="qr-header">
+            <div>
+              <h2>Event Check-In QR</h2>
+              <p>Create a temporary QR code for students attending this event.</p>
+            </div>
+          </div>
+
+          <div class="qr-controls">
+
+            <div class="qr-duration-field">
+              <label for="qrDuration">QR Duration</label>
+
+              <select
+                id="qrDuration"
+                [formControl]="qrDurationControl"
+              >
+                <option [ngValue]="5">5 minutes</option>
+                <option [ngValue]="10">10 minutes</option>
+                <option [ngValue]="15">15 minutes</option>
+                <option [ngValue]="30">30 minutes</option>
+                <option [ngValue]="60">60 minutes</option>
+              </select>
+            </div>
+
+            <button
+              class="qr-button"
+              type="button"
+              [disabled]="generatingQr()"
+              (click)="generateQrCode()"
+            >
+              {{ generatingQr() ? 'Generating...' : 'Generate QR Code' }}
+            </button>
+
+          </div>
+
+          @if (qrErrorMessage()) {
+            <div class="qr-message qr-error-message">
+              {{ qrErrorMessage() }}
+            </div>
+          }
+
+          @if (qrImageUrl()) {
+            <div class="qr-result">
+
+              <div class="qr-image-box">
+                <img
+                  [src]="qrImageUrl()"
+                  alt="Event check-in QR code"
+                >
+              </div>
+
+              <div class="qr-info">
+
+                <h3>QR Code Ready</h3>
+
+                <p>
+                  Students registered and approved for this event can scan this QR code to check in.
+                </p>
+
+                <div class="qr-expiry">
+                  Valid until:
+                  <strong>{{ formatQrExpiry() }}</strong>
+                </div>
+
+                <div class="qr-link">
+                  {{ qrCheckInUrl() }}
+                </div>
+
+                <p class="qr-warning">
+                  Creating a new QR code disables the previous active QR code.
+                </p>
+
+              </div>
+
+            </div>
+          }
+
+        </section>
+      }
+
     </section>
   `,
   styleUrl: './event-manage.scss' // Componentin tasarım dosyası
@@ -168,13 +303,38 @@ export class EventManage implements OnInit {
   readonly errorMessage = signal(''); // Hata mesajını tutar
   readonly successMessage = signal(''); // Başarı mesajını tutar
 
-  readonly form = this.fb.nonNullable.group({ // Etkinlik formunu ve validation kurallarını oluşturur
+  readonly generatingQr = signal(false);
+  // qr kod oluşturma işleminin devam edip etmediğini tutar
+
+  readonly qrImageUrl = signal('');
+  // qrcode kütüphanesi tarafından oluşturulan qr görselini tutar
+
+  readonly qrCheckInUrl = signal('');
+  // qr kod içerisine yazılan check-in adresini tutar
+
+  readonly qrExpiresAt = signal('');
+  // qr kodun geçerliliğinin biteceği zamanı tutar
+
+  readonly qrErrorMessage = signal('');
+  // qr oluşturulurken oluşan hata mesajını tutar
+
+  readonly qrDurationControl = this.fb.nonNullable.control(
+    10,
+    [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(120)
+    ]
+  );
+  // qr kodun kaç dakika geçerli olacağını tutar
+
+  readonly form = this.fb.nonNullable.group({
     clubId: ['', [Validators.required]], // Kulüp seçimini zorunlu yapar
     title: ['', [Validators.required, Validators.maxLength(200)]], // Başlık zorunlu ve maksimum 200 karakter
     description: ['', [Validators.required, Validators.maxLength(3000)]], // Açıklama zorunlu ve maksimum 3000 karakter
 
     // primeng datepicker date nesnesi kullandığı için tarih alanını date veya null olarak tutar
-    startDate: this.fb.control<Date | null>(null, [Validators.required]), // Başlangıç tarihini zorunlu yapar
+    startDate: this.fb.control<Date | null>(null, [Validators.required]),
 
     location: ['', [Validators.required, Validators.maxLength(250)]], // Konum zorunlu ve maksimum 250 karakter
     capacity: [1, [Validators.required, Validators.min(1)]], // Kapasite zorunlu ve minimum 1
@@ -182,194 +342,277 @@ export class EventManage implements OnInit {
     visibility: ['Public' as EventVisibility, [Validators.required]] // Katılım tipi zorunlu ve varsayılan Public
   });
 
-  ngOnInit(): void { // Sayfa ilk açıldığında otomatik çalışır
+  ngOnInit(): void {
     this.loadMyClubs(); // Managerın yönettiği kulüpleri getirir
 
     const idParam = this.route.snapshot.paramMap.get('id'); // URL içindeki id parametresini alır
 
-    if (!idParam) { // URLde id yoksa oluşturma modunda kalır
-      return; // Metodun devam etmesini engeller
-    }
-
-    const id = Number(idParam); // URLden gelen IDyi number tipine çevirir
-
-    if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Invalid event ID.'); // Hata mesajı gösterir
-      return; // İşlemi durdurur
-    }
-
-    this.eventId = id; // Etkinlik IDsini kaydeder
-    this.isEditMode.set(true); // Sayfayı güncelleme moduna geçirir
-    this.loadEvent(id); // Etkinlik bilgilerini backendden getirir
-  }
-
-  loadMyClubs(): void { // Managerın yönettiği kulüpleri backendden getirir
-    this.clubService.getAll().subscribe({ // Backendden bütün kulüpleri ister
-      next: clubs => { // İstek başarılı olduğunda çalışır
-        const user = this.auth.currentUser(); // Giriş yapan kullanıcıyı alır
-
-        if (!user) { // Kullanıcı bilgisi yoksa
-          this.myClubs.set([]); // Kulüp listesini boşaltır
-          return; // Metodu sonlandırır
-        }
-
-        this.myClubs.set(
-          clubs.filter(club => club.managerUserId === user.userId) // Sadece kullanıcının yönettiği kulüpleri alır
-        );
-      },
-      error: (error: HttpErrorResponse) => { // Kulüpler alınırken hata oluşursa
-        this.myClubs.set([]); // Kulüp listesini boşaltır
-        this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not load clubs.') // Hatayı kullanıcıya uygun mesaja çevirir
-        );
-      }
-    });
-  }
-
-  loadEvent(id: number): void { // Güncellenecek etkinliğin bilgilerini backendden getirir
-    this.loading.set(true); // Yükleme işlemini başlatır
-    this.errorMessage.set(''); // Önceki hata mesajını temizler
-
-    this.eventService.getById(id).subscribe({ // IDye göre etkinlik detayını ister
-      next: event => { // İstek başarılı olduğunda çalışır
-        this.form.patchValue({ // Gelen etkinlik bilgilerini forma yerleştirir
-          clubId: String(event.clubId), // Kulüp IDsini string olarak forma aktarır
-          title: event.title, // Başlığı forma aktarır
-          description: event.description, // Açıklamayı forma aktarır
-
-          startDate: new Date(event.startDate), // backendden gelen tarihi date nesnesine çevirip datepickera aktarır
-
-          location: event.location, // Konumu forma aktarır
-          capacity: event.capacity, // Kapasiteyi forma aktarır
-          category: event.category, // Kategoriyi forma aktarır
-          visibility: event.visibility // Katılım tipini forma aktarır
-        });
-        this.loading.set(false); // Yükleme işlemini bitirir
-      },
-      error: (error: HttpErrorResponse) => { // Etkinlik bilgileri alınırken hata oluşursa
-        this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not load event information.') // Hatayı anlaşılır mesaja çevirir
-        );
-        this.loading.set(false); // Hata olsa bile yüklemeyi bitirir
-      }
-    });
-  }
-
-  submit(): void { // Form gönderildiğinde oluşturma veya güncelleme işlemini başlatır
-    if (this.form.invalid || this.saving()) { // Form geçersizse veya işlem devam ediyorsa
-      return; // Yeni işlem başlatılmasını engeller
-    }
-
-    this.saving.set(true); // Kaydetme işlemini başlatır
-    this.errorMessage.set(''); // Önceki hata mesajını temizler
-    this.successMessage.set(''); // Önceki başarı mesajını temizler
-
-    const value = this.form.getRawValue(); // Formdaki bütün değerleri alır
-
-    if (!value.startDate) { // herhangi bir nedenle tarih seçilmemişse kontrol eder
-      this.errorMessage.set('Please select a start date.'); // kullanıcıya tarih seçmesi gerektiğini söyler
-      this.saving.set(false); // kaydetme işlemini durdurur
+    if (!idParam) {
       return;
     }
 
-    const commonRequest = { // Oluşturma ve güncellemede ortak kullanılacak alanları toplar
-      title: value.title.trim(), // Başlığın gereksiz boşluklarını temizler
-      description: value.description.trim(), // Açıklamanın gereksiz boşluklarını temizler
+    const id = Number(idParam);
 
-      startDate: value.startDate.toISOString(), // datepickerın date nesnesini backend için ISO formatına çevirir
+    if (!Number.isInteger(id) || id <= 0) {
+      this.errorMessage.set('Invalid event ID.');
+      return;
+    }
 
-      location: value.location.trim(), // Konumun gereksiz boşluklarını temizler
-      capacity: Number(value.capacity), // Kapasiteyi number tipine çevirir
-      category: value.category.trim(), // Kategorinin gereksiz boşluklarını temizler
-      visibility: value.visibility // Katılım tipini requeste ekler
+    this.eventId = id;
+    this.isEditMode.set(true);
+    this.loadEvent(id);
+  }
+
+  loadMyClubs(): void {
+    this.clubService.getAll().subscribe({
+      next: clubs => {
+        const user = this.auth.currentUser();
+
+        if (!user) {
+          this.myClubs.set([]);
+          return;
+        }
+
+        this.myClubs.set(
+          clubs.filter(club => club.managerUserId === user.userId)
+        );
+      },
+      error: (error: HttpErrorResponse) => {
+        this.myClubs.set([]);
+
+        this.errorMessage.set(
+          getApiErrorMessage(error, 'Could not load clubs.')
+        );
+      }
+    });
+  }
+
+  loadEvent(id: number): void {
+    this.loading.set(true);
+    this.errorMessage.set('');
+
+    this.eventService.getById(id).subscribe({
+      next: event => {
+        this.form.patchValue({
+          clubId: String(event.clubId),
+          title: event.title,
+          description: event.description,
+          startDate: new Date(event.startDate),
+          location: event.location,
+          capacity: event.capacity,
+          category: event.category,
+          visibility: event.visibility
+        });
+
+        this.loading.set(false);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage.set(
+          getApiErrorMessage(error, 'Could not load event information.')
+        );
+
+        this.loading.set(false);
+      }
+    });
+  }
+
+  submit(): void {
+    if (this.form.invalid || this.saving()) {
+      return;
+    }
+
+    this.saving.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const value = this.form.getRawValue();
+
+    if (!value.startDate) {
+      this.errorMessage.set('Please select a start date.');
+      this.saving.set(false);
+      return;
+    }
+
+    const commonRequest = {
+      title: value.title.trim(),
+      description: value.description.trim(),
+
+      startDate: value.startDate.toISOString(),
+
+      location: value.location.trim(),
+      capacity: Number(value.capacity),
+      category: value.category.trim(),
+      visibility: value.visibility
     };
 
-    if (this.isEditMode() && this.eventId) { // Güncelleme modundaysa ve etkinlik IDsi varsa
+    if (this.isEditMode() && this.eventId) {
       const request: UpdateEventRequest = {
-        ...commonRequest // Ortak alanları güncelleme requestine ekler
+        ...commonRequest
       };
 
-      this.updateEvent(this.eventId, request); // Güncelleme metodunu çağırır
-      return; // Oluşturma kodunun çalışmasını engeller
+      this.updateEvent(this.eventId, request);
+      return;
     }
 
     const request: CreateEventRequest = {
-      clubId: Number(value.clubId), // Seçilen kulüp IDsini number tipine çevirir
-      ...commonRequest // Ortak alanları oluşturma requestine ekler
+      clubId: Number(value.clubId),
+      ...commonRequest
     };
 
-    this.createEvent(request); // Yeni etkinlik oluşturur
+    this.createEvent(request);
   }
 
-  createEvent(request: CreateEventRequest): void { // Yeni etkinlik oluşturma isteğini backend'e gönderir
-    this.eventService.create(request).subscribe({ // EventService üzerinden oluşturma isteği gönderir
-      next: event => { // Etkinlik başarıyla oluşturulduğunda çalışır
-        this.saving.set(false); // Kaydetme işlemini bitirir
-        void this.router.navigate(['/events', event.id]); // Yeni etkinliğin detay sayfasına gider
+  createEvent(request: CreateEventRequest): void {
+    this.eventService.create(request).subscribe({
+      next: event => {
+        this.saving.set(false);
+
+        void this.router.navigate([
+          '/events',
+          event.id
+        ]);
       },
-      error: (error: HttpErrorResponse) => { // Oluşturma sırasında hata oluşursa
+      error: (error: HttpErrorResponse) => {
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not create the event.') // Hatayı anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not create the event.')
         );
-        this.saving.set(false); // Hata olsa bile kaydetme işlemini bitirir
+
+        this.saving.set(false);
       }
     });
   }
 
-  updateEvent(id: number, request: UpdateEventRequest): void { // Var olan etkinliği günceller
-    this.eventService.update(id, request).subscribe({ // EventService üzerinden güncelleme isteği gönderir
-      next: event => { // Güncelleme başarılı olduğunda çalışır
-        this.successMessage.set('Event updated.'); // Başarı mesajını gösterir
+  updateEvent(
+    id: number,
+    request: UpdateEventRequest
+  ): void {
+    this.eventService.update(id, request).subscribe({
+      next: event => {
+        this.successMessage.set('Event updated.');
 
-        this.form.patchValue({ // Backendden dönen güncel bilgileri tekrar forma yerleştirir
-          title: event.title, // Güncel başlığı forma aktarır
-          description: event.description, // Güncel açıklamayı forma aktarır
-
-          startDate: new Date(event.startDate), // backendden dönen güncel tarihi date nesnesine çevirip datepickera aktarır
-
-          location: event.location, // Güncel konumu forma aktarır
-          capacity: event.capacity, // Güncel kapasiteyi forma aktarır
-          category: event.category, // Güncel kategoriyi forma aktarır
-          visibility: event.visibility // Güncel katılım tipini forma aktarır
+        this.form.patchValue({
+          title: event.title,
+          description: event.description,
+          startDate: new Date(event.startDate),
+          location: event.location,
+          capacity: event.capacity,
+          category: event.category,
+          visibility: event.visibility
         });
 
-        this.saving.set(false); // Güncelleme işlemini bitirir
+        this.saving.set(false);
       },
-      error: (error: HttpErrorResponse) => { // Güncelleme sırasında hata oluşursa
+      error: (error: HttpErrorResponse) => {
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not update the event.') // Hatayı anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not update the event.')
         );
-        this.saving.set(false); // Hata olsa bile kaydetme işlemini bitirir
+
+        this.saving.set(false);
       }
     });
   }
 
-  cancelEvent(): void { // Mevcut etkinliği iptal eder
-    if (!this.eventId || this.saving()) { // Etkinlik IDsi yoksa veya işlem devam ediyorsa
-      return; // İptal işlemini başlatmaz
+  cancelEvent(): void {
+    if (!this.eventId || this.saving()) {
+      return;
     }
 
-    const approved = window.confirm('Are you sure you want to cancel the event?'); // Kullanıcıdan iptal onayı ister
+    const approved = window.confirm(
+      'Are you sure you want to cancel the event?'
+    );
 
-    if (!approved) { // Kullanıcı onaylamadıysa
-      return; // İşlemi iptal eder
+    if (!approved) {
+      return;
     }
 
-    this.saving.set(true); // İptal işlemini başlatır
-    this.errorMessage.set(''); // Önceki hata mesajını temizler
-    this.successMessage.set(''); // Önceki başarı mesajını temizler
+    this.saving.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
 
-    this.eventService.cancel(this.eventId).subscribe({ // EventService üzerinden iptal isteği gönderir
-      next: () => { // İptal işlemi başarılı olduğunda çalışır
-        this.successMessage.set('Event cancelled.'); // Başarı mesajını gösterir
-        this.saving.set(false); // İptal işlemini bitirir
+    this.eventService.cancel(this.eventId).subscribe({
+      next: () => {
+        this.successMessage.set('Event cancelled.');
+        this.saving.set(false);
       },
-      error: (error: HttpErrorResponse) => { // İptal sırasında hata oluşursa
+      error: (error: HttpErrorResponse) => {
         this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not cancel the event.') // Hatayı anlaşılır mesaja çevirir
+          getApiErrorMessage(error, 'Could not cancel the event.')
         );
-        this.saving.set(false); // Hata olsa bile işlemi bitirir
+
+        this.saving.set(false);
       }
     });
+  }
+
+  generateQrCode(): void {
+    if (
+      !this.eventId ||
+      this.generatingQr() ||
+      this.qrDurationControl.invalid
+    ) {
+      return;
+    }
+
+    this.generatingQr.set(true);
+    this.qrErrorMessage.set('');
+    this.qrImageUrl.set('');
+    this.qrCheckInUrl.set('');
+    this.qrExpiresAt.set('');
+
+    this.eventService.createCheckInSession(
+      this.eventId,
+      {
+        expiresInMinutes: this.qrDurationControl.getRawValue()
+      }
+    ).subscribe({
+      next: async response => {
+        try {
+          const checkInUrl =
+            `${window.location.origin}/check-in?token=${encodeURIComponent(response.token)}`;
+
+          // backendden gelen tokenı öğrencinin açacağı frontend check-in adresine ekler
+          const qrImage = await QRCode.toDataURL(
+            checkInUrl,
+            {
+              width: 320,
+              margin: 2,
+              errorCorrectionLevel: 'M'
+            }
+          );
+
+          // oluşturulan check-in adresini qrcode kütüphanesi ile görsele çevirir
+          this.qrCheckInUrl.set(checkInUrl);
+          this.qrExpiresAt.set(response.expiresAt);
+          this.qrImageUrl.set(qrImage);
+        } catch {
+          this.qrErrorMessage.set(
+            'QR image could not be created.'
+          );
+        } finally {
+          this.generatingQr.set(false);
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        this.qrErrorMessage.set(
+          getApiErrorMessage(
+            error,
+            'Could not create the QR code.'
+          )
+        );
+
+        this.generatingQr.set(false);
+      }
+    });
+  }
+
+  formatQrExpiry(): string {
+    const expiresAt = this.qrExpiresAt();
+
+    if (!expiresAt) {
+      return '';
+    }
+
+    return new Date(expiresAt).toLocaleString();
+    // backendden gelen utc tarihi kullanıcının yerel saatine çevirerek gösterir
   }
 }

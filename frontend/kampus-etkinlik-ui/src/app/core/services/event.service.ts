@@ -3,6 +3,10 @@ import { HttpClient, HttpParams } from '@angular/common/http'; // Backend'e HTTP
 import { Observable } from 'rxjs'; // Backend'den gelecek async sonuçları Observable olarak kullanmak için
 import { API_BASE_URL } from '../config/api.config'; // Backend API'nin ana adresini kullanmak için
 import {
+  CheckInRequest,
+  CheckInResponse,
+  CheckInSessionResponse,
+  CreateCheckInSessionRequest,
   CreateEventRequest,
   EventPageQuery,
   EventResponse,
@@ -85,5 +89,24 @@ export class EventService {
 
   cancel(id: number): Observable<EventResponse> { // Verilen idye sahip etkinliği iptal eder
     return this.http.put<EventResponse>(`${API_BASE_URL}/Events/${id}/cancel`, {}); // İptal endpointine boş body ile PUT isteği gönderir
+  }
+
+  createCheckInSession(
+    eventId: number,
+    request: CreateCheckInSessionRequest
+  ): Observable<CheckInSessionResponse> {
+    return this.http.post<CheckInSessionResponse>(
+      `${API_BASE_URL}/events/${eventId}/check-in-session`,
+      request
+    );
+    // clubmanager için etkinliğe ait geçici qr oturumu oluşturur
+  }
+
+  checkIn(request: CheckInRequest): Observable<CheckInResponse> {
+    return this.http.post<CheckInResponse>(
+      `${API_BASE_URL}/check-in`,
+      request
+    );
+    // qr koddan gelen tokenı backende gönderip öğrencinin katılımını kaydeder
   }
 }

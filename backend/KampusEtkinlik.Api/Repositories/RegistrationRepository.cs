@@ -1,4 +1,3 @@
- 
 using KampusEtkinlik.Api.Data; // ApplicationDbContext üzerinden veritabanına erişmemizi sağlar
 using KampusEtkinlik.Api.Enums; // RegistrationApprovalStatus enumuna erişmemizi sağlar
 using KampusEtkinlik.Api.Models; // Registration modeline erişmemizi sağlar
@@ -47,6 +46,25 @@ public sealed class RegistrationRepository(ApplicationDbContext dbContext) : IRe
                      // ve belirtilen etkinliğe mi ait kontrol eder
                 cancellationToken
             ); // eşleşen kayıt varsa döndürür, yoksa null döndürür
+    }
+
+
+
+    public async Task<Registration?> GetByUserAndEventForUpdateAsync(
+        string userId,
+        int eventId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await dbContext.Registrations
+            .Include(registration => registration.Event)
+            .FirstOrDefaultAsync(
+                registration =>
+                    registration.UserId == userId &&
+                    registration.EventId == eventId,
+                cancellationToken
+            );
+        // qr check-in sırasında CheckedInAt alanı değiştirileceği için kayıt takipli olarak getirilir
     }
 
 
@@ -153,4 +171,3 @@ public sealed class RegistrationRepository(ApplicationDbContext dbContext) : IRe
         // kayıt ekleme veya ApprovalStatus değişikliklerini PostgreSQL veritabanına kaydeder
     }
 }
- 

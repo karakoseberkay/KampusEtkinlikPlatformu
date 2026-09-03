@@ -104,6 +104,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/my-registrations/my-registrations').then(module => module.MyRegistrations)
   },
   {
+    path: 'check-in',
+    title: 'Event Check-In',
+    canActivate: [studentGuard], // qr ile etkinliğe katılım işlemini sadece Student yapabilir
+    loadComponent: () => import('./pages/check-in/check-in').then(module => module.CheckIn)
+    // qr kod okutulduğunda token query parameter olarak bu sayfaya gelir
+  },
+  {
     path: 'user-management',
     title: 'User Management',
     canActivate: [adminGuard], // sadece manager@kampus.com admin hesabı erişebilir

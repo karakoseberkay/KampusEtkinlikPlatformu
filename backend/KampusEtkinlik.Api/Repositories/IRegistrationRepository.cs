@@ -1,4 +1,3 @@
- 
 using KampusEtkinlik.Api.Enums; // RegistrationApprovalStatus enumuna erişmemizi sağlar
 using KampusEtkinlik.Api.Models; // Registration modeline erişmemizi sağlar
 
@@ -18,6 +17,14 @@ public interface IRegistrationRepository // etkinlik kayıtlarıyla ilgili verit
         int eventId, // kontrol edilecek etkinliğin idsini alır
         CancellationToken cancellationToken = default
     ); // kullanıcının belirtilen etkinliğe daha önce kayıt olup olmadığını getirir, yoksa null döner
+
+
+    Task<Registration?> GetByUserAndEventForUpdateAsync(
+        string userId,
+        int eventId,
+        CancellationToken cancellationToken = default
+    );
+    // qr check-in sırasında güncellenecek kayıt bilgisini takipli olarak getirir
 
 
     Task<List<Registration>> GetByUserIdAsync(
@@ -49,4 +56,3 @@ public interface IRegistrationRepository // etkinlik kayıtlarıyla ilgili verit
         CancellationToken cancellationToken = default
     ); // kayıt üzerindeki ekleme veya durum değişikliklerini veritabanına kaydeder
 }
- 

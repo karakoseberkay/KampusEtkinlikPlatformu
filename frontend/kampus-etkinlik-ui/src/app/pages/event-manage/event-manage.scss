@@ -1,9 +1,11 @@
 /* Etkinlik oluştur / güncelle sayfası */
+
 .event-manage-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
 /* Sayfa başlığı */
+
 .page-header {
   margin-bottom: 28px; // Başlık ile form arasında boşluk bırakır.
 }
@@ -22,6 +24,7 @@
 }
 
 /* Mesaj alanları */
+
 .page-message {
   margin-bottom: 20px; // Mesaj ile form arasında boşluk bırakır.
   padding: 14px 16px; // Mesaj kutusunun içine boşluk verir.
@@ -45,6 +48,7 @@
 }
 
 /* Form kartı */
+
 .event-form {
   max-width: 900px; // Formun gereğinden fazla genişlemesini engeller.
   background-color: #ffffff; // Form kartının arka planını beyaz yapar.
@@ -83,6 +87,7 @@
 }
 
 /* Form alanları */
+
 .form-field {
   display: flex; // Label ve inputu flex yapısına geçirir.
   flex-direction: column; // Labelı inputun üstünde gösterir.
@@ -133,6 +138,7 @@
 }
 
 /* Form butonları */
+
 .form-actions {
   display: flex; // Form butonlarını yan yana dizer.
   justify-content: flex-end; // Butonları formun sağ tarafına hizalar.
@@ -179,8 +185,173 @@
   cursor: not-allowed; // Butonların kullanılamadığını gösterir.
 }
 
-// Responsive düzen 
-@media (max-width: 700px) { // Ekran genişliği 700px veya altına düştüğünde çalışır.
+/* qr kod yönetim alanı */
+
+.qr-card {
+  max-width: 900px;
+  margin-top: 24px;
+  background-color: #ffffff;
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qr-header {
+  padding: 20px 22px;
+  border-bottom: 1px solid #e7edf3;
+}
+
+.qr-header h2 {
+  margin: 0 0 5px;
+  color: #003267;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.qr-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.qr-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 22px;
+}
+
+.qr-duration-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 220px;
+}
+
+.qr-duration-field label {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.qr-duration-field select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  outline: none;
+  font-size: 13px;
+}
+
+.qr-duration-field select:focus {
+  border-color: #003267;
+}
+
+.qr-button {
+  min-height: 40px;
+  padding: 0 18px;
+  background-color: #003267;
+  color: #ffffff;
+  border: 1px solid #003267;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.qr-button:hover:not(:disabled) {
+  background-color: #00264f;
+  border-color: #00264f;
+}
+
+.qr-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.qr-message {
+  margin: 0 22px 22px;
+  padding: 12px 14px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+.qr-error-message {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.qr-result {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 22px 24px;
+}
+
+.qr-image-box {
+  flex: 0 0 auto;
+  padding: 14px;
+  background-color: #ffffff;
+  border: 1px solid #dbe3ec;
+  border-radius: 8px;
+}
+
+.qr-image-box img {
+  display: block;
+  width: 260px;
+  max-width: 100%;
+  height: auto;
+}
+
+.qr-info {
+  min-width: 0;
+}
+
+.qr-info h3 {
+  margin: 0 0 8px;
+  color: #003267;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.qr-info p {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.qr-expiry {
+  margin-bottom: 14px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.qr-link {
+  max-width: 100%;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.qr-info .qr-warning {
+  margin-bottom: 0;
+  color: #b45309;
+}
+
+/* Responsive düzen */
+
+@media (max-width: 700px) {
+
   .page-header h1 {
     font-size: 25px; // Mobilde ana başlığı biraz küçültür.
   }
@@ -201,4 +372,28 @@
   .cancel-button {
     width: 100%; // Mobilde butonları tam genişlik yapar.
   }
+
+  .qr-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .qr-duration-field {
+    width: 100%;
+  }
+
+  .qr-button {
+    width: 100%;
+  }
+
+  .qr-result {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qr-image-box {
+    display: flex;
+    justify-content: center;
+  }
+
 }
