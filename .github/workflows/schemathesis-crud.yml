@@ -1,0 +1,355 @@
+name: CampusBody Isolated CRUD Fuzz Tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  crud-fuzz:
+    name: Isolated POST PUT DELETE Fuzz Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: campusbody_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d campusbody_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://127.0.0.1:5080
+      DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE: false
+
+      ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=campusbody_test;Username=postgres;Password=postgres
+
+      Jwt__Key: CampusBody_CI_Test_Key_Only_123456789012345678901234567890
+      Jwt__Issuer: CampusBody.CI
+      Jwt__Audience: CampusBody.CI
+
+      MANAGER_EMAIL: manager@kampus.com
+      MANAGER_PASSWORD: ${{ secrets.TEST_MANAGER_PASSWORD }}
+
+      STUDENT_EMAIL: ci-student@campusbody.test
+      STUDENT_PASSWORD: CiStudent1234
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore backend
+        run: |
+          dotnet restore backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj
+
+      - name: Install EF Core CLI
+        run: |
+          dotnet tool install --global dotnet-ef
+          dotnet ef --version
+
+      - name: Apply migrations to temporary PostgreSQL
+        run: |
+          dotnet ef database update \
+            --project backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj \
+            --startup-project backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj
+
+      - name: Build backend
+        run: |
+          dotnet build \
+            backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj \
+            --configuration Release \
+            --no-restore
+
+      - name: Start backend
+        run: |
+          dotnet run \
+            --project backend/KampusEtkinlik.Api/KampusEtkinlik.Api.csproj \
+            --configuration Release \
+            --no-build \
+            > campusbody-api-ci.log 2>&1 &
+
+          echo $! > campusbody-api-ci.pid
+
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent \
+              "http://127.0.0.1:5080/openapi/v1.json" \
+              > /dev/null; then
+
+              echo "Backend is ready"
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "Backend could not start"
+          cat campusbody-api-ci.log
+          exit 1
+
+      - name: Login test manager
+        id: manager_login
+        run: |
+          body=$(jq -n \
+            --arg email "$MANAGER_EMAIL" \
+            --arg password "$MANAGER_PASSWORD" \
+            '{email: $email, password: $password}')
+
+          response=$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            -X POST \
+            "http://127.0.0.1:5080/api/Auth/login" \
+            -H "Content-Type: application/json" \
+            -d "$body")
+
+          token=$(echo "$response" | jq -r '.accessToken')
+
+          if [ -z "$token" ] || [ "$token" = "null" ]; then
+            echo "Manager JWT could not be retrieved"
+            exit 1
+          fi
+
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Register temporary student
+        id: student_register
+        run: |
+          body=$(jq -n \
+            --arg fullName "CI Fuzz Student" \
+            --arg email "$STUDENT_EMAIL" \
+            --arg password "$STUDENT_PASSWORD" \
+            --arg department "Test" \
+            '{
+              fullName: $fullName,
+              email: $email,
+              password: $password,
+              department: $department
+            }')
+
+          response=$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            -X POST \
+            "http://127.0.0.1:5080/api/Auth/register" \
+            -H "Content-Type: application/json" \
+            -d "$body")
+
+          token=$(echo "$response" | jq -r '.accessToken')
+          userId=$(echo "$response" | jq -r '.userId')
+
+          if [ -z "$token" ] || [ "$token" = "null" ]; then
+            echo "Student JWT could not be retrieved"
+            exit 1
+          fi
+
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+          echo "user_id=$userId" >> "$GITHUB_OUTPUT"
+
+      - name: Create temporary club
+        id: create_club
+        run: |
+          response=$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            -X POST \
+            "http://127.0.0.1:5080/api/Clubs" \
+            -H "Authorization: Bearer ${{ steps.manager_login.outputs.token }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "CI Fuzz Club",
+              "description": "Temporary isolated fuzz test club",
+              "logoUrl": null
+            }')
+
+          clubId=$(echo "$response" | jq -r '.id')
+
+          echo "club_id=$clubId" >> "$GITHUB_OUTPUT"
+
+      - name: Create temporary event
+        id: create_event
+        run: |
+          futureDate=$(date -u -d "+30 days" +"%Y-%m-%dT%H:%M:%SZ")
+
+          body=$(jq -n \
+            --argjson clubId "${{ steps.create_club.outputs.club_id }}" \
+            --arg startDate "$futureDate" \
+            '{
+              clubId: $clubId,
+              title: "CI Fuzz Event",
+              description: "Temporary isolated fuzz test event",
+              startDate: $startDate,
+              location: "CI Test Location",
+              capacity: 100,
+              category: "Testing",
+              visibility: "ApprovalRequired"
+            }')
+
+          response=$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            -X POST \
+            "http://127.0.0.1:5080/api/Events" \
+            -H "Authorization: Bearer ${{ steps.manager_login.outputs.token }}" \
+            -H "Content-Type: application/json" \
+            -d "$body")
+
+          eventId=$(echo "$response" | jq -r '.id')
+
+          echo "event_id=$eventId" >> "$GITHUB_OUTPUT"
+          echo "future_date=$futureDate" >> "$GITHUB_OUTPUT"
+
+      - name: Create temporary registration
+        id: create_registration
+        run: |
+          response=$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            -X POST \
+            "http://127.0.0.1:5080/api/events/${{ steps.create_event.outputs.event_id }}/register" \
+            -H "Authorization: Bearer ${{ steps.student_register.outputs.token }}")
+
+          registrationId=$(echo "$response" | jq -r '.id')
+
+          echo "registration_id=$registrationId" >> "$GITHUB_OUTPUT"
+
+      - name: Create Schemathesis CI config
+        run: |
+          cat > schemathesis-ci.toml <<EOF
+          generation.mode = "all"
+          generation.max-examples = 25
+          request-timeout = 10.0
+
+          [parameters]
+          "path.eventId" = ${{ steps.create_event.outputs.event_id }}
+          "path.userId" = "${{ steps.student_register.outputs.user_id }}"
+          "body.clubId" = ${{ steps.create_club.outputs.club_id }}
+          "body.startDate" = "${{ steps.create_event.outputs.future_date }}"
+
+          [[operations]]
+          include-name = "GET /api/Clubs/{id}"
+          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
+
+          [[operations]]
+          include-name = "PUT /api/Clubs/{id}"
+          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
+
+          [[operations]]
+          include-name = "DELETE /api/Clubs/{id}"
+          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
+
+          [[operations]]
+          include-name = "GET /api/Clubs/{id}/stats"
+          parameters = { "path.id" = ${{ steps.create_club.outputs.club_id }} }
+
+          [[operations]]
+          include-name = "GET /api/Events/{id}"
+          parameters = { "path.id" = ${{ steps.create_event.outputs.event_id }} }
+
+          [[operations]]
+          include-name = "PUT /api/Events/{id}"
+          parameters = { "path.id" = ${{ steps.create_event.outputs.event_id }} }
+
+          [[operations]]
+          include-name = "PUT /api/Events/{id}/cancel"
+          parameters = { "path.id" = ${{ steps.create_event.outputs.event_id }} }
+
+          [[operations]]
+          include-name = "PUT /api/Registrations/{id}/approve"
+          parameters = { "path.id" = ${{ steps.create_registration.outputs.registration_id }} }
+
+          [[operations]]
+          include-name = "PUT /api/Registrations/{id}/reject"
+          parameters = { "path.id" = ${{ steps.create_registration.outputs.registration_id }} }
+          EOF
+
+      - name: Manager POST PUT fuzz tests
+        id: manager_mutations
+        continue-on-error: true
+        uses: schemathesis/action@v3
+        with:
+          schema: 'http://127.0.0.1:5080/openapi/v1.json'
+          base-url: 'http://127.0.0.1:5080'
+          authorization: 'Bearer ${{ steps.manager_login.outputs.token }}'
+          checks: 'not_a_server_error'
+          max-examples: 25
+          config-file: 'schemathesis-ci.toml'
+          args: '--include-method POST --include-method PUT --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          coverage-artifact-name: 'schemathesis-crud-manager'
+          coverage-step-summary: 'true'
+
+      - name: Student registration fuzz tests
+        id: student_mutations
+        continue-on-error: true
+        uses: schemathesis/action@v3
+        with:
+          schema: 'http://127.0.0.1:5080/openapi/v1.json'
+          base-url: 'http://127.0.0.1:5080'
+          authorization: 'Bearer ${{ steps.student_register.outputs.token }}'
+          checks: 'not_a_server_error'
+          max-examples: 25
+          config-file: 'schemathesis-ci.toml'
+          args: '--include-path /api/events/{eventId}/register --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          coverage-artifact-name: 'schemathesis-crud-student'
+          coverage-step-summary: 'true'
+
+      - name: Manager DELETE fuzz tests
+        id: manager_delete
+        continue-on-error: true
+        uses: schemathesis/action@v3
+        with:
+          schema: 'http://127.0.0.1:5080/openapi/v1.json'
+          base-url: 'http://127.0.0.1:5080'
+          authorization: 'Bearer ${{ steps.manager_login.outputs.token }}'
+          checks: 'not_a_server_error'
+          max-examples: 25
+          config-file: 'schemathesis-ci.toml'
+          args: '--include-method DELETE --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          coverage-artifact-name: 'schemathesis-crud-delete'
+          coverage-step-summary: 'true'
+
+      - name: Upload backend log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: campusbody-isolated-api-log
+          path: campusbody-api-ci.log
+
+      - name: Final fuzz test result
+        if: always()
+        run: |
+          echo "Manager POST/PUT: ${{ steps.manager_mutations.outcome }}"
+          echo "Student POST: ${{ steps.student_mutations.outcome }}"
+          echo "Manager DELETE: ${{ steps.manager_delete.outcome }}"
+
+          if [ "${{ steps.manager_mutations.outcome }}" != "success" ] || \
+             [ "${{ steps.student_mutations.outcome }}" != "success" ] || \
+             [ "${{ steps.manager_delete.outcome }}" != "success" ]; then
+            echo "At least one isolated fuzz test found a failure."
+            exit 1
+          fi
+
+          echo "All isolated CRUD fuzz tests passed."
