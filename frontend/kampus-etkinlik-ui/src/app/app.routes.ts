@@ -104,12 +104,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/my-registrations/my-registrations').then(module => module.MyRegistrations)
   },
   {
-    path: 'check-in',
-    title: 'Event Check-In',
-    canActivate: [studentGuard], // qr ile etkinliğe katılım işlemini sadece Student yapabilir
-    loadComponent: () => import('./pages/check-in/check-in').then(module => module.CheckIn)
-    // qr kod okutulduğunda token query parameter olarak bu sayfaya gelir
-  },
+  path: 'check-in',
+  title: 'Event Check-In',
+  canActivate: [authGuard], // giriş yapmış kullanıcı qr check-in sayfasını açabilir
+  loadComponent: () => import('./pages/check-in/check-in').then(module => module.CheckIn)
+},
   {
     path: 'user-management',
     title: 'User Management',
