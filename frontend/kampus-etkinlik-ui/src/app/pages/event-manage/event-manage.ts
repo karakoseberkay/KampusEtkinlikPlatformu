@@ -8,7 +8,6 @@ import { EventService } from '../../core/services/event.service'; // Etkinlik ol
 import { ClubResponse, CreateEventRequest, EventVisibility, UpdateEventRequest } from '../../core/models/api.models'; // Kullanılan etkinlik ve kulüp modelleri
 import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
 import { DatePickerModule } from 'primeng/datepicker'; // primeng datepicker componentini kullanmak için
-import * as QRCode from 'qrcode'; // backendden gelen güvenli check-in adresini qr koda çevirmek için
 
 @Component({ // Bu classın Angular componenti olduğunu belirtir
   selector: 'app-event-manage', // Componentin selector adı
@@ -196,90 +195,6 @@ import * as QRCode from 'qrcode'; // backendden gelen güvenli check-in adresini
 
       </form>
 
-      <!-- qr kod sadece mevcut bir etkinlik düzenlenirken oluşturulabilir -->
-      @if (isEditMode()) {
-        <section class="qr-card">
-
-          <div class="qr-header">
-            <div>
-              <h2>Event Check-In QR</h2>
-              <p>Create a temporary QR code for students attending this event.</p>
-            </div>
-          </div>
-
-          <div class="qr-controls">
-
-            <div class="qr-duration-field">
-              <label for="qrDuration">QR Duration</label>
-
-              <select
-                id="qrDuration"
-                [formControl]="qrDurationControl"
-              >
-                <option [ngValue]="5">5 minutes</option>
-                <option [ngValue]="10">10 minutes</option>
-                <option [ngValue]="15">15 minutes</option>
-                <option [ngValue]="30">30 minutes</option>
-                <option [ngValue]="60">60 minutes</option>
-              </select>
-            </div>
-
-            <button
-              class="qr-button"
-              type="button"
-              [disabled]="generatingQr()"
-              (click)="generateQrCode()"
-            >
-              {{ generatingQr() ? 'Generating...' : 'Generate QR Code' }}
-            </button>
-
-          </div>
-
-          @if (qrErrorMessage()) {
-            <div class="qr-message qr-error-message">
-              {{ qrErrorMessage() }}
-            </div>
-          }
-
-          @if (qrImageUrl()) {
-            <div class="qr-result">
-
-              <div class="qr-image-box">
-                <img
-                  [src]="qrImageUrl()"
-                  alt="Event check-in QR code"
-                >
-              </div>
-
-              <div class="qr-info">
-
-                <h3>QR Code Ready</h3>
-
-                <p>
-                  Students registered and approved for this event can scan this QR code to check in.
-                </p>
-
-                <div class="qr-expiry">
-                  Valid until:
-                  <strong>{{ formatQrExpiry() }}</strong>
-                </div>
-
-                <div class="qr-link">
-                  {{ qrCheckInUrl() }}
-                </div>
-
-                <p class="qr-warning">
-                  Creating a new QR code disables the previous active QR code.
-                </p>
-
-              </div>
-
-            </div>
-          }
-
-        </section>
-      }
-
     </section>
   `,
   styleUrl: './event-manage.scss' // Componentin tasarım dosyası
@@ -302,31 +217,6 @@ export class EventManage implements OnInit {
   readonly saving = signal(false); // Oluşturma, güncelleme veya iptal işleminin durumunu tutar
   readonly errorMessage = signal(''); // Hata mesajını tutar
   readonly successMessage = signal(''); // Başarı mesajını tutar
-
-  readonly generatingQr = signal(false);
-  // qr kod oluşturma işleminin devam edip etmediğini tutar
-
-  readonly qrImageUrl = signal('');
-  // qrcode kütüphanesi tarafından oluşturulan qr görselini tutar
-
-  readonly qrCheckInUrl = signal('');
-  // qr kod içerisine yazılan check-in adresini tutar
-
-  readonly qrExpiresAt = signal('');
-  // qr kodun geçerliliğinin biteceği zamanı tutar
-
-  readonly qrErrorMessage = signal('');
-  // qr oluşturulurken oluşan hata mesajını tutar
-
-  readonly qrDurationControl = this.fb.nonNullable.control(
-    10,
-    [
-      Validators.required,
-      Validators.min(1),
-      Validators.max(120)
-    ]
-  );
-  // qr kodun kaç dakika geçerli olacağını tutar
 
   readonly form = this.fb.nonNullable.group({
     clubId: ['', [Validators.required]], // Kulüp seçimini zorunlu yapar
@@ -542,77 +432,5 @@ export class EventManage implements OnInit {
         this.saving.set(false);
       }
     });
-  }
-
-  generateQrCode(): void {
-    if (
-      !this.eventId ||
-      this.generatingQr() ||
-      this.qrDurationControl.invalid
-    ) {
-      return;
-    }
-
-    this.generatingQr.set(true);
-    this.qrErrorMessage.set('');
-    this.qrImageUrl.set('');
-    this.qrCheckInUrl.set('');
-    this.qrExpiresAt.set('');
-
-    this.eventService.createCheckInSession(
-      this.eventId,
-      {
-        expiresInMinutes: this.qrDurationControl.getRawValue()
-      }
-    ).subscribe({
-      next: async response => {
-        try {
-          const checkInUrl =
-            `${window.location.origin}/check-in?token=${encodeURIComponent(response.token)}`;
-
-          // backendden gelen tokenı öğrencinin açacağı frontend check-in adresine ekler
-          const qrImage = await QRCode.toDataURL(
-            checkInUrl,
-            {
-              width: 320,
-              margin: 2,
-              errorCorrectionLevel: 'M'
-            }
-          );
-
-          // oluşturulan check-in adresini qrcode kütüphanesi ile görsele çevirir
-          this.qrCheckInUrl.set(checkInUrl);
-          this.qrExpiresAt.set(response.expiresAt);
-          this.qrImageUrl.set(qrImage);
-        } catch {
-          this.qrErrorMessage.set(
-            'QR image could not be created.'
-          );
-        } finally {
-          this.generatingQr.set(false);
-        }
-      },
-      error: (error: HttpErrorResponse) => {
-        this.qrErrorMessage.set(
-          getApiErrorMessage(
-            error,
-            'Could not create the QR code.'
-          )
-        );
-
-        this.generatingQr.set(false);
-      }
-    });
-  }
-
-  formatQrExpiry(): string {
-    const expiresAt = this.qrExpiresAt();
-
-    if (!expiresAt) {
-      return '';
-    }
-
-    return new Date(expiresAt).toLocaleString();
-    // backendden gelen utc tarihi kullanıcının yerel saatine çevirerek gösterir
   }
 }
