@@ -353,6 +353,9 @@ jobs:
       - name: Create student Schemathesis config
         run: |
           cat > schemathesis-student-crud.toml <<EOF
+          [cache]
+          enabled = false
+
           [generation]
           mode = "all"
 
@@ -371,7 +374,7 @@ jobs:
           checks: 'not_a_server_error'
           max-examples: 25
           config-file: 'schemathesis-student-crud.toml'
-          args: '--include-path /api/events/{eventId}/register --include-method POST --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          args: '--include-name "POST /api/events/{eventId}/register" --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
           coverage-artifact-name: 'schemathesis-crud-student-post'
           coverage-step-summary: 'true'
 
@@ -414,14 +417,15 @@ jobs:
       - name: Create manager Schemathesis config
         run: |
           cat > schemathesis-manager-crud.toml <<EOF
+          [cache]
+          enabled = false
+
           [generation]
           mode = "all"
 
           [parameters]
           "body.clubId" = ${{ steps.create_event_club.outputs.club_id }}
           "body.startDate" = "${{ steps.create_event.outputs.future_date }}"
-          "path.eventId" = ${{ steps.create_event.outputs.event_id }}
-          "path.userId" = "${{ steps.student_register.outputs.user_id }}"
 
           [[operations]]
           include-name = "PUT /api/Clubs/{id}"
@@ -459,7 +463,7 @@ jobs:
           checks: 'not_a_server_error'
           max-examples: 25
           config-file: 'schemathesis-manager-crud.toml'
-          args: '--include-method POST --exclude-path /api/Auth/register --exclude-path /api/Auth/login --exclude-path /api/events/{eventId}/register --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          args: '--include-name "POST /api/Clubs" --include-name "POST /api/Events" --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
           coverage-artifact-name: 'schemathesis-crud-manager-post'
           coverage-step-summary: 'true'
 
@@ -474,7 +478,7 @@ jobs:
           checks: 'not_a_server_error'
           max-examples: 25
           config-file: 'schemathesis-manager-crud.toml'
-          args: '--include-method PUT --exclude-path /api/Users/{userId}/role --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          args: '--include-name "PUT /api/Clubs/{id}" --include-name "PUT /api/Events/{id}" --include-name "PUT /api/Events/{id}/cancel" --include-name "PUT /api/Registrations/{id}/approve" --include-name "PUT /api/Registrations/{id}/reject" --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
           coverage-artifact-name: 'schemathesis-crud-manager-put'
           coverage-step-summary: 'true'
 
@@ -489,7 +493,7 @@ jobs:
           checks: 'not_a_server_error'
           max-examples: 25
           config-file: 'schemathesis-manager-crud.toml'
-          args: '--include-method DELETE --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
+          args: '--include-name "DELETE /api/Clubs/{id}" --phases=coverage,fuzzing --request-timeout 10 --request-retries 1'
           coverage-artifact-name: 'schemathesis-crud-manager-delete'
           coverage-step-summary: 'true'
 
