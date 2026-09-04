@@ -1,11 +1,9 @@
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations; // Required validation özelliğini kullanmamızı sağlar
 
-namespace KampusEtkinlik.Api.DTOs.CheckIn;
+namespace KampusEtkinlik.Api.DTOs.CheckIn; // bu dosyanın CheckIn DTO katmanına ait olduğunu belirtir
 
-
-public sealed class CheckInRequest
+public sealed class CheckInRequest // qr okutulduğunda frontendden backende gönderilen token bilgisini taşır
 {
-    [Required]
-    public string Token { get; set; } = string.Empty;
-    // öğrencinin qr koddan aldığı geçici tokenı tutar
+    [Required] // token bilgisinin boş gönderilmesini engeller
+    public string Token { get; set; } = string.Empty; // kullanıcının qr koddan aldığı geçici tokenı tutar
 }
