@@ -1,39 +1,42 @@
-import { inject } from '@angular/core'; // servisleri guard içinde kullanabilmek için
-import { CanActivateFn, Router, UrlTree } from '@angular/router'; // guard tipi yönlendirme ve url oluşturma işlemleri için
-import { AuthService } from '../services/auth.service'; // kullanıcının oturum ve rol bilgilerine erişmek için
+import { inject } from '@angular/core'; // AuthService ve Router gibi servisleri guard içinde DI ile almak için
+import { CanActivateFn, Router, UrlTree } from '@angular/router'; // route erişimini kontrol etmek ve yönlendirme URLsi oluşturmak için
+import { AuthService } from '../services/auth.service'; // kullanıcının oturum rol ve kullanıcı bilgilerine erişmek için
 
-function roleGuard(role: string): boolean | UrlTree { // verilen role göre sayfa erişimini kontrol eder ya true döner ya da başka sayfaya yönlendirir
-  const authService = inject(AuthService); // kullanıcının oturum ve rol bilgilerine erişmemizi sağlar
-  const router = inject(Router); // kullanıcıyı farklı routelara yönlendirmemizi sağlar
+function roleGuard(role: string): boolean | UrlTree { // verilen role göre sayfa erişimini kontrol eder true veya yönlendirme için UrlTree döndürür
+  const authService = inject(AuthService); // kullanıcının oturum ve rol bilgilerine erişmek için servisi DI ile alır
+  const router = inject(Router); // kullanıcıyı başka routea yönlendirecek UrlTree oluşturmak için Routerı DI ile alır
 
-  if (!authService.hasValidSession()) { // kullanıcının geçerli oturumu yoksa
-    return router.createUrlTree(['/login']); // login sayfasına yönlendirir
+  if (!authService.hasValidSession()) {
+    return router.createUrlTree(['/login']); // geçerli oturum yoksa kullanıcıyı login sayfasına yönlendirir
   }
 
-  if (!authService.hasRole(role)) { // kullanıcı gerekli role sahip değilse
-    return router.createUrlTree(['/home']); // ana sayfaya yönlendirir
+  if (!authService.hasRole(role)) {
+    return router.createUrlTree(['/home']); // kullanıcı istenen role sahip değilse home sayfasına yönlendirir
   }
 
-  return true; // bütün kontroller geçildiyse sayfaya girişe izin verir
+  return true; // oturum ve rol kontrolü başarılıysa sayfaya girişe izin verir
 }
 
-export const studentGuard: CanActivateFn = () => roleGuard('Student'); // sadece Student rolüne izin verir
+export const studentGuard: CanActivateFn = () => roleGuard('Student');
+// ortak roleGuard fonksiyonuna Student rolünü göndererek sadece Student kullanıcıların erişmesini sağlar
 
-export const clubManagerGuard: CanActivateFn = () => roleGuard('ClubManager'); // sadece ClubManager rolüne izin verir
+export const clubManagerGuard: CanActivateFn = () => roleGuard('ClubManager');
+// ortak roleGuard fonksiyonuna ClubManager rolünü göndererek sadece ClubManager kullanıcıların erişmesini sağlar
 
-export const adminGuard: CanActivateFn = () => { // sadece projedeki admin hesabının erişebilmesini kontrol eder
-  const authService = inject(AuthService); // mevcut kullanıcının oturum ve kullanıcı bilgilerine erişmek için
-  const router = inject(Router); // gerektiğinde kullanıcıyı başka sayfaya yönlendirmek için
+export const adminGuard: CanActivateFn = () => { // projedeki admin hesabının user management sayfasına erişimini kontrol eder
+  const authService = inject(AuthService); // giriş yapan kullanıcının oturum rol ve kullanıcı bilgilerine erişmek için
+  const router = inject(Router); // erişim reddedilirse başka sayfaya yönlendirmek için
 
-  if (!authService.hasValidSession()) { // geçerli oturum yoksa
-    return router.createUrlTree(['/login']); // login sayfasına yönlendirir
+  if (!authService.hasValidSession()) {
+    return router.createUrlTree(['/login']); // geçerli oturum yoksa kullanıcıyı login sayfasına yönlendirir
   }
 
   const user = authService.currentUser(); // giriş yapan kullanıcının bilgilerini alır
 
-  if (!user || !authService.hasRole('ClubManager') || user.email.toLowerCase() !== 'manager@kampus.com') { // kullanıcı yoksa clubmanager değilse veya admin mailine sahip değilse
-    return router.createUrlTree(['/home']); // kullanıcının admin sayfasına girmesini engelleyip ana sayfaya gönderir
+  if (!user || !authService.hasRole('ClubManager') || user.email.toLowerCase() !== 'manager@kampus.com') {
+    return router.createUrlTree(['/home']);
+    // kullanıcı yoksa ClubManager değilse veya belirlenen admin mailine sahip değilse admin sayfasına girişini engeller
   }
 
-  return true; // bütün admin kontrolleri geçildiyse sayfaya girişe izin verir
+  return true; // bütün admin kontrolleri başarılıysa sayfaya girişe izin verir
 };

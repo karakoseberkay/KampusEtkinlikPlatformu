@@ -1,9 +1,11 @@
 /* Etkinlik detay sayfası */
+
 .event-detail-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
 /* Sayfa başlığı */
+
 .page-header {
   margin-bottom: 28px; // Sayfa başlığı ile detay kartı arasında boşluk bırakır.
 }
@@ -22,6 +24,7 @@
 }
 
 /* Bilgi ve hata mesajları */
+
 .page-message {
   padding: 18px; // Mesaj kutusunun içine boşluk verir.
   background-color: #ffffff; // Mesaj kutusunun arka planını beyaz yapar.
@@ -38,6 +41,7 @@
 }
 
 /* Detay kartı */
+
 .detail-card {
   background-color: #ffffff; // Detay kartının arka planını beyaz yapar.
   border: 1px solid #dbe3ec; // Kartın etrafına ince gri border ekler.
@@ -48,7 +52,7 @@
 .detail-card-header {
   display: flex; // Başlık bilgisi ile durum etiketini yan yana dizer.
   align-items: flex-start; // İçerikleri kartın üst kısmına hizalar.
-  justify-content: space-between; // Başlığı sola, durum etiketini sağa yerleştirir.
+  justify-content: space-between; // Başlığı sola durum etiketini sağa yerleştirir.
   gap: 20px; // İki bölüm arasında boşluk bırakır.
   padding: 24px; // Başlık bölümünün içine boşluk verir.
   border-bottom: 1px solid #e7edf3; // Başlık ile detay bilgileri arasına çizgi ekler.
@@ -70,6 +74,7 @@
 }
 
 /* Kategori etiketi */
+
 .category-badge {
   display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
   padding: 5px 9px; // Etiketin içerisine boşluk verir.
@@ -81,6 +86,7 @@
 }
 
 /* Durum etiketleri */
+
 .status-badge {
   display: inline-block; // Etiketin yalnızca içeriği kadar geniş olmasını sağlar.
   padding: 6px 10px; // Durum etiketinin içine boşluk verir.
@@ -101,6 +107,7 @@
 }
 
 /* Etkinlik bilgileri */
+
 .detail-grid {
   display: grid; // Bilgileri grid yapısıyla düzenler.
   grid-template-columns: repeat(3, 1fr); // Büyük ekranda üç eşit kolon oluşturur.
@@ -110,7 +117,7 @@
 
 .detail-item {
   display: flex; // Label ve değeri flex yapısına geçirir.
-  flex-direction: column; // Label üstte, değer altta görünür.
+  flex-direction: column; // Label üstte değer altta görünür.
   gap: 7px; // Label ile değer arasında boşluk bırakır.
   padding: 20px 0; // Her bilgi alanına üstten ve alttan boşluk verir.
   border-bottom: 1px solid #edf1f5; // Bilgiler arasına ince çizgi ekler.
@@ -133,6 +140,7 @@
 }
 
 /* Kayıt butonu */
+
 .detail-actions {
   display: flex; // İşlem butonlarını flex yapısında tutar.
   justify-content: flex-end; // Kayıt ol butonunu sağ tarafa hizalar.
@@ -162,6 +170,7 @@
 }
 
 /* Başarılı kayıt mesajı */
+
 .success-message {
   margin: 0 24px 24px; // Mesajın kart kenarlarıyla ve alt bölümle boşluğunu ayarlar.
   padding: 12px 14px; // Mesaj kutusunun içine boşluk verir.
@@ -172,8 +181,91 @@
   font-size: 13px; // Mesaj yazı boyutunu belirler.
 }
 
-// Responsive düzen 
-@media (max-width: 900px) { // Ekran genişliği 900px veya altına düştüğünde çalışır.
+/* Check-in yapan katılımcılar */
+
+.participants-card {
+  margin-top: 24px; // Katılımcı tablosunu etkinlik detay kartından ayırır.
+  background-color: #ffffff; // Kartın arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına ince border ekler.
+  border-radius: 8px; // Kart köşelerini yuvarlatır.
+  overflow: hidden; // Tablo içeriğinin kartın dışına taşmasını engeller.
+}
+
+.participants-header {
+  padding: 20px 24px; // Başlık alanının içerisine boşluk verir.
+  border-bottom: 1px solid #e7edf3; // Başlığı tablodan ayırır.
+}
+
+.participants-header h2 {
+  margin: 0 0 5px; // Başlığın dış boşluğunu düzenler.
+  color: #003267; // Başlığı CampusBody laciverti yapar.
+  font-size: 20px; // Başlık boyutunu belirler.
+  font-weight: 700; // Başlığı kalın yapar.
+}
+
+.participants-header p {
+  margin: 0; // Varsayılan paragraf boşluğunu kaldırır.
+  color: #64748b; // Alt açıklama rengini belirler.
+  font-size: 13px; // Açıklama boyutunu belirler.
+}
+
+.participants-message {
+  padding: 24px; // Boş veya yükleniyor mesajının çevresine boşluk verir.
+  color: #64748b; // Mesaj rengini belirler.
+  font-size: 13px; // Mesaj boyutunu belirler.
+}
+
+.participants-table-wrapper {
+  width: 100%; // Tablo alanının kart genişliğini kullanmasını sağlar.
+  overflow-x: auto; // Küçük ekranlarda tablo yatay kaydırılabilir olur.
+}
+
+.participants-table {
+  width: 100%; // Tablonun kullanılabilir genişliğin tamamını kaplamasını sağlar.
+  min-width: 700px; // Kolonların çok fazla sıkışmasını engeller.
+  border-collapse: collapse; // Hücre borderlarının tek çizgi gibi görünmesini sağlar.
+}
+
+.participants-table th {
+  padding: 13px 16px; // Tablo başlıklarının içine boşluk verir.
+  background-color: #f8fafc; // Başlık satırına açık arka plan verir.
+  color: #64748b; // Başlık yazılarının rengini belirler.
+  border-bottom: 1px solid #e7edf3; // Başlık satırının altına çizgi ekler.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 700; // Başlıkları kalın gösterir.
+  text-align: left; // Başlıkları sola hizalar.
+  white-space: nowrap; // Başlıkların alt satıra geçmesini engeller.
+}
+
+.participants-table td {
+  padding: 14px 16px; // Tablo hücrelerinin içine boşluk verir.
+  color: #475569; // Hücre yazılarının rengini belirler.
+  border-bottom: 1px solid #edf1f5; // Katılımcı satırlarını birbirinden ayırır.
+  font-size: 13px; // Hücre yazı boyutunu belirler.
+}
+
+.participants-table tbody tr:last-child td {
+  border-bottom: none; // Son katılımcının altındaki gereksiz çizgiyi kaldırır.
+}
+
+.participant-name {
+  color: #1e293b !important; // Katılımcının adını diğer alanlardan daha koyu gösterir.
+  font-weight: 700; // Katılımcının adını belirginleştirir.
+}
+
+.approval-badge {
+  display: inline-block; // Etiketin içerik kadar geniş olmasını sağlar.
+  padding: 5px 8px; // Etiketin içine boşluk verir.
+  background-color: #ecfdf3; // Onay durumuna açık yeşil arka plan verir.
+  color: #15803d; // Onay durumunu yeşil gösterir.
+  border-radius: 4px; // Etiketin köşelerini yuvarlatır.
+  font-size: 11px; // Etiket yazı boyutunu belirler.
+  font-weight: 700; // Etiketi kalın gösterir.
+}
+
+/* Responsive düzen */
+
+@media (max-width: 900px) {
   .detail-grid {
     grid-template-columns: repeat(2, 1fr); // Detay bilgilerini üç kolondan iki kolona düşürür.
   }
@@ -187,7 +279,7 @@
   }
 }
 
-@media (max-width: 600px) { // Telefon boyutundaki ekranlarda çalışır.
+@media (max-width: 600px) {
   .page-header h1 {
     font-size: 25px; // Mobilde sayfa başlığını biraz küçültür.
   }
@@ -216,5 +308,9 @@
 
   .register-button {
     width: 100%; // Mobilde kayıt butonunu tam genişlik yapar.
+  }
+
+  .participants-header {
+    padding: 18px; // Mobilde katılımcı kartının başlık boşluğunu azaltır.
   }
 }

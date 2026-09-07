@@ -1,112 +1,97 @@
-import { inject, Injectable } from '@angular/core'; // inject ile HttpClient gibi servisleri alabilmek ve Injectable kullanmak için
-import { HttpClient, HttpParams } from '@angular/common/http'; // Backend'e HTTP isteği göndermek ve query parametreleri oluşturmak için
-import { Observable } from 'rxjs'; // Backend'den gelecek async sonuçları Observable olarak kullanmak için
-import { API_BASE_URL } from '../config/api.config'; // Backend API'nin ana adresini kullanmak için
-import {
-  CheckInRequest,
-  CheckInResponse,
-  CheckInSessionResponse,
-  CreateCheckInSessionRequest,
-  CreateEventRequest,
-  EventPageQuery,
-  EventResponse,
-  PagedResponse,
-  PopularEventResponse,
-  UpdateEventRequest
-} from '../models/api.models'; // Etkinlik request, response ve sayfalama modellerini kullanmak için
+import { inject, Injectable } from '@angular/core'; // inject ile servisleri alabilmek ve bu classı Angular servisi olarak tanımlamak için
+import { HttpClient, HttpParams } from '@angular/common/http'; // backende HTTP istekleri göndermek ve URL query parametreleri oluşturmak için
+import { Observable } from 'rxjs'; // backendden gelecek asenkron sonuçları Observable olarak kullanmak için
+import { API_BASE_URL } from '../config/api.config'; // backend API'nin ana adresini kullanmak için
+import { CheckInRequest, CheckInResponse, CheckInSessionResponse, CreateCheckInSessionRequest, CreateEventRequest, EventPageQuery, EventResponse, PagedResponse, PopularEventResponse, UpdateEventRequest } from '../models/api.models'; // etkinlik ve check-in işlemlerinde kullanılan request response modellerine erişmek için
 
 @Injectable({
-  providedIn: 'root' // Servisin uygulama genelinde tek instance olarak kullanılmasını sağlar
+  providedIn: 'root' // servisin uygulama genelinde tek instance olarak kullanılmasını sağlar
+  //“Bu class bir servistir ve uygulamanın her yerinden kullanılabilir.”
 })
 export class EventService {
-  private readonly http = inject(HttpClient); // Backend'e HTTP istekleri göndermemizi sağlar
+  private readonly http = inject(HttpClient); // HttpClient servisini DI ile alıp backende HTTP isteği göndermemizi sağlar
 
-/*
-  getAll(): Observable<EventResponse[]> { // Tüm etkinlikleri backendden getirir(filtresiz)
+  /*
+  getAll(): Observable<EventResponse[]> { // tüm etkinlikleri backendden filtresiz getirir şu anda kullanılmadığı için kapalıdır
     return this.http.get<EventResponse[]>(`${API_BASE_URL}/Events`);
-  }*/
+  }
+  */
 
-  getPaged(query: EventPageQuery): Observable<PagedResponse<EventResponse>> { // Etkinlikleri filtreli ve sayfalı şekilde backendden getirir
-    let params = new HttpParams(); // Backend'e gönderilecek query parametrelerini tutacak boş HttpParams oluşturur(immutable yapı yani değiştirmez yeni oluşturur)
+  getPaged(query: EventPageQuery): Observable<PagedResponse<EventResponse>> { // etkinlikleri filtreli sıralı ve sayfalı şekilde backendden getirir
+    let params = new HttpParams(); // URL query parametrelerini tutar HttpParams immutable olduğu için her set işleminde yeni değer döndürür
 
-    if (query.search) { // Arama değeri girilmişse
-      params = params.set('search', query.search); // URL'e search query parametresini ekler
+    if (query.search) {
+      params = params.set('search', query.search); // arama metni varsa URL parametresine ekler
     }
 
-    if (query.category) { // Kategori filtresi seçilmişse
-      params = params.set('category', query.category); // URL'e category query parametresini ekler
+    if (query.category) {
+      params = params.set('category', query.category); // kategori seçilmişse URL parametresine ekler
     }
 
-    if (query.clubId !== undefined) { // Kulüp filtresi gönderilmişse
-      params = params.set('clubId', query.clubId.toString()); // Kulüp IDsini stringe çevirip URL parametresi olarak ekler
+    if (query.clubId !== undefined) {
+      params = params.set('clubId', query.clubId.toString()); // number olan clubIdsini URLde kullanılabilmesi için stringe çevirir
     }
 
-    if (query.dateFrom) { // Başlangıç tarihi filtresi varsa
-      params = params.set('dateFrom', query.dateFrom); // Başlangıç tarihini URL parametresine ekler
+    if (query.dateFrom) {
+      params = params.set('dateFrom', query.dateFrom); // başlangıç tarihi varsa URL parametresine ekler
     }
 
-    if (query.dateTo) { // Bitiş tarihi filtresi varsa
-      params = params.set('dateTo', query.dateTo); // Bitiş tarihini URL parametresine ekler
+    if (query.dateTo) {
+      params = params.set('dateTo', query.dateTo); // bitiş tarihi varsa URL parametresine ekler
     }
 
-    if (query.upcomingOnly !== undefined) { // Yaklaşan etkinlik filtresi belirtilmişse
-      params = params.set('upcomingOnly', query.upcomingOnly.toString()); // Boolean değeri stringe çevirip URL parametresine ekler
+    if (query.upcomingOnly !== undefined) {
+      params = params.set('upcomingOnly', query.upcomingOnly.toString()); // boolean değeri URLde kullanılabilmesi için stringe çevirir
     }
 
-    if (query.sortField) { // sıralama yapılacak alan gönderilmişse
+    if (query.sortField) {
       params = params.set('sortField', query.sortField); // sıralama yapılacak alanı URL parametresine ekler
     }
 
-    if (query.sortDirection) { // sıralama yönü gönderilmişse
-      params = params.set('sortDirection', query.sortDirection); // asc veya desc değerini URL parametresine ekler
+    if (query.sortDirection) {
+      params = params.set('sortDirection', query.sortDirection); // asc veya desc sıralama yönünü URL parametresine ekler
     }
 
-    params = params.set('page', (query.page ?? 1).toString()); // Sayfa verilmezse ilk sayfayı kullanır
-    params = params.set('pageSize', (query.pageSize ?? 10).toString()); // Sayfa boyutu verilmezse 10 kullanır
+    params = params.set('page', (query.page ?? 1).toString()); // ?? page değeri yoksa varsayılan olarak 1 kullanılmasını sağlar
+    params = params.set('pageSize', (query.pageSize ?? 10).toString()); // pageSize değeri yoksa varsayılan olarak 10 kullanır
 
     return this.http.get<PagedResponse<EventResponse>>(`${API_BASE_URL}/Events/paged`, { params });
-     // Oluşturulan filtre sıralama ve sayfalama parametreleriyle backend'e GET isteği gönderir
+    // hazırlanan query parametreleriyle GET isteği gönderir ve sayfalanmış EventResponse sonucu bekler
   }
 
-  getPopular(limit = 10): Observable<PopularEventResponse[]> { // En popüler etkinlikleri backendden getirir
-    const params = new HttpParams().set('limit', limit.toString()); // Kaç etkinlik getirileceğini limit query parametresi olarak oluşturur
-
+  getPopular(limit = 10): Observable<PopularEventResponse[]> { // en popüler etkinlikleri backendden getirir limit verilmezse 10 kullanır
+    const params = new HttpParams().set('limit', limit.toString()); // getirilecek etkinlik sayısını URL parametresi olarak hazırlar
     return this.http.get<PopularEventResponse[]>(`${API_BASE_URL}/Events/popular`, { params });
-     // Limit bilgisiyle popüler etkinlikleri backendden ister
+    // GET isteği gönderir ve PopularEventResponse listesinin dönmesini bekler
   }
 
-  getById(id: number): Observable<EventResponse> { // Verilen idye sahip etkinliği backendden getirir
-    return this.http.get<EventResponse>(`${API_BASE_URL}/Events/${id}`); // Etkinlik IDsini URL'e ekleyip GET isteği gönderir
+  getById(id: number): Observable<EventResponse> { // verilen idye sahip etkinliği backendden getirir
+    return this.http.get<EventResponse>(`${API_BASE_URL}/Events/${id}`);
+    // template literal ile eventi idsini URLye ekleyip GET isteği gönderir
   }
 
-  create(request: CreateEventRequest): Observable<EventResponse> { // Yeni etkinlik oluşturmak için verileri backende gönderir
-    return this.http.post<EventResponse>(`${API_BASE_URL}/Events`, request); // Etkinlik bilgilerini request body içinde POST isteğiyle gönderir
+  create(request: CreateEventRequest): Observable<EventResponse> { // yeni etkinlik oluşturmak için verileri backende gönderir
+    return this.http.post<EventResponse>(`${API_BASE_URL}/Events`, request);
+    // POST ile request nesnesini body içinde gönderir ve oluşturulan EventResponse bilgisini bekler
   }
 
-  update(id: number, request: UpdateEventRequest): Observable<EventResponse> { // Verilen idye sahip etkinliği günceller
-    return this.http.put<EventResponse>(`${API_BASE_URL}/Events/${id}`, request); // Güncel etkinlik bilgilerini PUT isteğiyle backend'e gönderir
+  update(id: number, request: UpdateEventRequest): Observable<EventResponse> { // verilen idye sahip etkinliği günceller
+    return this.http.put<EventResponse>(`${API_BASE_URL}/Events/${id}`, request);
+    // PUT ile güncel etkinlik bilgilerini body içerisinde backende gönderir
   }
 
-  cancel(id: number): Observable<EventResponse> { // Verilen idye sahip etkinliği iptal eder
-    return this.http.put<EventResponse>(`${API_BASE_URL}/Events/${id}/cancel`, {}); // İptal endpointine boş body ile PUT isteği gönderir
+  cancel(id: number): Observable<EventResponse> { // verilen idye sahip etkinliği iptal eder
+    return this.http.put<EventResponse>(`${API_BASE_URL}/Events/${id}/cancel`, {});
+    // cancel endpointine PUT isteği gönderir bodyde veri gerekmediği için boş nesne gönderir
   }
 
-  createCheckInSession(
-    eventId: number,
-    request: CreateCheckInSessionRequest
-  ): Observable<CheckInSessionResponse> {
-    return this.http.post<CheckInSessionResponse>(
-      `${API_BASE_URL}/events/${eventId}/check-in-session`,
-      request
-    );
-    // clubmanager için etkinliğe ait geçici qr oturumu oluşturur
+  createCheckInSession(eventId: number, request: CreateCheckInSessionRequest): Observable<CheckInSessionResponse> {
+    return this.http.post<CheckInSessionResponse>(`${API_BASE_URL}/events/${eventId}/check-in-session`, request);
+    // clubmanagerın seçtiği etkinlik ve süre bilgisini backende gönderip geçici qr tokenını alır
   }
 
   checkIn(request: CheckInRequest): Observable<CheckInResponse> {
-    return this.http.post<CheckInResponse>(
-      `${API_BASE_URL}/check-in`,
-      request
-    );
-    // qr koddan gelen tokenı backende gönderip öğrencinin katılımını kaydeder
+    return this.http.post<CheckInResponse>(`${API_BASE_URL}/check-in`, request);
+    // qr koddan alınan tokenı backende gönderip kullanıcının etkinliğe katılımını kaydeder
   }
 }
