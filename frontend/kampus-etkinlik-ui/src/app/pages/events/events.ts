@@ -6,6 +6,7 @@ import { ClubService } from '../../core/services/club.service'; // kulüp verile
 import { EventService } from '../../core/services/event.service'; // etkinlik ve qr işlemlerini backendle haberleştirmek için
 import { ClubResponse, EventResponse } from '../../core/models/api.models'; // kulüp ve etkinlik modellerine erişmek için
 import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hatalarını kullanıcıya gösterilecek mesaja çevirmek için
+import { formatDateTime } from '../../core/utils/date-time'; // backendden gelen tarihleri kullanıcıya daha okunabilir formatta göstermek için
 import { PaginatorModule } from 'primeng/paginator'; // primeng sayfalama componentini kullanmak için
 import { TableModule } from 'primeng/table'; // primeng tablo ve sorting özelliklerini kullanmak için
 import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görseline çevirmek için
@@ -17,7 +18,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
   template: `
     <!-- Etkinlikler sayfasının ana alanı -->
     <section class="events-page">
-
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
@@ -42,7 +42,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
 
         <div class="filter-content">
           <div class="filter-grid">
-
             <!-- Etkinlik adına göre arama -->
             <div class="form-field">
               <label for="search">Search Events</label>
@@ -77,7 +76,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
               >
                 <option value="">All Clubs</option>
 
-                <!-- @for clubs signalındaki kulüpleri tek tek optiona çevirir track ise her kulübü idsiyle takip eder -->
                 @for (club of clubs(); track club.id) {
                   <option [value]="club.id">{{ club.name }}</option>
                 }
@@ -119,7 +117,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
             </div>
           </div>
 
-          <!-- Filtreleme işlemleri -->
           <div class="filter-actions">
             <button class="filter-button" type="button" [disabled]="loading()" (click)="applyFilters()">
               Apply Filters
@@ -132,22 +129,18 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
         </div>
       </section>
 
-      <!-- Backend isteği devam ederken gösterilir -->
       @if (loading()) {
         <div class="page-message">Events are loading...</div>
       }
 
-      <!-- Backend isteğinde hata oluşursa gösterilir -->
       @if (errorMessage()) {
         <div class="page-message error-message">{{ errorMessage() }}</div>
       }
 
-      <!-- Filtrelere uygun etkinlik bulunamazsa gösterilir -->
       @if (!loading() && events().length === 0 && !errorMessage()) {
         <div class="page-message">No events match the search criteria.</div>
       }
 
-      <!-- Etkinlik varsa listeyi gösterir -->
       @if (events().length > 0) {
         <section class="events-section">
           <div class="list-header">
@@ -159,8 +152,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
 
           <div class="table-card">
             <div class="table-wrapper">
-
-              <!-- value tabloya etkinlikleri verir customSort ise sıralamayı backend üzerinden bizim yönetmemizi sağlar -->
               <p-table
                 [value]="events()"
                 [customSort]="true"
@@ -170,7 +161,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
                 styleClass="events-table"
                 [tableStyle]="{ 'min-width': '1180px' }"
               >
-                <!-- #header primeng tablosunun başlık şablonunu oluşturur -->
                 <ng-template #header>
                   <tr>
                     <th pSortableColumn="title">
@@ -217,12 +207,11 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
                   </tr>
                 </ng-template>
 
-                <!-- let-event primengin o an işlediği etkinlik kaydını event değişkenine verir -->
                 <ng-template #body let-event>
                   <tr>
                     <td class="event-title">{{ event.title }}</td>
                     <td>{{ event.clubName }}</td>
-                    <td>{{ event.startDate }}</td>
+                    <td>{{ formatDateTime(event.startDate) }}</td>
                     <td>{{ event.location }}</td>
                     <td>{{ event.capacity }}</td>
 
@@ -252,7 +241,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
                           Details
                         </a>
 
-                        <!-- ownsEvent true ise giriş yapan clubmanager bu etkinliğin sahibi demektir -->
                         @if (ownsEvent(event)) {
                           <a class="edit-link" [routerLink]="['/event-manage', event.id]">
                             Update
@@ -279,7 +267,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
             </div>
           </div>
 
-          <!-- primeng paginator backend sayfalamasını kontrol eder -->
           <p-paginator
             [first]="(page() - 1) * pageSize()"
             [rows]="pageSize()"
@@ -293,11 +280,9 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
         </section>
       }
 
-      <!-- selectedCheckInEvent doluysa qr oluşturma penceresini açar as selectedEvent ile değeri kısa isimle kullanır -->
+      <!-- qr oluşturma penceresi -->
       @if (selectedCheckInEvent(); as selectedEvent) {
         <div class="check-in-backdrop" (click)="closeCheckIn()">
-
-          <!-- stopPropagation modalın içine basınca tıklamanın arka plana gitmesini ve modalın kapanmasını engeller -->
           <section class="check-in-modal" (click)="$event.stopPropagation()">
             <div class="check-in-modal-header">
               <div>
@@ -313,7 +298,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
                 <div class="qr-duration-field">
                   <label for="qrDuration">QR Duration</label>
 
-                  <!-- + işareti selectten string gelen süre değerini number tipine çevirir -->
                   <select
                     id="qrDuration"
                     [value]="qrDuration()"
@@ -341,7 +325,6 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
                 <div class="qr-error">{{ qrErrorMessage() }}</div>
               }
 
-              <!-- qr görseli oluşturulduysa kullanıcıya qr ve bilgilerini gösterir -->
               @if (qrImageUrl()) {
                 <div class="qr-result">
                   <div class="qr-image-box">
@@ -354,7 +337,7 @@ import * as QRCode from 'qrcode'; // check-in adresini okutulabilir qr görselin
 
                     <div class="qr-expiry">
                       Valid until:
-                      <strong>{{ formatQrExpiry() }}</strong>
+                      <strong>{{ formatDateTime(qrExpiresAt()) }}</strong>
                     </div>
 
                     <div class="qr-url">{{ qrCheckInUrl() }}</div>
@@ -378,7 +361,7 @@ export class Events implements OnInit {
   private readonly clubService = inject(ClubService); // kulüp verilerini backendden almak için servisi DI ile alır
   private readonly eventService = inject(EventService); // etkinlik ve qr işlemlerini yapmak için servisi DI ile alır
 
-  readonly events = signal<EventResponse[]>([]); // signal değiştiğinde Angular templatei otomatik günceller ve etkinlik listesini tutar
+  readonly events = signal<EventResponse[]>([]); // backendden gelen etkinlik listesini tutar
   readonly clubs = signal<ClubResponse[]>([]); // backendden gelen kulüp listesini tutar
   readonly searchText = signal(''); // arama kutusundaki metni tutar
   readonly category = signal(''); // kategori filtresini tutar
@@ -386,7 +369,7 @@ export class Events implements OnInit {
   readonly dateFrom = signal(''); // başlangıç tarihi filtresini tutar
   readonly dateTo = signal(''); // bitiş tarihi filtresini tutar
   readonly upcomingOnly = signal(false); // sadece yaklaşan etkinlikleri gösterme bilgisini tutar
-  readonly sortField = signal<string | null>(null); // sıralama yapılacak alanı tutar başlangıçta sıralama olmadığı için null olabilir
+  readonly sortField = signal<string | null>(null); // sıralama yapılacak alanı tutar
   readonly sortDirection = signal<'asc' | 'desc' | null>(null); // sıralamanın artan azalan veya boş olmasını tutar
   readonly page = signal(1); // bulunulan sayfa numarasını tutar
   readonly pageSize = signal(10); // bir sayfada gösterilecek etkinlik sayısını tutar
@@ -394,70 +377,67 @@ export class Events implements OnInit {
   readonly totalPages = signal(0); // toplam sayfa sayısını tutar
   readonly loading = signal(false); // backend isteğinin devam edip etmediğini tutar
   readonly errorMessage = signal(''); // kullanıcıya gösterilecek hata mesajını tutar
-
-  readonly selectedCheckInEvent = signal<EventResponse | null>(null); // qr oluşturmak için seçilen etkinliği tutar seçilmemişse null olur
-  readonly qrDuration = signal(10); // qr kodun kaç dakika geçerli olacağını tutar varsayılan 10 dakikadır
+  readonly selectedCheckInEvent = signal<EventResponse | null>(null); // qr oluşturmak için seçilen etkinliği tutar
+  readonly qrDuration = signal(10); // qr kodun kaç dakika geçerli olacağını tutar
   readonly generatingQr = signal(false); // qr oluşturma işleminin devam edip etmediğini tutar
-  readonly qrImageUrl = signal(''); // qrcode kütüphanesinin oluşturduğu qr görselini tutar
-  readonly qrCheckInUrl = signal(''); // qr kodun içine yazılan check-in adresini tutar
-  readonly qrExpiresAt = signal(''); // backendden gelen qr geçerlilik bitiş zamanını tutar
+  readonly qrImageUrl = signal(''); // oluşturulan qr görselini tutar
+  readonly qrCheckInUrl = signal(''); // qr kodun içerisindeki check-in adresini tutar
+  readonly qrExpiresAt = signal(''); // qr kodun geçerlilik bitiş zamanını tutar
   readonly qrErrorMessage = signal(''); // qr oluşturulurken oluşan hata mesajını tutar
+  readonly formatDateTime = formatDateTime; // tarihleri template içinde okunabilir formatta göstermek için ortak fonksiyonu kullanır
 
-  ngOnInit(): void { // component ilk açıldığında Angular tarafından otomatik çalıştırılır
+  ngOnInit(): void {
     if (this.auth.hasRole('Student')) {
-      this.upcomingOnly.set(true); // Student için varsayılan olarak sadece yaklaşan etkinlikleri gösterir
+      this.upcomingOnly.set(true); // Student için varsayılan olarak yaklaşan etkinlikleri gösterir
     }
 
-    this.loadClubs(); // kulüp listesini backendden getirir
-    this.loadEvents(); // etkinlik listesini backendden getirir
+    this.loadClubs();
+    this.loadEvents();
   }
 
-  ownsEvent(event: EventResponse): boolean { // giriş yapan ClubManagerın etkinliğin sahibi olup olmadığını kontrol eder
-    const user = this.auth.currentUser(); // signal içindeki giriş yapan kullanıcı bilgisini alır
+  ownsEvent(event: EventResponse): boolean { // ClubManagerın etkinliğin sahibi olup olmadığını kontrol eder
+    const user = this.auth.currentUser();
 
     if (!user || !this.auth.hasRole('ClubManager')) {
-      return false; // kullanıcı yoksa veya ClubManager değilse yönetim yetkisi vermez
+      return false;
     }
 
     return this.clubs().some(club => club.id === event.clubId && club.managerUserId === user.userId);
-    // some listedeki en az bir kulüp koşula uyuyorsa true döndürür etkinlik managerın kulübüne ait mi kontrol eder
   }
 
   openCheckIn(event: EventResponse): void {
     if (!this.ownsEvent(event) || event.status !== 'Active') {
-      return; // manager etkinliğin sahibi değilse veya etkinlik aktif değilse qr penceresini açmaz
+      return;
     }
 
-    this.selectedCheckInEvent.set(event); // seçilen etkinliği signal içine kaydedip modalın açılmasını sağlar
-    this.qrDuration.set(10); // her yeni açılışta qr süresini 10 dakikaya döndürür
+    this.selectedCheckInEvent.set(event);
+    this.qrDuration.set(10);
     this.qrImageUrl.set('');
     this.qrCheckInUrl.set('');
     this.qrExpiresAt.set('');
     this.qrErrorMessage.set('');
-    // önceki qr penceresinden kalabilecek bilgileri temizler
   }
 
   closeCheckIn(): void {
     if (this.generatingQr()) {
-      return; // qr üretilirken pencerenin kapatılmasını engeller
+      return;
     }
 
-    this.selectedCheckInEvent.set(null); // null yapıldığı için @if kapanır ve modal ekrandan kalkar
+    this.selectedCheckInEvent.set(null);
     this.qrImageUrl.set('');
     this.qrCheckInUrl.set('');
     this.qrExpiresAt.set('');
     this.qrErrorMessage.set('');
-    // qr penceresine ait eski bilgileri temizler
   }
 
   generateQrCode(): void {
-    const event = this.selectedCheckInEvent(); // qr oluşturulacak etkinliği signal içinden alır
+    const event = this.selectedCheckInEvent();
 
     if (!event || this.generatingQr() || !this.ownsEvent(event)) {
-      return; // etkinlik yoksa işlem devam ediyorsa veya manager etkinliğin sahibi değilse işlemi durdurur
+      return;
     }
 
-    this.generatingQr.set(true); // tekrar butona basılmasını engellemek için qr işlemini başladı olarak işaretler
+    this.generatingQr.set(true);
     this.qrErrorMessage.set('');
     this.qrImageUrl.set('');
     this.qrCheckInUrl.set('');
@@ -466,68 +446,53 @@ export class Events implements OnInit {
     this.eventService.createCheckInSession(event.id, {
       expiresInMinutes: this.qrDuration()
     }).subscribe({
-      // subscribe Observable olan backend isteğinin sonucunu dinler
       next: async response => {
         try {
           const checkInUrl = `${window.location.origin}/check-in?token=${encodeURIComponent(response.token)}`;
-          // window.location.origin uygulamanın o anki domainini alır encodeURIComponent ise tokenı URLde güvenli kullanılabilecek hale getirir
+          // backendden gelen tokenı frontend check-in adresine ekler
 
           const qrImage = await QRCode.toDataURL(checkInUrl, {
             width: 320,
             margin: 2,
             errorCorrectionLevel: 'M'
           });
-          // toDataURL check-in linkini qr görseline çevirir width boyutu margin kenar boşluğunu errorCorrectionLevel ise hata düzeltme seviyesini belirler
+          // check-in adresini gerçek qr görseline çevirir
 
-          this.qrCheckInUrl.set(checkInUrl); // oluşturulan gerçek check-in adresini ekranda göstermek için saklar
-          this.qrExpiresAt.set(response.expiresAt); // backendin belirlediği qr bitiş zamanını saklar
-          this.qrImageUrl.set(qrImage); // oluşturulan qr görselini signal içine koyunca img etiketi ekranda gösterir
+          this.qrCheckInUrl.set(checkInUrl);
+          this.qrExpiresAt.set(response.expiresAt);
+          this.qrImageUrl.set(qrImage);
         } catch {
-          this.qrErrorMessage.set('QR image could not be created.'); // token alınsa bile qr görseli oluşturulamazsa hata gösterir
+          this.qrErrorMessage.set('QR image could not be created.');
         } finally {
-          this.generatingQr.set(false); // try başarılı veya hatalı olsa da işlem durumunu kapatır
+          this.generatingQr.set(false);
         }
       },
       error: (error: HttpErrorResponse) => {
         this.qrErrorMessage.set(getApiErrorMessage(error, 'Could not create the QR code.'));
-        // backend qr oturumu oluşturamazsa gelen hatayı kullanıcıya uygun mesaja çevirir
-
-        this.generatingQr.set(false); // backend hatasında tekrar qr oluşturulabilmesi için işlem durumunu kapatır
+        this.generatingQr.set(false);
       }
     });
   }
 
-  formatQrExpiry(): string {
-    const value = this.qrExpiresAt(); // backendden gelen bitiş zamanını alır
-
-    if (!value) {
-      return ''; // bitiş zamanı yoksa boş metin döndürür
-    }
-
-    return new Date(value).toLocaleString();
-    // backendden gelen tarihi Date nesnesine çevirip kullanıcının yerel tarih saat formatında gösterir
-  }
-
-  loadClubs(): void { // bütün kulüpleri backendden getirir
+  loadClubs(): void {
     this.clubService.getAll().subscribe({
       next: clubs => {
-        this.clubs.set(clubs); // istek başarılıysa gelen kulüpleri signal içine kaydeder
+        this.clubs.set(clubs);
       },
       error: () => {
-        this.clubs.set([]); // kulüp isteği başarısızsa listeyi boşaltır
+        this.clubs.set([]);
       }
     });
   }
 
-  loadEvents(): void { // filtre sıralama ve sayfalama bilgilerine göre etkinlikleri getirir
-    this.loading.set(true); // backend isteğinin başladığını belirtir
-    this.errorMessage.set(''); // önceki hata mesajını temizler
+  loadEvents(): void {
+    this.loading.set(true);
+    this.errorMessage.set('');
 
     const clubId = this.selectedClubId() ? Number(this.selectedClubId()) : undefined;
-    // selectten string gelen club idsini numbera çevirir seçim yoksa backende filtre göndermemek için undefined yapar
 
     this.eventService.getPaged({
-      search: this.searchText().trim() || undefined, // trim baştaki ve sondaki boşlukları siler boşsa undefined gönderir
+      search: this.searchText().trim() || undefined,
       category: this.category().trim() || undefined,
       clubId,
       dateFrom: this.getDateFrom(),
@@ -539,25 +504,25 @@ export class Events implements OnInit {
       pageSize: this.pageSize()
     }).subscribe({
       next: result => {
-        this.events.set(result.items); // mevcut sayfadaki etkinlikleri kaydeder
-        this.page.set(result.page); // backendin döndürdüğü sayfa numarasını kaydeder
-        this.totalCount.set(result.totalCount); // toplam etkinlik sayısını kaydeder
-        this.totalPages.set(result.totalPages); // toplam sayfa sayısını kaydeder
-        this.loading.set(false); // yükleme işlemini bitirir
+        this.events.set(result.items);
+        this.page.set(result.page);
+        this.totalCount.set(result.totalCount);
+        this.totalPages.set(result.totalPages);
+        this.loading.set(false);
       },
       error: (error: HttpErrorResponse) => {
         this.events.set([]);
         this.totalCount.set(0);
         this.totalPages.set(0);
         this.errorMessage.set(getApiErrorMessage(error, 'Could not load events.'));
-        this.loading.set(false); // hata olsa bile yükleme durumunu kapatır
+        this.loading.set(false);
       }
     });
   }
 
   applyFilters(): void {
-    this.page.set(1); // filtre değiştiğinde ilk sayfaya döner
-    this.loadEvents(); // yeni filtrelerle etkinlikleri tekrar getirir
+    this.page.set(1);
+    this.loadEvents();
   }
 
   clearFilters(): void {
@@ -566,57 +531,58 @@ export class Events implements OnInit {
     this.selectedClubId.set('');
     this.dateFrom.set('');
     this.dateTo.set('');
-    this.upcomingOnly.set(this.auth.hasRole('Student')); // Student ise yaklaşan etkinlik filtresini varsayılan olarak açık bırakır
+    this.upcomingOnly.set(this.auth.hasRole('Student'));
     this.page.set(1);
-    this.loadEvents(); // bütün filtreleri temizleyip etkinlikleri yeniden getirir
+    this.loadEvents();
   }
 
-  onSort(event: { field?: string; order?: number }): void { // primeng tablo sıralaması değiştiğinde çalışır
+  onSort(event: { field?: string; order?: number }): void {
     if (!event.field || !event.order) {
       this.sortField.set(null);
       this.sortDirection.set(null);
       this.page.set(1);
       this.loadEvents();
-      return; // sıralama kaldırılmışsa backendin varsayılan sıralamasına döner
+      return;
     }
 
-    this.sortField.set(event.field); // seçilen kolonun adını kaydeder
-    this.sortDirection.set(event.order === -1 ? 'desc' : 'asc'); // primeng -1 değerini desc diğer değeri asc olarak çevirir
+    this.sortField.set(event.field);
+    this.sortDirection.set(event.order === -1 ? 'desc' : 'asc');
     this.page.set(1);
-    this.loadEvents(); // sıralama bilgilerini backend göndererek listeyi tekrar getirir
+    this.loadEvents();
   }
 
-  onPageChange(event: { page?: number; first?: number; rows?: number }): void { // primeng paginator sayfa veya pageSize değiştirdiğinde çalışır
+  onPageChange(event: { page?: number; first?: number; rows?: number }): void {
     if (this.loading()) {
-      return; // önceki backend isteği devam ederken ikinci sayfa isteğini engeller
+      return;
     }
 
-    const newPageSize = event.rows ?? this.pageSize(); // yeni rows değeri yoksa mevcut pageSize kullanılır
+    const newPageSize = event.rows ?? this.pageSize();
     const newPage = event.page !== undefined ? event.page + 1 : Math.floor((event.first ?? 0) / newPageSize) + 1;
-    // primeng sayfayı 0dan backend ise 1den başlattığı için page değerine 1 ekler
 
     this.pageSize.set(newPageSize);
     this.page.set(newPage);
-    this.loadEvents(); // yeni sayfa bilgileriyle backendden etkinlikleri tekrar getirir
+    this.loadEvents();
   }
 
-  private getDateFrom(): string | undefined { // başlangıç tarihini backendin beklediği ISO tarih formatına çevirir
+  private getDateFrom(): string | undefined {
     const value = this.dateFrom();
 
     if (!value) {
-      return undefined; // tarih seçilmemişse backende filtre göndermez
+      return undefined;
     }
 
-    return new Date(`${value}T00:00:00`).toISOString(); // seçilen günün başlangıç saatini ISO formatına çevirir
+    return new Date(`${value}T00:00:00`).toISOString();
+    // filtre için tarihi backendin beklediği ISO formatına çevirir kullanıcıya gösterilen formatı etkilemez
   }
 
-  private getDateTo(): string | undefined { // bitiş tarihini backendin beklediği ISO tarih formatına çevirir
+  private getDateTo(): string | undefined {
     const value = this.dateTo();
 
     if (!value) {
       return undefined;
     }
 
-    return new Date(`${value}T23:59:59.999`).toISOString(); // seçilen günün son anını ISO formatına çevirir
+    return new Date(`${value}T23:59:59.999`).toISOString();
+    // filtre için günün son anını backendin beklediği ISO formatına çevirir
   }
 }

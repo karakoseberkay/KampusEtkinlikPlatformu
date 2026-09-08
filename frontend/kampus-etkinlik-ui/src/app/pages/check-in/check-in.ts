@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http'; // backendden gelen HT
 import { ActivatedRoute, Router } from '@angular/router'; // mevcut URLdeki parametreleri okumak ve başka sayfaya yönlendirmek için
 import { EventService } from '../../core/services/event.service'; // qr tokenını backende göndererek check-in işlemini yapmak için
 import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hatalarını kullanıcıya gösterilecek mesaja çevirmek için
+import { formatDateTime } from '../../core/utils/date-time'; // backendden gelen check-in zamanını kullanıcıya okunabilir formatta göstermek için
 
 @Component({
   selector: 'app-check-in', // componentin HTML tarafında kullanılabilecek selector adını belirler
@@ -33,7 +34,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hata
             <span>{{ successMessage() }}</span>
 
             @if (checkedInAt()) {
-              <small>{{ formatCheckedInAt() }}</small>
+              <small>{{ formatDateTime(checkedInAt()) }}</small>
             }
           </div>
         }
@@ -66,6 +67,7 @@ export class CheckIn implements OnInit {
   readonly successMessage = signal(''); // başarılı check-in mesajını tutar
   readonly errorMessage = signal(''); // başarısız check-in mesajını tutar
   readonly checkedInAt = signal(''); // başarılı check-in zamanını tutar
+  readonly formatDateTime = formatDateTime; // check-in zamanını template içinde okunabilir formatta göstermek için ortak fonksiyonu kullanır
 
   ngOnInit(): void { // component açıldığında Angular tarafından otomatik çalıştırılır
     const token = this.route.snapshot.queryParamMap.get('token');
@@ -102,17 +104,6 @@ export class CheckIn implements OnInit {
         this.checkingIn.set(false); // hata durumunda da yükleniyor durumunu kapatır
       }
     });
-  }
-
-  formatCheckedInAt(): string {
-    const checkedInAt = this.checkedInAt(); // signal içinde tutulan check-in zamanını alır
-
-    if (!checkedInAt) {
-      return ''; // check-in zamanı yoksa boş metin döndürür
-    }
-
-    return new Date(checkedInAt).toLocaleString();
-    // backendden gelen UTC zamanı Date nesnesine çevirip kullanıcının yerel tarih ve saat formatında gösterir
   }
 
   goHome(): void {

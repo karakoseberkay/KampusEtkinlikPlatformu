@@ -6,6 +6,7 @@ import { EventService } from '../../core/services/event.service'; // etkinlik de
 import { RegistrationService } from '../../core/services/registration.service'; // etkinlik kayıtlarını ve check-in yapan kullanıcıları backendden almak için
 import { EventResponse, RegistrationResponse } from '../../core/models/api.models'; // etkinlik ve kayıt modellerini kullanmak için
 import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hatalarını anlaşılır mesaja çevirmek için
+import { formatDateTime } from '../../core/utils/date-time'; // backendden gelen tarihleri kullanıcıya daha okunabilir formatta göstermek için
 
 @Component({ // bu classın Angular componenti olduğunu belirtir
   selector: 'app-event-detail', // componentin selector adı
@@ -13,7 +14,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hata
   template: `
     <!-- Etkinlik detay sayfası -->
     <section class="event-detail-page">
-
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
@@ -39,7 +39,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hata
       <!-- Etkinlik bilgisi geldiyse detay kartını gösterir -->
       @if (event(); as eventItem) {
         <section class="detail-card">
-
           <!-- Etkinlik başlığı ve açıklaması -->
           <div class="detail-card-header">
             <div>
@@ -70,7 +69,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hata
 
           <!-- Etkinliğin temel bilgileri -->
           <div class="detail-grid">
-
             <div class="detail-item">
               <span class="detail-label">Club</span>
               <span class="detail-value">{{ eventItem.clubName }}</span>
@@ -78,7 +76,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hata
 
             <div class="detail-item">
               <span class="detail-label">Date</span>
-              <span class="detail-value">{{ eventItem.startDate }}</span>
+              <span class="detail-value">{{ formatDateTime(eventItem.startDate) }}</span>
             </div>
 
             <div class="detail-item">
@@ -107,7 +105,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hata
 
             <div class="detail-item">
               <span class="detail-label">Created At</span>
-              <span class="detail-value">{{ eventItem.createdAt }}</span>
+              <span class="detail-value">{{ formatDateTime(eventItem.createdAt) }}</span>
             </div>
           </div>
 
@@ -178,11 +176,11 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // backend hata
                       </td>
 
                       <td>
-                        {{ formatDate(registration.registeredAt) }}
+                        {{ formatDateTime(registration.registeredAt) }}
                       </td>
 
                       <td>
-                        {{ formatDate(registration.checkedInAt) }}
+                        {{ formatDateTime(registration.checkedInAt) }}
                       </td>
                     </tr>
                   }
@@ -207,10 +205,10 @@ export class EventDetail implements OnInit {
   readonly registering = signal(false); // kayıt işleminin devam edip etmediğini tutar
   readonly errorMessage = signal(''); // hata mesajını tutar
   readonly successMessage = signal(''); // başarılı kayıt mesajını tutar
-
   readonly checkedInParticipants = signal<RegistrationResponse[]>([]); // qr ile giriş yapmış kullanıcıları tutar
   readonly participantsLoading = signal(false); // katılımcı listesinin yüklenme durumunu tutar
   readonly canViewCheckedInParticipants = signal(false); // backend izin verirse katılımcı tablosunun gösterilmesini sağlar
+  readonly formatDateTime = formatDateTime; // tarihleri template içinde okunabilir formatta göstermek için ortak fonksiyonu kullanır
 
   ngOnInit(): void { // sayfa ilk açıldığında otomatik çalışır
     const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki id değerini alıp numbera çevirir
@@ -287,13 +285,5 @@ export class EventDetail implements OnInit {
         // manager etkinliğin sahibi değilse backend erişimi reddeder ve tablo gösterilmez
       }
     });
-  }
-
-  formatDate(value: string | null): string { // backendden gelen tarihleri kullanıcının yerel saat formatında gösterir
-    if (!value) {
-      return '-';
-    }
-
-    return new Date(value).toLocaleString();
   }
 }

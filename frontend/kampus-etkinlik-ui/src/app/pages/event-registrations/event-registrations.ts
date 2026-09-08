@@ -1,10 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core'; // Component, inject, OnInit ve signal kullanmak için
+import { Component, inject, OnInit, signal } from '@angular/core'; // Component inject OnInit ve signal kullanmak için
 import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için
 import { FormsModule } from '@angular/forms'; // Template içinde ngModel kullanmak için
 import { ActivatedRoute } from '@angular/router'; // URL içindeki etkinlik ID değerini almak için
-import { RegistrationService } from '../../core/services/registration.service'; // Kayıtları getirmek, onaylamak ve reddetmek için
+import { RegistrationService } from '../../core/services/registration.service'; // Kayıtları getirmek onaylamak ve reddetmek için
 import { RegistrationApprovalStatus, RegistrationResponse } from '../../core/models/api.models'; // Kayıt durumları ve kayıt modelleri
 import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını anlaşılır mesaja çevirmek için
+import { formatDateTime } from '../../core/utils/date-time'; // Backendden gelen tarihleri kullanıcıya daha okunabilir formatta göstermek için
 
 @Component({ // Bu classın Angular componenti olduğunu belirtir
   selector: 'app-event-registrations', // Componentin selector adı
@@ -13,7 +14,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
   template: `
     <!-- Etkinlik kayıtları sayfası -->
     <section class="event-registrations-page">
-
       <!-- Sayfa başlığı -->
       <div class="page-header">
         <div>
@@ -38,11 +38,11 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
           <div class="form-field">
             <label for="approvalStatus">Status</label>
 
-            <!-- Seçilen durumu selectedStatus signalına bağlar -->
+            <!-- Seçilen durumu selectedStatus signalına bağlar ve değiştiğinde changeStatus çalışır -->
             <select
               id="approvalStatus"
               [ngModel]="selectedStatus()"
-              (ngModelChange)="changeStatus($event)"//Select'in seçili değeri değiştiği anda çalışır
+              (ngModelChange)="changeStatus($event)"
             >
               <option value="">All</option>
               <option value="Pending">Pending</option>
@@ -84,7 +84,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Kayıt listesi -->
       @if (registrations().length > 0) {
         <section class="registrations-section">
-
           <!-- Liste başlığı -->
           <div class="section-header">
             <h2>Registration List</h2>
@@ -113,7 +112,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <td class="student-name">{{ registration.userFullName }}</td> <!-- Öğrencinin adı -->
                       <td class="event-title">{{ registration.eventTitle }}</td> <!-- Etkinlik adı -->
                       <td>{{ registration.clubName }}</td> <!-- Kulüp adı -->
-                      <td>{{ registration.registeredAt }}</td> <!-- Kayıt tarihi -->
+                      <td>{{ formatDateTime(registration.registeredAt) }}</td> <!-- Kayıt tarihini okunabilir formatta gösterir -->
 
                       <!-- Kayıt durumunu gösterir -->
                       <td>
@@ -140,7 +139,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
                       <td>
                         @if (registration.approvalStatus === 'Pending') {
                           <div class="table-actions">
-
                             <!-- Kaydı onaylar -->
                             <button
                               class="approve-button"
@@ -180,6 +178,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
   styleUrl: './event-registrations.scss' // Componentin tasarım dosyası
 })
 export class EventRegistrations implements OnInit {
+  readonly formatDateTime = formatDateTime; // tarihleri template içinde okunabilir formatta göstermek için ortak fonksiyonu kullanır
   private readonly route = inject(ActivatedRoute); // URL içindeki etkinlik IDsine erişmek için
   private readonly registrationService = inject(RegistrationService); // Kayıt işlemlerini yapmak için
 
@@ -195,93 +194,87 @@ export class EventRegistrations implements OnInit {
   ngOnInit(): void { // Sayfa ilk açıldığında otomatik çalışır
     const id = Number(this.route.snapshot.paramMap.get('id')); // URL içindeki etkinlik IDsini alıp numbera çevirir
 
-    if (!Number.isInteger(id) || id <= 0) { // ID geçerli pozitif tam sayı değilse
-      this.errorMessage.set('Invalid event ID.'); // Kullanıcıya hata mesajı gösterir
-      return; // Backend isteğinin yapılmasını engeller
+    if (!Number.isInteger(id) || id <= 0) {
+      this.errorMessage.set('Invalid event ID.');
+      return;
     }
 
-    this.eventId = id; // Geçerli etkinlik IDsini kaydeder
-    this.loadRegistrations(); // Etkinlik kayıtlarını backendden getirir
+    this.eventId = id;
+    this.loadRegistrations();
   }
 
   changeStatus(value: RegistrationApprovalStatus | ''): void { // Durum filtresi değiştiğinde çalışır
-    this.selectedStatus.set(value); // Yeni filtre değerini kaydeder
-    this.loadRegistrations(); // Yeni filtreye göre kayıtları tekrar getirir
+    this.selectedStatus.set(value);
+    this.loadRegistrations();
   }
 
   loadRegistrations(clearSuccess = true): void { // Etkinlik kayıtlarını seçilen filtreye göre getirir
-    if (!this.eventId) { // Geçerli etkinlik IDsi yoksa
-      return; // Backend isteğini engeller
+    if (!this.eventId) {
+      return;
     }
 
-    this.loading.set(true); // Yükleme işlemini başlatır
-    this.errorMessage.set(''); // Önceki hata mesajını temizler
+    this.loading.set(true);
+    this.errorMessage.set('');
 
-    if (clearSuccess) { // Normal yükleme işlemiyse
-      this.successMessage.set(''); // Önceki başarı mesajını temizler
+    if (clearSuccess) {
+      this.successMessage.set('');
     }
 
-    const selected = this.selectedStatus(); // Seçilen durum filtresini alır
-    const status: RegistrationApprovalStatus | undefined = selected === '' ? undefined : selected; // Tümü seçiliyse filtre göndermez
+    const selected = this.selectedStatus();
+    const status: RegistrationApprovalStatus | undefined = selected === '' ? undefined : selected;
 
-    this.registrationService.getForEvent(this.eventId, status).subscribe({ // Etkinlik IDsi ve durum filtresiyle backend'e istek gönderir
-      next: registrations => { // İstek başarılı olduğunda çalışır
-        this.registrations.set(registrations); // Gelen kayıtları signal içine kaydeder
-        this.loading.set(false); // Yükleme işlemini bitirir
+    this.registrationService.getForEvent(this.eventId, status).subscribe({
+      next: registrations => {
+        this.registrations.set(registrations);
+        this.loading.set(false);
       },
-      error: (error: HttpErrorResponse) => { // Backend isteğinde hata oluşursa çalışır
-        this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not load event registrations.') // Hatayı kullanıcıya uygun mesaja çevirir
-        );
-        this.loading.set(false); // Hata olsa bile yükleme işlemini bitirir
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage.set(getApiErrorMessage(error, 'Could not load event registrations.'));
+        this.loading.set(false);
       }
     });
   }
 
   approve(registrationId: number): void { // Verilen kaydı onaylar
-    if (this.processingId() !== null) { // Başka bir işlem devam ediyorsa
-      return; // Yeni işlem başlatılmasını engeller
+    if (this.processingId() !== null) {
+      return;
     }
 
-    this.processingId.set(registrationId); // İşlem yapılan kaydın IDsini kaydeder
-    this.errorMessage.set(''); // Önceki hata mesajını temizler
-    this.successMessage.set(''); // Önceki başarı mesajını temizler
+    this.processingId.set(registrationId);
+    this.errorMessage.set('');
+    this.successMessage.set('');
 
-    this.registrationService.approve(registrationId).subscribe({ // Kayıt onaylama isteğini backend'e gönderir
-      next: () => { // Onaylama işlemi başarılı olduğunda çalışır
-        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
-        this.successMessage.set('Registration approved.'); // Başarı mesajını gösterir
-        this.loadRegistrations(false); // Listeyi tekrar getirir ve başarı mesajını korur
+    this.registrationService.approve(registrationId).subscribe({
+      next: () => {
+        this.processingId.set(null);
+        this.successMessage.set('Registration approved.');
+        this.loadRegistrations(false);
       },
-      error: (error: HttpErrorResponse) => { // Onaylama sırasında hata oluşursa çalışır
-        this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not approve the registration.') // Hatayı kullanıcıya uygun mesaja çevirir
-        );
-        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage.set(getApiErrorMessage(error, 'Could not approve the registration.'));
+        this.processingId.set(null);
       }
     });
   }
 
   reject(registrationId: number): void { // Verilen kaydı reddeder
-    if (this.processingId() !== null) { // Başka bir işlem devam ediyorsa
-      return; // Yeni işlem başlatılmasını engeller
+    if (this.processingId() !== null) {
+      return;
     }
 
-    this.processingId.set(registrationId); // İşlem yapılan kaydın IDsini kaydeder
-    this.errorMessage.set(''); // Önceki hata mesajını temizler
-    this.successMessage.set(''); // Önceki başarı mesajını temizler
+    this.processingId.set(registrationId);
+    this.errorMessage.set('');
+    this.successMessage.set('');
 
-    this.registrationService.reject(registrationId).subscribe({ // Kayıt reddetme isteğini backend'e gönderir
-      next: () => { // Reddetme işlemi başarılı olduğunda çalışır
-        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
-        this.successMessage.set('Registration rejected.'); // Başarı mesajını gösterir
-        this.loadRegistrations(false); // Listeyi tekrar getirir ve başarı mesajını korur
+    this.registrationService.reject(registrationId).subscribe({
+      next: () => {
+        this.processingId.set(null);
+        this.successMessage.set('Registration rejected.');
+        this.loadRegistrations(false);
       },
-      error: (error: HttpErrorResponse) => { // Reddetme sırasında hata oluşursa çalışır
-        this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not reject the registration.') // Hatayı kullanıcıya uygun mesaja çevirir
-        );
-        this.processingId.set(null); // İşlem yapılan kayıt ID bilgisini temizler
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage.set(getApiErrorMessage(error, 'Could not reject the registration.'));
+        this.processingId.set(null);
       }
     });
   }

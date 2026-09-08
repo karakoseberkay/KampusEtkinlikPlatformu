@@ -1,20 +1,21 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core'; // Component, computed, servis enjeksiyonu, OnInit ve signal yapısını kullanmak için gerekli Angular araçlarını içe aktarır.
-import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için kullanılır.
-import { RegistrationService } from '../../core/services/registration.service'; // Giriş yapan kullanıcının kendi etkinlik kayıtlarını backendden almak için kullanılır.
-import { RegistrationResponse } from '../../core/models/api.models'; // Backendden gelen kayıt nesnesinin TypeScript tipidir.
-import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
+import { Component, computed, inject, OnInit, signal } from '@angular/core'; // Component computed servis enjeksiyonu OnInit ve signal kullanmak için
+import { HttpErrorResponse } from '@angular/common/http'; // Backendden gelen HTTP hatalarını yakalamak için
+import { RegistrationService } from '../../core/services/registration.service'; // Giriş yapan kullanıcının kendi etkinlik kayıtlarını backendden almak için
+import { RegistrationResponse } from '../../core/models/api.models'; // Backendden gelen kayıt modelini kullanmak için
+import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hatalarını kullanıcıya gösterilecek anlaşılır mesaja dönüştürmek için
+import { formatDateTime } from '../../core/utils/date-time'; // Backendden gelen tarihleri kullanıcıya daha okunabilir formatta göstermek için
 
-@Component({ // Bu classın Angular componenti olduğunu belirtir.
-  selector: 'app-my-registrations', // Componentin selector adını belirler.
-  standalone: true, // Componentin NgModule kullanmadan bağımsız çalışmasını sağlar.
+@Component({ // Bu classın Angular componenti olduğunu belirtir
+  selector: 'app-my-registrations', // Componentin selector adını belirler
+  standalone: true, // Componentin NgModule kullanmadan bağımsız çalışmasını sağlar
   template: `
     <!-- Kayıtlarım sayfasının tamamını kapsar -->
     <section class="registrations-page">
       <!-- Sayfanın üst başlık alanıdır -->
       <div class="page-header">
         <div>
-          <h1>My Registrations</h1> <!-- Sayfanın ana başlığını gösterir. -->
-          <p>View the events you have joined or applied for.</p> <!-- Sayfanın kısa açıklamasını gösterir. -->
+          <h1>My Registrations</h1>
+          <p>View the events you have joined or applied for.</p>
         </div>
 
         <!-- Öğrencinin kayıtlarını backendden tekrar çekmek için kullanılır -->
@@ -40,33 +41,28 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- Yükleme tamamlandıysa ve hata yoksa özet istatistikleri gösterir -->
       @if (!loading() && !errorMessage()) {
         <section class="summary-section">
-          <!-- Bölüm başlığı -->
           <div class="section-header">
-            <h2>Participation Summary</h2> <!-- Öğrencinin kayıt durumlarının özetlendiği bölümün başlığıdır. -->
-            <p>Shows the current status of your event registrations.</p> <!-- Bölümün neyi gösterdiğini açıklar. -->
+            <h2>Participation Summary</h2>
+            <p>Shows the current status of your event registrations.</p>
           </div>
 
           <!-- Özet kutularını grid şeklinde gösterir -->
           <div class="summary-grid">
-            <!-- Öğrencinin toplam kayıt sayısını gösterir -->
             <div class="summary-card">
               <span class="summary-label">Total Registrations</span>
               <strong class="summary-value">{{ totalRegistrationCount() }}</strong>
             </div>
 
-            <!-- Onaylanmış kayıtların sayısını gösterir -->
             <div class="summary-card">
               <span class="summary-label">Approved</span>
               <strong class="summary-value approved-value">{{ approvedCount() }}</strong>
             </div>
 
-            <!-- Onay bekleyen kayıtların sayısını gösterir -->
             <div class="summary-card">
               <span class="summary-label">Pending</span>
               <strong class="summary-value pending-value">{{ pendingCount() }}</strong>
             </div>
 
-            <!-- Reddedilen kayıtların sayısını gösterir -->
             <div class="summary-card">
               <span class="summary-label">Rejected</span>
               <strong class="summary-value rejected-value">{{ rejectedCount() }}</strong>
@@ -85,48 +81,38 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       <!-- En az bir kayıt varsa kayıt geçmişi tablosunu gösterir -->
       @if (registrations().length > 0) {
         <section class="history-section">
-          <!-- Tablo bölümünün başlığıdır -->
           <div class="section-header">
-            <h2>Registration History</h2> <!-- Kayıt listesinin başlığını gösterir. -->
-            <p>Shows the events you applied for and their registration status.</p> <!-- Tablo hakkında kısa açıklama -->
+            <h2>Registration History</h2>
+            <p>Shows the events you applied for and their registration status.</p>
           </div>
 
-          <!-- Tabloyu kart görünümünde tutar -->
           <div class="table-card">
-            <!-- Küçük ekranlarda tablonun yatay kaydırılabilmesini sağlar -->
             <div class="table-wrapper">
-              <!-- Öğrencinin etkinlik kayıtlarının gösterildiği tablo -->
               <table class="registrations-table">
-                <!-- Tablo kolon başlıkları -->
                 <thead>
                   <tr>
-                    <th>Event</th> <!-- Etkinlik başlığının bulunduğu kolondur. -->
-                    <th>Club</th> <!-- Etkinliği oluşturan kulübün bulunduğu kolondur. -->
-                    <th>Registration Date</th> <!-- Öğrencinin etkinliğe ne zaman kayıt olduğunu gösterir. -->
-                    <th>Status</th> <!-- Kaydın onay durumunu gösterir. -->
+                    <th>Event</th>
+                    <th>Club</th>
+                    <th>Registration Date</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
 
-                <!-- Backendden gelen kayıtları tabloya basar -->
                 <tbody>
                   @for (registration of registrations(); track registration.id) {
                     <tr>
-                      <!-- Kayıt olunan etkinliğin başlığını gösterir -->
                       <td class="event-title">
                         {{ registration.eventTitle }}
                       </td>
 
-                      <!-- Etkinliği oluşturan kulübün adını gösterir -->
                       <td>
                         {{ registration.clubName }}
                       </td>
 
-                      <!-- Öğrencinin kayıt tarihini gösterir -->
                       <td>
-                        {{ registration.registeredAt }}
+                        {{ formatDateTime(registration.registeredAt) }}
                       </td>
 
-                      <!-- Kayıt durumunu kullanıcıya Türkçe ve renkli etiket şeklinde gösterir -->
                       <td>
                         @if (registration.approvalStatus === 'Approved') {
                           <span class="status-badge status-approved">
@@ -156,38 +142,37 @@ import { getApiErrorMessage } from '../../core/utils/api-error'; // Backend hata
       }
     </section>
   `,
-  styleUrl: './my-registrations.scss' // Bu componentin tasarımını my-registrations.scss dosyasından almasını sağlar.
+  styleUrl: './my-registrations.scss' // Componentin tasarım dosyasını bağlar
 })
-export class MyRegistrations implements OnInit { // Kayıtlarım sayfasının TypeScript classıdır ve OnInit yaşam döngüsünü kullanır.
-  private readonly registrationService = inject(RegistrationService); // Öğrencinin kayıt işlemlerine erişmek için RegistrationService'i enjekte eder.
+export class MyRegistrations implements OnInit {
+  readonly formatDateTime = formatDateTime; // tarihleri template içinde okunabilir formatta göstermek için ortak fonksiyonu kullanır
+  private readonly registrationService = inject(RegistrationService); // Öğrencinin kayıt işlemlerine erişmek için RegistrationServicei DI ile alır
 
-  readonly registrations = signal<RegistrationResponse[]>([]); // Backendden gelen kayıt listesini tutar.
-  readonly loading = signal(false); // Kayıtlar yüklenirken işlemin devam edip etmediğini tutar.
-  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar.
+  readonly registrations = signal<RegistrationResponse[]>([]); // Backendden gelen kayıt listesini tutar
+  readonly loading = signal(false); // Kayıtlar yüklenirken işlemin devam edip etmediğini tutar
+  readonly errorMessage = signal(''); // Kullanıcıya gösterilecek hata mesajını tutar
 
-  readonly totalRegistrationCount = computed(() => this.registrations().length); // Öğrencinin toplam etkinlik kayıt sayısını hesaplar.
-  readonly approvedCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Approved').length); // Onaylanmış kayıtların sayısını hesaplar.
-  readonly pendingCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Pending').length); // Onay bekleyen kayıtların sayısını hesaplar.
-  readonly rejectedCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Rejected').length); // Reddedilen kayıtların sayısını hesaplar.
+  readonly totalRegistrationCount = computed(() => this.registrations().length); // Öğrencinin toplam etkinlik kayıt sayısını hesaplar
+  readonly approvedCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Approved').length); // Onaylanmış kayıtların sayısını hesaplar
+  readonly pendingCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Pending').length); // Onay bekleyen kayıtların sayısını hesaplar
+  readonly rejectedCount = computed(() => this.registrations().filter(registration => registration.approvalStatus === 'Rejected').length); // Reddedilen kayıtların sayısını hesaplar
 
-  ngOnInit(): void { // Sayfa ilk açıldığında otomatik olarak çalışır.
-    this.loadRegistrations(); // Giriş yapan öğrencinin kendi kayıtlarını backendden getirir.
+  ngOnInit(): void {
+    this.loadRegistrations(); // Sayfa açıldığında kullanıcının kayıtlarını backendden getirir
   }
 
-  loadRegistrations(): void { // Giriş yapan kullanıcının kendi etkinlik kayıtlarını backendden getirir.
-    this.loading.set(true); // Backend isteğinin başladığını belirtir.
-    this.errorMessage.set(''); // Önceki hata mesajını temizler.
+  loadRegistrations(): void { // Giriş yapan kullanıcının kendi etkinlik kayıtlarını backendden getirir
+    this.loading.set(true);
+    this.errorMessage.set('');
 
-    this.registrationService.getMine().subscribe({ // RegistrationService içindeki getMine metodunu çağırarak giriş yapan kullanıcının kayıtlarını ister.
-      next: registrations => { // Backend isteği başarılı olduğunda çalışır.
-        this.registrations.set(registrations); // Backendden gelen kayıt listesini registrations signalına aktarır.
-        this.loading.set(false); // Yükleme işleminin tamamlandığını belirtir.
+    this.registrationService.getMine().subscribe({
+      next: registrations => {
+        this.registrations.set(registrations);
+        this.loading.set(false);
       },
-      error: (error: HttpErrorResponse) => { // Backend isteği hata verdiğinde çalışır.
-        this.errorMessage.set(
-          getApiErrorMessage(error, 'Could not load registrations.') // Backend hatasını kullanıcıya gösterilecek anlaşılır mesaja dönüştürür.
-        );
-        this.loading.set(false); // Hata olsa bile yükleme işlemini sonlandırır.
+      error: (error: HttpErrorResponse) => {
+        this.errorMessage.set(getApiErrorMessage(error, 'Could not load registrations.'));
+        this.loading.set(false);
       }
     });
   }
