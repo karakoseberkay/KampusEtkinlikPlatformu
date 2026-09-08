@@ -48,6 +48,10 @@ export interface ClubStatsResponse { // backendden dönen genel kulüp istatisti
   totalPendingRegistrationCount: number; // bütün etkinliklerdeki toplam bekleyen kayıt sayısını tutar
   totalRejectedRegistrationCount: number; // bütün etkinliklerdeki toplam reddedilen kayıt sayısını tutar
   overallRegistrationRate: number; // kulübün bütün etkinliklerinin genel kayıt doluluk oranını tutar
+  totalAttendanceEligibleRegistrationCount: number; // başlamış ve iptal edilmemiş etkinliklerdeki toplam onaylı kayıt sayısını tutar
+  totalCheckedInRegistrationCount: number; // qr ile gerçekten check-in yapan toplam kayıt sayısını tutar
+  totalAbsentRegistrationCount: number; // onaylı kaydı olup qr ile check-in yapmayan toplam kayıt sayısını tutar
+  overallAttendanceRate: number; // gerçekten katılanların değerlendirilen kayıtlar içindeki yüzdesini tutar
   events: ClubEventStatsResponse[]; // kulübün her etkinliğine ait istatistikleri liste halinde tutar
 }
 
@@ -135,14 +139,14 @@ export interface PagedResponse<T> { // sayfalama kullanılan endpointlerden dön
 }
 
 export interface EventPageQuery { // etkinlik filtreleme sıralama ve sayfalama parametrelerini tutar
-  search?: string; // etkinlik arama metnini tutar ? olduğu için gönderilmesi zorunlu değildir
+  search?: string; // etkinlik arama metnini tutar gönderilmesi zorunlu değildir
   category?: string; // kategori filtresini tutar gönderilmesi zorunlu değildir
   clubId?: number; // kulüp filtresini tutar gönderilmesi zorunlu değildir
   dateFrom?: string; // etkinliklerin hangi tarihten itibaren getirileceğini tutar
   dateTo?: string; // etkinliklerin hangi tarihe kadar getirileceğini tutar
   upcomingOnly?: boolean; // sadece yaklaşan etkinliklerin getirileceğini belirtir
   sortField?: string; // etkinliklerin hangi alana göre sıralanacağını tutar
-  sortDirection?: 'asc' | 'desc'; // sıralamanın artan asc veya azalan desc olacağını tutar
+  sortDirection?: 'asc' | 'desc'; // sıralamanın artan veya azalan olacağını tutar
   page?: number; // istenen sayfa numarasını tutar
   pageSize?: number; // bir sayfada kaç etkinlik gösterileceğini tutar
 }

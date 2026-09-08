@@ -1,105 +1,69 @@
-
 using KampusEtkinlik.Api.DTOs.Clubs; // kulüp request response ve istatistik DTOlarına erişmemizi sağlar
+using KampusEtkinlik.Api.Enums; // EventStatus ve RegistrationApprovalStatus enumlarına erişmemizi sağlar
 using KampusEtkinlik.Api.Models; // Club modeline erişmemizi sağlar
 using KampusEtkinlik.Api.Repositories; // IClubRepository üzerinden kulüp veritabanı işlemlerine erişmemizi sağlar
-using KampusEtkinlik.Api.Enums; // EventStatus ve RegistrationApprovalStatus enumlarına erişmemizi sağlar
 
 namespace KampusEtkinlik.Api.Services; // bu dosyanın Services katmanına ait olduğunu belirtir
 
-
-public sealed class ClubService(IClubRepository clubRepository ) : IClubService 
-// kulüp veritabanı işlemlerini yapacak repositoryi DI üzerinden alır
-// IClubServicede tanımlanan kulüp iş kurallarını gerçekleştirir
+public sealed class ClubService(IClubRepository clubRepository) : IClubService
+// kulüp veritabanı işlemlerini yapacak repositoryi DI üzerinden alır ve IClubServicedeki iş kurallarını gerçekleştirir
 {
-
-
-    public async Task<IReadOnlyList<ClubResponse>> GetAllAsync(
-        CancellationToken cancellationToken = default
-    )
+    public async Task<IReadOnlyList<ClubResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var clubs = await clubRepository.GetAllAsync(cancellationToken);
-         // repository üzerinden tüm kulüpleri veritabanından getirir
-
+        // repository üzerinden tüm kulüpleri veritabanından getirir
 
         return clubs.Select(MapToResponse).ToList();
-             // her Club modelini frontend için ClubResponse DTOsuna çevirir (managerfullname ve eventcount için)
-             // sonuçları liste haline getirir
+        // her Club modelini frontend için ClubResponse DTOsuna çevirip liste halinde döndürür
     }
 
-
-
-    public async Task<ClubResponse?> GetByIdAsync(
-        int id, // getirilecek kulübün idsini alır
-        CancellationToken cancellationToken = default
-    )
+    public async Task<ClubResponse?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var club = await clubRepository.GetByIdAsync(id,cancellationToken);  
-         // verilen idye sahip kulübü repository üzerinden getirir
+        var club = await clubRepository.GetByIdAsync(id, cancellationToken);
+        // verilen idye sahip kulübü repository üzerinden getirir
 
-
-        return club is null ? null: MapToResponse(club);
-            // kulüp bulunamadıysa null döndürür
-             // kulüp bulunduysa ClubResponsa çevirip döndürür
+        return club is null ? null : MapToResponse(club);
+        // kulüp bulunamadıysa null bulunduysa ClubResponsea çevirip döndürür
     }
 
-
-
-    public async Task<ClubStatsResponse?> GetStatsAsync(
-        int id, // istatistikleri getirilecek kulübün idsini alır
-        string managerUserId, // işlemi yapan kulüp yöneticisinin kullanıcı idsini alır
-        CancellationToken cancellationToken = default
-    )
+    public async Task<ClubStatsResponse?> GetStatsAsync(int id, string managerUserId, CancellationToken cancellationToken = default)
     {
-        var club = await clubRepository.GetByIdWithStatsAsync(
-            id,
-            cancellationToken
-        ); // kulübü etkinlikleri ve etkinlik kayıtlarıyla beraber getirir
+        var club = await clubRepository.GetByIdWithStatsAsync(id, cancellationToken);
+        // kulübü etkinlikleri ve etkinlik kayıtlarıyla beraber getirir
 
-
-        if (club is null) // kulüp bulunamazsa
+        if (club is null)
         {
             return null;
         }
 
-
-        if (club.ManagerUserId != managerUserId) // işlemi yapan kullanıcı bu kulübün yöneticisi mi kontrol eder
+        if (club.ManagerUserId != managerUserId)
         {
-            throw new UnauthorizedAccessException(
-                "You can only view statistics for clubs you manage."
-            ); // başka yöneticinin kulüp istatistiklerine erişmesini engeller
+            throw new UnauthorizedAccessException("You can only view statistics for clubs you manage.");
+            // başka yöneticinin kulüp istatistiklerini görüntülemesini engeller
         }
 
-
-        var eventStats = club.Events.OrderByDescending(eventItem => eventItem.StartDate).Select(eventItem =>{
-            // etkinlikleri en yeni tarihten eskiye doğru sıralar
-            // her etkinlik için ayrı istatistik oluşturur
-           
-                var approvedCount =eventItem.Registrations.Count(registration =>
-                        registration.ApprovalStatus
-                        == RegistrationApprovalStatus.Approved);
+        var eventStats = club.Events
+            .OrderByDescending(eventItem => eventItem.StartDate) // etkinlikleri en yeni tarihten eskiye doğru sıralar
+            .Select(eventItem =>
+            {
+                var approvedCount = eventItem.Registrations.Count(registration =>
+                    registration.ApprovalStatus == RegistrationApprovalStatus.Approved);
                 // etkinlikte Approved durumundaki kayıtların sayısını hesaplar
 
-
                 var pendingCount = eventItem.Registrations.Count(registration =>
-                        registration.ApprovalStatus
-                        == RegistrationApprovalStatus.Pending);                  
+                    registration.ApprovalStatus == RegistrationApprovalStatus.Pending);
                 // etkinlikte Pending durumundaki kayıtların sayısını hesaplar
 
-
-                var rejectedCount = eventItem.Registrations.Count(registration =>                   
-                        registration.ApprovalStatus
-                        == RegistrationApprovalStatus.Rejected);              
+                var rejectedCount = eventItem.Registrations.Count(registration =>
+                    registration.ApprovalStatus == RegistrationApprovalStatus.Rejected);
                 // etkinlikte Rejected durumundaki kayıtların sayısını hesaplar
 
+                var registrationRate = eventItem.Capacity > 0
+                    ? Math.Round(approvedCount * 100.0 / eventItem.Capacity, 2)
+                    : 0;
+                // onaylanan kayıtların kapasiteye göre yüzdesini hesaplar kapasite 0 ise divisionbyzero hatasını engeller
 
-                var registrationRate =
-                    eventItem.Capacity > 0 // kapasite 0dan büyükse oran hesaplar (divisionbyzero için koşul koydum)
-                        ? Math.Round(approvedCount * 100.0 / eventItem.Capacity,2): 0;                           
-                         // onaylanan kayıtların kapasiteye göre yüzdesini hesaplar ve 2 basamağa yuvarlar
-                         // kapasite 0 ise sıfıra bölme hatası olmaması için oranı 0 yapar
-
-
-                return new ClubEventStatsResponse // hesaplanan etkinlik istatistiklerini response nesnesine dönüştürür
+                return new ClubEventStatsResponse
                 {
                     EventId = eventItem.Id, // etkinlik idsi
                     Title = eventItem.Title, // etkinlik başlığı
@@ -109,244 +73,199 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
                     ApprovedRegistrationCount = approvedCount, // onaylanan kayıt sayısı
                     PendingRegistrationCount = pendingCount, // bekleyen kayıt sayısı
                     RejectedRegistrationCount = rejectedCount, // reddedilen kayıt sayısı
-                    RegistrationRate = registrationRate // etkinliğin doluluk/onaylı kayıt oranı
+                    RegistrationRate = registrationRate // etkinliğin doluluk oranı
                 };
-            }).ToList(); // bütün etkinlik istatistiklerini liste haline getirir
-           
+            })
+            .ToList();
 
+        var totalCapacity = club.Events.Sum(eventItem => eventItem.Capacity);
+        // kulübün bütün etkinliklerinin toplam kapasitesini hesaplar
 
-        var totalCapacity = club.Events.Sum(eventItem => eventItem.Capacity);//buradaki lambda her etkinliği al, onun Capacity değerini seç ve Sum bunları toplasın demek için var        
-         // kulübün tüm etkinliklerinin toplam kapasitesini hesaplar
+        var totalApprovedCount = eventStats.Sum(eventItem => eventItem.ApprovedRegistrationCount);
+        // bütün etkinliklerdeki toplam onaylanmış kayıt sayısını hesaplar
 
+        var overallRegistrationRate = totalCapacity > 0
+            ? Math.Round(totalApprovedCount * 100.0 / totalCapacity, 2)
+            : 0;
+        // toplam onaylı kayıtların toplam kapasiteye göre yüzdesini hesaplar
 
-        var totalApprovedCount = eventStats.Sum(eventItem => eventItem.ApprovedRegistrationCount);            
-         // bütün etkinliklerdeki toplam onaylanmış kayıt sayısını hesaplar
+        var attendanceEvents = club.Events
+            .Where(eventItem =>
+                eventItem.Status != EventStatus.Cancelled &&
+                eventItem.StartDate <= DateTimeOffset.UtcNow)
+            .ToList();
+        // sadece başlamış ve iptal edilmemiş etkinlikleri gerçek katılım hesabına dahil eder
 
+        var attendanceEligibleCount = attendanceEvents.Sum(eventItem =>
+            eventItem.Registrations.Count(registration =>
+                registration.ApprovalStatus == RegistrationApprovalStatus.Approved));
+        // katılım hesabına dahil edilen etkinliklerdeki toplam onaylı kayıt sayısını hesaplar
 
-        var overallRegistrationRate =totalCapacity > 0 ? Math.Round(totalApprovedCount * 100.0 / totalCapacity,2): 0;                                         
-                 // toplam onaylı kayıtların toplam kapasiteye göre yüzdesini hesaplar
-                 // toplam kapasite 0 ise sıfıra bölmeyi engeller (divisionbyzero)
+        var totalCheckedInCount = attendanceEvents.Sum(eventItem =>
+            eventItem.Registrations.Count(registration =>
+                registration.ApprovalStatus == RegistrationApprovalStatus.Approved &&
+                registration.CheckedInAt.HasValue));
+        // onaylı kaydı olup qr ile gerçekten check-in yapan kayıtların toplamını hesaplar
 
+        var totalAbsentCount = Math.Max(0, attendanceEligibleCount - totalCheckedInCount);
+        // onaylı kaydı olduğu halde qr ile check-in yapmayan kayıtların sayısını hesaplar
 
-        return new ClubStatsResponse // kulübün genel istatistiklerini frontend için hazırlar
+        var overallAttendanceRate = attendanceEligibleCount > 0
+            ? Math.Round(totalCheckedInCount * 100.0 / attendanceEligibleCount, 2)
+            : 0;
+        // gerçekten katılanların katılım için değerlendirilen kayıtlar içerisindeki yüzdesini hesaplar
+
+        return new ClubStatsResponse
         {
             ClubId = club.Id, // kulüp idsi
             ClubName = club.Name, // kulüp adı
 
             TotalEventCount = club.Events.Count, // kulübün toplam etkinlik sayısı
 
-            ActiveEventCount = club.Events.Count(eventItem => eventItem.Status == EventStatus.Active),                
-             // aktif etkinliklerin sayısını hesaplar
+            ActiveEventCount = club.Events.Count(eventItem => eventItem.Status == EventStatus.Active),
+            // aktif etkinliklerin sayısını hesaplar
 
-            CancelledEventCount = club.Events.Count(eventItem =>eventItem.Status == EventStatus.Cancelled),                
-             // iptal edilmiş etkinliklerin sayısını hesaplar
+            CancelledEventCount = club.Events.Count(eventItem => eventItem.Status == EventStatus.Cancelled),
+            // iptal edilmiş etkinliklerin sayısını hesaplar
 
             TotalApprovedRegistrationCount = totalApprovedCount, // toplam onaylanan kayıt sayısı
 
-            TotalPendingRegistrationCount = eventStats.Sum( eventItem => eventItem.PendingRegistrationCount),
-             // bütün etkinliklerdeki toplam bekleyen kayıt sayısı
+            TotalPendingRegistrationCount = eventStats.Sum(eventItem => eventItem.PendingRegistrationCount),
+            // bütün etkinliklerdeki toplam bekleyen kayıt sayısı
 
-            TotalRejectedRegistrationCount = eventStats.Sum(eventItem => eventItem.RejectedRegistrationCount),              
-             // bütün etkinliklerdeki toplam reddedilen kayıt sayısı
+            TotalRejectedRegistrationCount = eventStats.Sum(eventItem => eventItem.RejectedRegistrationCount),
+            // bütün etkinliklerdeki toplam reddedilen kayıt sayısı
 
             OverallRegistrationRate = overallRegistrationRate, // kulübün genel kayıt oranı
+
+            TotalAttendanceEligibleRegistrationCount = attendanceEligibleCount,
+            // başlamış etkinliklerdeki toplam onaylı kayıt sayısını döndürür
+
+            TotalCheckedInRegistrationCount = totalCheckedInCount,
+            // qr ile gerçekten katılım sağlayan kayıtların toplamını döndürür
+
+            TotalAbsentRegistrationCount = totalAbsentCount,
+            // kayıtlı olduğu halde check-in yapmayanların toplamını döndürür
+
+            OverallAttendanceRate = overallAttendanceRate,
+            // kulübün genel gerçek katılım yüzdesini döndürür
 
             Events = eventStats // etkinlik bazındaki detaylı istatistikleri ekler
         };
     }
 
-
-
-    public async Task<ClubResponse> CreateAsync(
-        string managerUserId, // yeni kulübün yöneticisi olacak kullanıcının idsini alır
-        CreateClubRequest request, // frontendden gelen kulüp oluşturma bilgilerini alır
-        CancellationToken cancellationToken = default
-    )
+    public async Task<ClubResponse> CreateAsync(string managerUserId, CreateClubRequest request, CancellationToken cancellationToken = default)
     {
         var clubName = request.Name.Trim(); // kulüp adının başındaki ve sonundaki boşlukları temizler
 
-
-        if (string.IsNullOrWhiteSpace(clubName)) // temizlendikten sonra kulüp adı boş mu kontrol eder
+        if (string.IsNullOrWhiteSpace(clubName))
         {
-            throw new ArgumentException(
-                "Club name cannot be empty."
-            ); // boş isimle kulüp oluşturulmasını engeller
+            throw new ArgumentException("Club name cannot be empty.");
         }
 
+        var nameExists = await clubRepository.NameExistsAsync(clubName, cancellationToken: cancellationToken);
+        // aynı isimde başka kulüp var mı repository üzerinden kontrol eder
 
-        var nameExists = await clubRepository.NameExistsAsync(
-
-                clubName,
-                cancellationToken: cancellationToken
-            ); // aynı isimde başka kulüp var mı repository üzerinden kontrol eder
-
-
-        if (nameExists) // aynı isimde kulüp varsa
+        if (nameExists)
         {
-            throw new InvalidOperationException(
-                "A club with this name already exists."
-            ); // aynı isimle ikinci kulüp oluşturulmasını engeller
+            throw new InvalidOperationException("A club with this name already exists.");
         }
 
-
-        var club = new Club // frontendden gelen bilgilerle yeni Club modeli oluşturur
+        var club = new Club
         {
-            Name = clubName, //yukarıda temizlenmiş kulüp adını verir
-
-            Description = NormalizeOptionalText(request.Description),                
-             // açıklama boşsa null yapar doluysa boşluklarını temizler(en altta tanımlandı)
-
-            LogoUrl = NormalizeOptionalText(request.LogoUrl),  
-             // logo adresi boşsa null yapar doluysa boşluklarını temizler
-
-            ManagerUserId = managerUserId // giriş yapan yöneticiyi kulübün sahibi/yöneticisi yapar(jwt)
+            Name = clubName,
+            Description = NormalizeOptionalText(request.Description), // açıklama boşsa null yapar doluysa boşluklarını temizler
+            LogoUrl = NormalizeOptionalText(request.LogoUrl), // logo adresi boşsa null yapar doluysa boşluklarını temizler
+            ManagerUserId = managerUserId // giriş yapan yöneticiyi kulübün yöneticisi yapar
         };
 
-
-        await clubRepository.AddAsync(club, cancellationToken);           
-         // kulübü eklenmek üzere DbContexte gönderir
-
+        await clubRepository.AddAsync(club, cancellationToken);
+        // kulübü eklenmek üzere DbContexte gönderir
 
         await clubRepository.SaveChangesAsync(cancellationToken);
-         // yeni kulübü gerçekten PostgreSQL veritabanına kaydeder
+        // yeni kulübü PostgreSQL veritabanına kaydeder
 
+        var createdClub = await clubRepository.GetByIdAsync(club.Id, cancellationToken);
+        // kaydedilen kulübü güncel bilgileriyle tekrar getirir
 
-        var createdClub = await clubRepository.GetByIdAsync(club.Id, cancellationToken);             
-             // kaydedilen kulübü yönetici ve etkinlik bilgileriyle tekrar veritabanından getirir (güncel id ile)
-
-
-        if (createdClub is null) // oluşturulan kulüp tekrar okunamazsa
+        if (createdClub is null)
         {
-            throw new InvalidOperationException(
-                "The club was created but could not be retrieved."
-            ); // beklenmeyen veri erişim hatasında işlemi hata ile durdurur
+            throw new InvalidOperationException("The club was created but could not be retrieved.");
         }
 
-
-        return MapToResponse(createdClub); 
-        // oluşturulan Club modelini ClubResponsa çevirip frontend'e döndürür
+        return MapToResponse(createdClub);
     }
 
-
-
-    public async Task<ClubResponse?> UpdateAsync(
-        int id, // güncellenecek kulübün idsini alır
-        string managerUserId, // işlemi yapan yöneticinin kullanıcı idsini alır
-        UpdateClubRequest request, // frontendden gelen yeni kulüp bilgilerini alır
-        CancellationToken cancellationToken = default
-    )
+    public async Task<ClubResponse?> UpdateAsync(int id, string managerUserId, UpdateClubRequest request, CancellationToken cancellationToken = default)
     {
-        var club = await clubRepository.GetByIdAsync(
-            id,
-            cancellationToken
-        ); // güncellenecek kulübü veritabanından getirir
+        var club = await clubRepository.GetByIdAsync(id, cancellationToken);
+        // güncellenecek kulübü veritabanından getirir
 
-
-        if (club is null) // kulüp bulunamazsa
+        if (club is null)
         {
             return null;
         }
 
-
-        if (club.ManagerUserId != managerUserId) // işlemi yapan kullanıcı kulübün yöneticisi mi kontrol eder
+        if (club.ManagerUserId != managerUserId)
         {
-            throw new UnauthorizedAccessException(
-                "You can only update clubs you manage."
-            ); // başka yöneticinin kulübünü güncellemeyi engeller
+            throw new UnauthorizedAccessException("You can only update clubs you manage.");
         }
 
+        var clubName = request.Name.Trim(); // yeni kulüp adının boşluklarını temizler
 
-        var clubName = request.Name.Trim(); // yeni kulüp adının başındaki ve sonundaki boşlukları temizler
-
-
-        if (string.IsNullOrWhiteSpace(clubName)) // isim temizlendikten sonra boş mu kontrol eder
+        if (string.IsNullOrWhiteSpace(clubName))
         {
-            throw new ArgumentException(
-                "Club name cannot be empty."
-            ); // boş isimle güncellemeyi engeller
+            throw new ArgumentException("Club name cannot be empty.");
         }
 
+        var nameExists = await clubRepository.NameExistsAsync(clubName, club.Id, cancellationToken);
+        // mevcut kulübü hariç tutarak aynı isimde başka kulüp var mı kontrol eder
 
-        var nameExists =
-            await clubRepository.NameExistsAsync(
-                clubName,
-                club.Id, // mevcut kulübü isim tekrar kontrolünün dışında bırakır
-                cancellationToken
-            ); // başka bir kulüpte aynı isim var mı kontrol eder
-
-
-        if (nameExists) // başka kulüp aynı isme sahipse
+        if (nameExists)
         {
-            throw new InvalidOperationException(
-                "Another club with this name already exists."
-            ); // aynı isimde iki kulüp oluşmasını engeller
+            throw new InvalidOperationException("Another club with this name already exists.");
         }
 
-
-        club.Name = clubName; // kulübün adını yeni değerle günceller
-
-        club.Description = NormalizeOptionalText( request.Description);//normalize fonksiyonu en altta     
-         // açıklamayı temizleyip günceller
-
+        club.Name = clubName;
+        club.Description = NormalizeOptionalText(request.Description);
         club.LogoUrl = NormalizeOptionalText(request.LogoUrl);
-         // logo adresini temizleyip günceller
-
-
-        await clubRepository.SaveChangesAsync(cancellationToken); 
-        // EF Coreun takip ettiği değişiklikleri PostgreSQL veritabanına kaydeder
-
-
-        return MapToResponse(club); // güncellenen kulübü ClubResponsea çevirip döndürür
-    }
-
-
-
-    public async Task<bool> DeleteAsync(
-        int id, // silinecek kulübün idsini alır
-        string managerUserId, // silme işlemini yapan yöneticinin kullanıcı idsini alır
-        CancellationToken cancellationToken = default
-    )
-    {
-        var club = await clubRepository.GetByIdAsync( id, cancellationToken);          
-         // silinecek kulübü etkinlikleriyle beraber veritabanından getirir
-
-
-        if (club is null) // kulüp bulunamazsa
-        {
-            return false; // silme işleminin başarısız olduğunu döndürür
-        }
-
-
-        if (club.ManagerUserId != managerUserId) // işlemi yapan kişi bu kulübün yöneticisi mi kontrol eder
-        {
-            throw new UnauthorizedAccessException(
-                "You can only delete clubs you manage."
-            ); // başka yöneticinin kulübünü silmesini engeller
-        }
-
-
-        if (club.Events.Count > 0) // kulübün en az bir etkinliği varsa
-        {
-            throw new InvalidOperationException(
-                "A club with existing events cannot be deleted."
-            ); // etkinliği bulunan kulübün silinmesini iş kuralı olarak engeller
-        }
-
-
-        clubRepository.Remove(club); // kulübü silinmek üzere EF Coreda işaretler
-
 
         await clubRepository.SaveChangesAsync(cancellationToken);
-            
-         // silme işlemini gerçekten PostgreSQL veritabanına uygular
+        // değişiklikleri PostgreSQL veritabanına kaydeder
 
-
-        return true; // kulübün başarıyla silindiğini belirtir
+        return MapToResponse(club);
     }
 
+    public async Task<bool> DeleteAsync(int id, string managerUserId, CancellationToken cancellationToken = default)
+    {
+        var club = await clubRepository.GetByIdAsync(id, cancellationToken);
+        // silinecek kulübü etkinlikleriyle beraber getirir
 
+        if (club is null)
+        {
+            return false;
+        }
 
-    private static ClubResponse MapToResponse(Club club) // Club modelini frontend'e gönderilecek ClubResponse DTOsuna çevirir
+        if (club.ManagerUserId != managerUserId)
+        {
+            throw new UnauthorizedAccessException("You can only delete clubs you manage.");
+        }
+
+        if (club.Events.Count > 0)
+        {
+            throw new InvalidOperationException("A club with existing events cannot be deleted.");
+            // etkinliği bulunan kulübün silinmesini engeller
+        }
+
+        clubRepository.Remove(club); // kulübü EF Core tarafında silinmek üzere işaretler
+
+        await clubRepository.SaveChangesAsync(cancellationToken);
+        // silme işlemini PostgreSQL veritabanına uygular
+
+        return true;
+    }
+
+    private static ClubResponse MapToResponse(Club club)
     {
         return new ClubResponse
         {
@@ -355,23 +274,15 @@ public sealed class ClubService(IClubRepository clubRepository ) : IClubService
             Description = club.Description, // kulüp açıklaması
             LogoUrl = club.LogoUrl, // kulüp logo adresi
             ManagerUserId = club.ManagerUserId, // kulüp yöneticisinin kullanıcı idsi
-
-            ManagerFullName = club.ManagerUser?.FullName ?? string.Empty,               
-            // yönetici bilgisi varsa ad soyadını alır, yoksa boş string döndürür
-
+            ManagerFullName = club.ManagerUser?.FullName ?? string.Empty, // yönetici varsa ad soyadını yoksa boş string döndürür
             EventCount = club.Events.Count // kulübün toplam etkinlik sayısını hesaplar
         };
     }
 
-
-
-    private static string? NormalizeOptionalText(
-        string? value // temizlenecek isteğe bağlı metni alır
-    )
+    private static string? NormalizeOptionalText(string? value)
     {
         return string.IsNullOrWhiteSpace(value)
             ? null // değer boş veya sadece boşluksa null döndürür
-            : value.Trim(); // değer doluysa başındaki ve sonundaki boşlukları temizler
+            : value.Trim(); // doluysa başındaki ve sonundaki boşlukları temizler
     }
 }
-

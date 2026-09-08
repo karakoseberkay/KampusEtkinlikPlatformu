@@ -1,60 +1,62 @@
 /* Kulüp istatistikleri sayfası */
+
 .club-stats-page {
   width: 100%; // Sayfanın kullanılabilir alanın tamamını kaplamasını sağlar.
 }
 
 /* Sayfa başlığı */
+
 .page-header {
-  display: flex; // Başlık ile yenile butonunu yan yana dizer.
-  align-items: center; // Başlık ve butonu dikey olarak ortalar.
-  justify-content: space-between; // Başlığı sola, butonu sağa yerleştirir.
-  gap: 20px; // Başlık ile buton arasında boşluk bırakır.
-  margin-bottom: 28px; // Başlık ile sonraki içerik arasında boşluk bırakır.
+  display: flex; // Başlık ve yenile butonunu yan yana dizer.
+  align-items: center; // İçerikleri dikey olarak ortalar.
+  justify-content: space-between; // Başlığı sola butonu sağa yerleştirir.
+  gap: 20px; // Başlık ve buton arasında boşluk bırakır.
+  margin-bottom: 28px; // Sayfa başlığı ile içerik arasında boşluk bırakır.
 }
 
 .page-header h1 {
-  margin: 0 0 6px; // Başlığın varsayılan marginini düzenler.
-  color: #003267; // Başlığı CampusBody lacivert rengine boyar.
-  font-size: 30px; // Ana başlığın yazı boyutunu belirler.
+  margin: 0 0 6px; // Başlığın dış boşluğunu düzenler.
+  color: #003267; // Ana başlığı CampusBody lacivertine boyar.
+  font-size: 30px; // Başlık boyutunu belirler.
   font-weight: 700; // Başlığı kalın yapar.
 }
 
 .page-header p {
   margin: 0; // Paragrafın varsayılan marginini kaldırır.
-  color: #64748b; // Açıklama yazısını açık gri-lacivert yapar.
+  color: #64748b; // Açıklama rengini belirler.
   font-size: 14px; // Açıklama yazı boyutunu belirler.
 }
 
-/* Verileri yenileme butonu */
 .refresh-button {
-  min-height: 40px; // Yenile butonunun minimum yüksekliğini belirler.
-  padding: 0 18px; // Butonun sağında ve solunda boşluk bırakır.
-  background-color: #003267; // Butonun arka planını CampusBody laciverti yapar.
+  min-height: 40px; // Butonun minimum yüksekliğini belirler.
+  padding: 0 18px; // Butonun yatay iç boşluğunu belirler.
+  background-color: #003267; // Butonun arka planını lacivert yapar.
   color: #ffffff; // Buton yazısını beyaz yapar.
-  border: none; // Tarayıcının varsayılan borderını kaldırır.
-  border-radius: 6px; // Buton köşelerini hafif yuvarlatır.
+  border: none; // Varsayılan borderı kaldırır.
+  border-radius: 6px; // Buton köşelerini yuvarlatır.
   font-size: 13px; // Buton yazı boyutunu belirler.
   font-weight: 700; // Buton yazısını kalın yapar.
-  cursor: pointer; // Mouse üzerine geldiğinde el işareti gösterir.
+  cursor: pointer; // Mouse üzerinde el işareti gösterir.
 }
 
 .refresh-button:hover:not(:disabled) {
-  background-color: #00234b; // Mouse üzerine geldiğinde butonu koyu lacivert yapar.
+  background-color: #00264f; // Mouse üzerine geldiğinde butonu koyulaştırır.
 }
 
 .refresh-button:disabled {
   opacity: 0.6; // Yükleme sırasında butonu soluk gösterir.
-  cursor: not-allowed; // Kullanıcıya butonun kullanılamadığını gösterir.
+  cursor: not-allowed; // Kullanılamadığını belirtir.
 }
 
-/* Mesaj alanları */
+/* Mesaj kutuları */
+
 .page-message {
-  margin-bottom: 24px; // Mesaj ile sonraki bölüm arasında boşluk bırakır.
-  padding: 17px; // Mesaj kutusunun içine boşluk verir.
-  background-color: #ffffff; // Normal mesaj arka planını beyaz yapar.
-  color: #64748b; // Normal mesaj yazısını gri-lacivert yapar.
+  padding: 18px; // Mesaj kutusunun içine boşluk verir.
+  margin-bottom: 20px; // Mesajın altına boşluk bırakır.
+  background-color: #ffffff; // Mesaj arka planını beyaz yapar.
+  color: #64748b; // Mesaj yazı rengini belirler.
   border: 1px solid #dbe3ec; // Mesaj kutusuna ince border ekler.
-  border-radius: 8px; // Mesaj kutusunun köşelerini hafif yuvarlatır.
+  border-radius: 8px; // Mesaj kutusunun köşelerini yuvarlatır.
   font-size: 13px; // Mesaj yazı boyutunu belirler.
 }
 
@@ -65,6 +67,7 @@
 }
 
 /* Kulüp özeti */
+
 .club-summary {
   padding: 22px; // Kulüp özet kartının içerisine boşluk verir.
   margin-bottom: 30px; // Özet kartı ile genel bilgiler arasında boşluk bırakır.
@@ -97,7 +100,9 @@
 }
 
 /* Bölüm başlıkları */
+
 .stats-section,
+.attendance-section,
 .chart-section,
 .events-section {
   margin-bottom: 34px; // Ana bölümler arasında boşluk bırakır.
@@ -121,6 +126,7 @@
 }
 
 /* İstatistik kartları */
+
 .stats-grid {
   display: grid; // İstatistik kutularını grid yapısında düzenler.
   grid-template-columns: repeat(4, 1fr); // Büyük ekranda dört eşit kolon oluşturur.
@@ -141,6 +147,10 @@
 
 .rate-card {
   border-color: #f6c99f; // Genel kayıt oranı kartına hafif turuncu border verir.
+}
+
+.attendance-rate-card {
+  border-color: #bbf7d0; // Gerçek katılım oranı kartına açık yeşil border verir.
 }
 
 .stat-label {
@@ -167,7 +177,80 @@
   color: #b91c1c; // İptal veya reddedilen değerleri kırmızı gösterir.
 }
 
+/* Gerçek katılım pie grafiği */
+
+.attendance-grid {
+  display: grid; // Pie grafik ve özet bilgilerini yan yana düzenler.
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr); // Grafiğe biraz daha fazla alan verir.
+  gap: 18px; // Grafik ile özet kartı arasında boşluk bırakır.
+}
+
+.attendance-chart-card {
+  min-height: 390px; // Pie grafiğin rahat görünmesi için minimum yükseklik verir.
+  display: flex; // Grafiği kart içerisinde ortalamak için flex kullanır.
+  align-items: center; // Grafiği dikey ortalar.
+  justify-content: center; // Grafiği yatay ortalar.
+  padding: 24px; // Grafik kartının içine boşluk verir.
+  background-color: #ffffff; // Grafik kartının arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Grafik kartının etrafına border ekler.
+  border-radius: 8px; // Grafik kartının köşelerini yuvarlatır.
+}
+
+.attendance-chart {
+  width: 100%; // PrimeNG grafiğin kullanılabilir genişliği kullanmasını sağlar.
+  max-width: 420px; // Pie grafiğin gereğinden fazla büyümesini engeller.
+  height: 320px; // Grafiğe sabit ve rahat bir görüntü alanı verir.
+}
+
+.attendance-chart p-chart {
+  display: block; // PrimeNG chart componentinin alanı düzgün kullanmasını sağlar.
+  width: 100%; // Grafiğin tam genişliği kullanmasını sağlar.
+  height: 100%; // Grafiğin kapsayıcının yüksekliğini kullanmasını sağlar.
+}
+
+.attendance-summary-card {
+  display: grid; // Katılım özetlerini alt alta kartlar halinde gösterir.
+  grid-template-columns: 1fr; // Her bilgiyi tek kolon halinde gösterir.
+  gap: 12px; // Özet elemanları arasında boşluk bırakır.
+  padding: 18px; // Özet kartının içine boşluk verir.
+  background-color: #ffffff; // Kartın arka planını beyaz yapar.
+  border: 1px solid #dbe3ec; // Kartın etrafına border ekler.
+  border-radius: 8px; // Kartın köşelerini yuvarlatır.
+}
+
+.attendance-summary-item {
+  display: flex; // Başlık ve değeri yan yana gösterir.
+  align-items: center; // İçerikleri dikey ortalar.
+  justify-content: space-between; // Başlığı sola değeri sağa yerleştirir.
+  gap: 16px; // İki alan arasında boşluk bırakır.
+  padding: 16px; // Her özet satırının içine boşluk verir.
+  background-color: #f8fafc; // Özet alanlarına hafif arka plan verir.
+  border: 1px solid #edf1f5; // Özet satırlarına ince border ekler.
+  border-radius: 6px; // Özet satırlarının köşelerini yuvarlatır.
+}
+
+.attendance-summary-item span {
+  color: #64748b; // Özet başlığını açık renkte gösterir.
+  font-size: 12px; // Başlık yazı boyutunu belirler.
+  font-weight: 600; // Başlığı belirgin hale getirir.
+}
+
+.attendance-summary-item strong {
+  color: #003267; // Normal değerleri lacivert gösterir.
+  font-size: 19px; // Değerleri daha büyük gösterir.
+  font-weight: 700; // Değerleri kalın gösterir.
+}
+
+.attendance-summary-item .attendance-success {
+  color: #15803d; // Check-in ve katılım oranını yeşil gösterir.
+}
+
+.attendance-summary-item .attendance-missed {
+  color: #64748b; // Check-in yapmayan kayıtları gri gösterir.
+}
+
 /* Kayıt oranı grafiği */
+
 .chart-card {
   padding: 22px; // Grafik kartının içine boşluk verir.
   background-color: #ffffff; // Grafik kartının arka planını beyaz yapar.
@@ -206,6 +289,7 @@
 }
 
 /* Boş veri mesajı */
+
 .empty-card {
   padding: 18px; // Mesaj kutusunun içine boşluk verir.
   background-color: #ffffff; // Mesaj kutusunu beyaz yapar.
@@ -216,6 +300,7 @@
 }
 
 /* Etkinlik istatistik tablosu */
+
 .table-card {
   width: 100%; // Tablo kartının tam genişlik kullanmasını sağlar.
   background-color: #ffffff; // Tablo arka planını beyaz yapar.
@@ -271,6 +356,7 @@
 }
 
 /* Tablo durum etiketleri */
+
 .status-badge {
   display: inline-block; // Durum etiketinin sadece içeriği kadar geniş olmasını sağlar.
   padding: 5px 9px; // Etiketin içine boşluk verir.
@@ -320,14 +406,19 @@
   font-weight: 700; // Oran değerini kalın yapar.
 }
 
-// Responsive düzen 
-@media (max-width: 1000px) { // Orta boy ekranlarda çalışır.
+/* Responsive düzen */
+
+@media (max-width: 1000px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr); // İstatistik kartlarını dört kolondan iki kolona düşürür.
   }
+
+  .attendance-grid {
+    grid-template-columns: 1fr; // Orta ekranda pie grafik ve özet bilgilerini alt alta dizer.
+  }
 }
 
-@media (max-width: 650px) { // Telefon boyutundaki ekranlarda çalışır.
+@media (max-width: 650px) {
   .page-header {
     align-items: flex-start; // Başlık ve butonu sola hizalar.
     flex-direction: column; // Başlık ile yenile butonunu alt alta dizer.
@@ -343,5 +434,18 @@
 
   .stats-grid {
     grid-template-columns: 1fr; // Mobilde istatistik kartlarını tek kolon halinde gösterir.
+  }
+
+  .attendance-chart-card {
+    min-height: 340px; // Mobilde grafik kartının yüksekliğini azaltır.
+    padding: 16px; // Mobilde grafik kartının iç boşluğunu azaltır.
+  }
+
+  .attendance-chart {
+    height: 280px; // Mobilde pie grafiği biraz küçültür.
+  }
+
+  .attendance-summary-item {
+    padding: 14px; // Mobilde özet satırlarının iç boşluğunu azaltır.
   }
 }
